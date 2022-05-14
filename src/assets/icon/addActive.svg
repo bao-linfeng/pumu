@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="17px" height="17px" viewBox="0 0 17 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.2 (67145) - http://www.bohemiancoding.com/sketch -->
+    <title>添加2</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <polygon id="path-1" points="0.0004 0.0004 15 0.0004 15 15 0.0004 15"></polygon>
+    </defs>
+    <g id="切图" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="添加2" transform="translate(1.000000, 1.000000)">
+            <mask id="mask-2" fill="white">
+                <use xlink:href="#path-1"></use>
+            </mask>
+            <g id="Clip-2"></g>
+            <path d="M13.8154,6.3154 L8.6844,6.3154 L8.6844,1.1844 C8.6844,0.5334 8.1514,0.0004 7.5004,0.0004 C6.8484,0.0004 6.3154,0.5334 6.3154,1.1844 L6.3154,6.3154 L1.1844,6.3154 C0.5334,6.3154 0.0004,6.8484 0.0004,7.5004 C0.0004,8.1514 0.5334,8.6844 1.1844,8.6844 L6.3154,8.6844 L6.3154,13.8154 C6.3154,14.4664 6.8484,15.0004 7.5004,15.0004 C8.1514,15.0004 8.6844,14.4664 8.6844,13.8154 L8.6844,8.6844 L13.8154,8.6844 C14.4664,8.6844 15.0004,8.1514 15.0004,7.5004 C15.0004,6.8484 14.4664,6.3154 13.8154,6.3154" id="Fill-1" fill="#4C95FF" mask="url(#mask-2)"></path>
+        </g>
+    </g>
+</svg>

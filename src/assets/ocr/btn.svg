@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="100px" viewBox="0 0 20 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.2 (67145) - http://www.bohemiancoding.com/sketch -->
+    <title>矩形</title>
+    <desc>Created with Sketch.</desc>
+    <g id="切图" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="矩形" fill="#FFFFFF" x="0" y="0" width="20" height="100" rx="4"></rect>
+        <g id="分组-20" transform="translate(3.000000, 46.000000)" fill="#7E8E98">
+            <polygon id="三角形" transform="translate(2.000000, 3.545455) rotate(-90.000000) translate(-2.000000, -3.545455) " points="2 1.54545455 5 5.54545455 -1 5.54545455"></polygon>
+            <polygon id="三角形-copy" transform="translate(12.000000, 3.545455) rotate(-90.000000) translate(-12.000000, -3.545455) " points="12 5.54545455 9 1.54545455 15 1.54545455"></polygon>
+        </g>
+    </g>
+</svg>

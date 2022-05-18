@@ -128,6 +128,8 @@ VXETable.renderer.add('AdaiActionButton', {
     attr.data.map((item)=>{
       if(row.status && item.value != 'look'){
         arr.push(<button class="AdaiActionButton disabled" onClick={() => events[item.value](params)}>{item.label}</button>)
+      }else if(row.checkDoneTimeO < 0 && item.value == 'setCommon'){
+        arr.push(<button class="AdaiActionButton disabled" onClick={() => events[item.value](params)}>{item.label}</button>)
       }else{
         arr.push(<button class="AdaiActionButton" onClick={() => events[item.value](params)}>{item.label}</button>)
       }

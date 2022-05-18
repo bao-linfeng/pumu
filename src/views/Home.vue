@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <div class="home_box">
-      <img class="logo" src="../assets/home/logo.png" alt="logo" />
+      <img class="logo" src="../assets/home/logo_a.png" alt="logo" />
       <img class="Y" src="../assets/home/btn.png" alt="登录" @click="gotoLink" />
       <img class="X" src="../assets/home/btnX.png" alt="登录" @click="gotoLink" />
     </div>

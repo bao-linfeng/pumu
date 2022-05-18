@@ -59,6 +59,7 @@ import Institution from "./views/manage/Institution.vue";
 import BookAudit from './views/manage/BookAudit.vue';
 import BookAuditList from './views/manage/BookAuditList.vue';
 import TakeCamera from './views/manage/TakeCamera.vue';
+import CameraDetail from './views/manage/CameraDetail.vue';
 
 Vue.use(Router);
 
@@ -75,6 +76,14 @@ const routes = [
       requireAuth: true,
     },
     component: TakeCamera
+  },
+  {
+    path: "/:id/cameraDetail",
+    name: "CameraDetail",
+    meta: {
+      requireAuth: true,
+    },
+    component: CameraDetail
   },
   {
     path: "/:id/DORlist",

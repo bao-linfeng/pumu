@@ -1,6 +1,6 @@
 <template>
   <div class="sidebar">
-    <router-link :to="'/'+pathname" class="logo"><img :src="require('../../assets/nav/logo_side.svg')"></router-link>
+    <router-link :to="'/'+pathname" class="logo"><img :src="require('../../assets/nav/logo_side_a.svg')"></router-link>
     <p class="userName">{{userName}}</p>
     <p class="userName role">{{roleO[role]}}</p>
     <p class="stationName">{{stationName}}</p>

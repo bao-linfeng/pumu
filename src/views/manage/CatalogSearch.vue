@@ -58,15 +58,18 @@
                 <el-button class="marginL10" type="primary" size="mini" @click="toggleColumn(2)">{{visible2 ? '隐藏' : '显示'}} 折叠列</el-button>
             </div>
             <div class="vex-table-box">
+                <!-- show-overflow -->
+                <!-- auto-resize -->
+                <!-- :column-config="{resizable: true}" -->
                 <vxe-table
                     border
                     resizable
                     stripe
                     keep-source
-                    show-overflow
                     highlight-hover-row
                     :loading="loading"
                     ref="xTable"
+                    :scroll-y="{enabled: false}"
                     :height="h"
                     :align="'center'"
                     :data="tableData"
@@ -77,11 +80,11 @@
                     @sort-change="sortChangeEvent"
                     >
                     <!-- <vxe-table-column type="checkbox" width="60"></vxe-table-column> -->
-                    <vxe-table-column field="_key" title="谱ID"></vxe-table-column>
-                    <vxe-table-column field="LocalityModern" title="谱籍地(原谱)"></vxe-table-column>
-                    <vxe-table-column field="place" title="谱籍地(现代)"></vxe-table-column>
-                    <vxe-table-column field="surname" title="姓氏"></vxe-table-column>
-                    <vxe-table-column field="genealogyName" title="谱名"></vxe-table-column>
+                    <vxe-table-column field="_key" title="谱ID" width="100"></vxe-table-column>
+                    <vxe-table-column field="LocalityModern" title="谱籍地(原谱)" width="120"></vxe-table-column>
+                    <vxe-table-column field="place" title="谱籍地(现代)" width="120"></vxe-table-column>
+                    <vxe-table-column field="surname" title="姓氏" width="50"></vxe-table-column>
+                    <vxe-table-column field="genealogyName" title="谱名" width="120"></vxe-table-column>
                     <vxe-table-column field="publish" title="出版年" sort-by="publish" sortable></vxe-table-column>
                     <vxe-table-column field="hasVolume" title="卷数(标称)"></vxe-table-column>
                     <vxe-table-column field="volumeNumber" title="卷数(实拍)"></vxe-table-column>
@@ -99,7 +102,7 @@
                     <vxe-table-column field="GCOverO" title="编目状态" :visible="visible2"></vxe-table-column>
                     <vxe-table-column field="NoIndexO" title="索引状态" :visible="visible2"></vxe-table-column>
                     <vxe-table-column field="updateUserName" title="更新人员" :visible="visible2"></vxe-table-column>
-                    <vxe-table-column field="updateTimeO" title="更新日期" sort-by="updateTime" sortable :visible="visible2"></vxe-table-column>
+                    <vxe-table-column field="updateTimeO" title="更新日期" width="100" sort-by="updateTime" sortable :visible="visible2"></vxe-table-column>
                     <vxe-table-column title="操作" :visible="visible" fixed="right" width="180" :cell-render="{name:'AdaiActionButton',attr:{data: attrData}, events: {'detail': getDetail, 'edit': getEdit, 'log': getLog}}"></vxe-table-column>
                 </vxe-table>
                 <div class="page-foot">

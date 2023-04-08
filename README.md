@@ -1,4 +1,4 @@
-# templete
+# 家谱查重 为FS提供优质谱目查重系统，影像审核、工作量统计
 
 ## Project setup
 ```

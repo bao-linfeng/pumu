@@ -173,7 +173,7 @@ export default {
       };
       this.loading = true;
       type ? this.curPage=1 : null;
-      let data=await api.getAxios('catalog/back?keyWordObj='+JSON.stringify(keyWordObj)+'&siteKey='+this.siteKey+'&page='+this.curPage+'&limit='+this.limit);
+      let data=await api.getAxios('catalog/back?keyWordObj='+JSON.stringify(keyWordObj)+'&startFileTimes=&endFileTimes='+'&siteKey='+this.siteKey+'&page='+this.curPage+'&limit='+this.limit);
       this.loading = false;
       if(data.status && data.result){
         let list = data.result.list;

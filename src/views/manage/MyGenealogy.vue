@@ -383,7 +383,7 @@ export default {
       this.allCheck = false;
       this.loading = true;
       type ? this.curPage=1 : null;
-      let data=await api.getAxios('catalog/back?surname='+this.surname+'&genealogyName='+this.genealogyName+'&prop='+this.prop+'&order='+this.order+'&place='+this.place+'&hall='+this.hall+'&celebrity='+this.celebrity+'&generationName='+this.poem+'&batch='+this.batch+'&version='+this.version+'&writeTime='+this.writeTime+'&author='+this.author+'&hasImage='+this.isImage+'&hasPerson='+this.isHasPerson+'&siteKey='+this.siteKey+'&page='+this.curPage+'&limit='+this.limit+'&source='+(this.source == '全部机构' ? '' : this.source)+'&hasCheck='+this.hasCheck+'&creator='+this.creator);
+      let data=await api.getAxios('catalog/back?surname='+this.surname+'&startFileTimes=&endFileTimes='+'&genealogyName='+this.genealogyName+'&prop='+this.prop+'&order='+this.order+'&place='+this.place+'&hall='+this.hall+'&celebrity='+this.celebrity+'&generationName='+this.poem+'&batch='+this.batch+'&version='+this.version+'&writeTime='+this.writeTime+'&author='+this.author+'&hasImage='+this.isImage+'&hasPerson='+this.isHasPerson+'&siteKey='+this.siteKey+'&page='+this.curPage+'&limit='+this.limit+'&source='+(this.source == '全部机构' ? '' : this.source)+'&hasCheck='+this.hasCheck+'&creator='+this.creator);
       this.loading = false;
       if(data.status && data.result){
         let list = data.result.list;

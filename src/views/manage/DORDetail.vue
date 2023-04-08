@@ -23,21 +23,20 @@
                 @checkbox-change = "checkboxChange"
                 @checkbox-all = "checkboxChange"
                 :edit-config="{trigger: 'click', mode: 'row',showStatus: true,activeMethod:activeCellMethod}"
-                @edit-closed="editClosedEvent"
                 :data="tableData">
                 <vxe-table-column type="checkbox" width="60"></vxe-table-column>
                 <vxe-table-column field="batch" title="批次号"></vxe-table-column>
                 <vxe-table-column field="_key" title="编码"></vxe-table-column>
-                <vxe-table-column field="genealogyName" title="谱名" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column field="publish" title="出版年" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column field="volume" title="卷数" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column field="hall" title="堂号" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column field="authors" title="作者" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column field="surname" title="姓氏" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column field="place" title="谱籍地" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column field="hasVolume" title="实拍册数" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column field="hasVolume" title="缺卷" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column field="hasVolume" title="谱籍现代地名" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                <vxe-table-column field="genealogyName" title="谱名"></vxe-table-column>
+                <vxe-table-column field="publish" title="出版年"></vxe-table-column>
+                <vxe-table-column field="volume" title="卷数"></vxe-table-column>
+                <vxe-table-column field="hall" title="堂号"></vxe-table-column>
+                <vxe-table-column field="authors" title="作者"></vxe-table-column>
+                <vxe-table-column field="surname" title="姓氏"></vxe-table-column>
+                <vxe-table-column field="place" title="谱籍地"></vxe-table-column>
+                <vxe-table-column field="hasVolume" title="实拍册数"></vxe-table-column>
+                <vxe-table-column field="hasVolume" title="缺卷"></vxe-table-column>
+                <vxe-table-column field="hasVolume" title="谱籍现代地名"></vxe-table-column>
                 <vxe-table-column field="creator" title="上传者"></vxe-table-column>
                 <!-- <vxe-table-column title="影像" :cell-render="{name:'AdaiActionButton',attr:{data:actionData},events:{'look':navTo}}"></vxe-table-column> -->
                 <vxe-table-column v-if="dorStatus == 2" field="dorOKMsg" title="打标"></vxe-table-column>
@@ -92,21 +91,6 @@ export default {
                 return false;
             }
             return true;
-        },
-        editClosedEvent({row}){
-            this.editCatalog(row);
-        },
-        editCatalog:async function(row){// 编辑谱目
-            let dataObj = {};
-            ['surname','place','genealogyName','authors','hall'].map((item)=>{
-                dataObj[item] = row[item];
-            });
-            let data=await api.patchAxios('data/edit',{'dataKey':row._key,'dataObj':dataObj});
-            if(data.status == 200){
-                
-            }else{
-                this.$XModal.message({ message: data.msg, status: 'warning' });
-            }
         },
         auditing:async function(status){// 审核状态
             if(status == 2){

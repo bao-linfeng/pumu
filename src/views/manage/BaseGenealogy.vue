@@ -11,10 +11,11 @@
                 <input v-if="this.role >=1 && this.role <= 2" class="root" type="button" value="前台公开" @click="openRootModal" />
                 <input v-if="stationKey == '1379194999'" class="swap" type="button" value="家谱分发" @click="openSiteModal(false)" />
                 <input v-if="stationKey == '1379194999'" class="swap" type="button" value="全部分发" @click="openSiteModal(true)" />
-                <input v-else class="swap" type="button" value="交换家谱" @click="openSwapModal" />
-                <el-button size="small" type="primary" v-if="this.role >=1 && this.role <= 3" @click="downloadExcel">下载检索结果</el-button>
+                <input v-else v-show="stationKey != '1528234980'" class="swap" type="button" value="交换家谱" @click="openSwapModal" />
+                <el-button size="small" type="primary" v-if="this.role >=1 && this.role <= 2" @click="downloadExcel">下载检索结果</el-button>
                 <LinkView class="marginLeft20" />
-                <el-button class="marginLeft20" size="small" type="primary" @click="isEdit = true">编辑的家谱</el-button>
+                <!-- v-show="stationKey != '1528234980'" -->
+                <el-button v-if="this.role >=1 && this.role <= 2"  class="marginLeft20" size="small" type="primary" @click="isEdit = true">编辑的家谱</el-button>
             </div>
             <!-- 家谱table -->
             <GenealogyTableModal v-if="fieldFilters.length" :fieldFilters="fieldFilters" :total="total" :list="list" v-on:checkbox-change="checkboxChange" v-on:get-genealogy="getJiapuList" />
@@ -24,7 +25,7 @@
                 :current-page.sync="page"
                 :page-size.sync="limit"
                 :total="total"
-                :layouts="['PrevJump', 'PrevPage', 'JumpNumber','NextPage', 'NextJump', 'Sizes', 'FullJump', 'Total']">
+                :layouts="['PrevJump', 'PrevPage', 'JumpNumber','NextPage', 'NextJump', 'FullJump', 'Total']">
             </vxe-pager>
         </div>
         <!-- 分级公开 -->
@@ -84,6 +85,15 @@ export default {
             endYear: '',
             noPublishAD: '',
             isEdit: false,
+            startTime: '',
+            endTime: '',
+            fileName: '',
+            keyWord: '',
+            isPublish: '',
+            isPlace: '',
+            condition: '',
+            FileStartTimes: '',
+            FileEndTimes: '',
         };
     },
     created:function(){
@@ -100,10 +110,10 @@ export default {
         getOrgInfo:async function(){
             let data = await api.getAxios('org/member/info?siteKey='+this.stationKey+'&userKey='+this.userId);
             if(data.status == 200){
-                this.$store.dispatch('setPropertyValue',{'property':'orgAdmin','value': data.data.role});
-                window.localStorage.setItem('orgAdmin',data.data.role);
-                this.$store.dispatch('setPropertyValue',{'property':'orgId','value': data.data.orgKey});
-                window.localStorage.setItem('orgId',data.data.orgKey);
+                this.$store.dispatch('setPropertyValue',{'property':'orgAdmin','value': data.data.role || ''});
+                window.localStorage.setItem('orgAdmin',data.data.role || '');
+                this.$store.dispatch('setPropertyValue',{'property':'orgId','value': data.data.orgKey || ''});
+                window.localStorage.setItem('orgId',data.data.orgKey || '');
             }else{
                 this.$XModal.message({ message: data.msg, status: 'warning' })
             }
@@ -115,7 +125,7 @@ export default {
             'begYear': this.begYear,
             'endYear': this.endYear,
             'libKey': this.libKey,
-            'orgKey': this.orgKey,
+            'orgKey': (this.orgKey).join(','),
             'equal': this.equal,
             'prop': this.prop,
             'order': this.order,
@@ -139,13 +149,23 @@ export default {
             this.page = currentPage;
             this.getJiapuList();
         },
-        getJiapuList:async function(){// 谱目列表
+        async getJiapuList(O){// 谱目列表
+            console.log(O);
+            if(O){
+                this.prop = O.prop;
+                this.order = O.order;
+            }
             this.loading = true;
-            let data=await api.getAxios('catalog/back?siteKey='+this.stationKey+'&noPublishAD='+this.noPublishAD+'&begYear='+this.begYear+'&endYear='+this.endYear+'&libKey='+this.libKey+'&orgKey='+this.orgKey+'&equal='+this.equal+'&keyWordObj='+JSON.stringify(this.keyWordObj)+'&prop='+this.prop+'&order='+this.order+'&page='+this.page+'&limit='+this.limit);
+            let data = await api.getAxios('catalog/back?siteKey='+this.stationKey+'&startFileTimes='+(this.FileStartTimes ? new Date(this.FileStartTimes).getTime() : '')+'&endFileTimes='+(this.FileEndTimes ? new Date(this.FileEndTimes).getTime() : '')+'&condition='+this.condition+'&isPublish='+this.isPublish+'&isPlace='+this.isPlace+'&noPublishAD='+this.noPublishAD+'&NoIndex='+this.NoIndex+'&fileName='+this.fileName+'&keyWord='+this.keyWord+'&startTime='+this.startTime+'&endTime='+this.endTime+'&begYear='+this.begYear+'&endYear='+this.endYear+'&libKey='+this.libKey+'&orgKey='+this.orgKey+'&equal='+this.equal+'&keyWordObj='+JSON.stringify(this.keyWordObj)+'&prop='+this.prop+'&order='+this.order+'&page='+this.page+'&limit='+this.limit);
             this.loading = false;
             if(data.status == 200){
                 this.list = data.result.list;
                 this.list.map((item)=>{
+                    item.NoIndexO = item.NoIndex == 1 ? '否' : '是';
+                    item.claimTimeO = item.claimTime ? ADS.getLocalTime(item.claimTime, '/', 1) : '';
+                    item.createTimeO = item.createTime ? ADS.getLocalTime(item.createTime, '/', 1) : '';
+                    item.Filetimes = ADS.getLocalTime(item.createTime, '/', 1) || item.Filetimes;
+                    item.Filenames = item.Filenames;
                     item.address = (item.prov || '') + ' ' + (item.city || '') + ' ' + (item.district || '');
                     item.hasImage = item.hasImage == 1 ? '有' : '无';
                     item.libsStr = item.libs.join(',');
@@ -173,14 +193,26 @@ export default {
             this.begYear = data['begYear'] || '';
             this.endYear = data['endYear'] || '';
             this.noPublishAD = data['noPublishAD'] ? 1 : '';
+            this.startTime = data['startTime'] || '';
+            this.endTime = data['endTime'] || '';
+            this.fileName = data['fileName'] || '';
+            this.keyWord = data['keyWord'] || '';
+            this.isPublish = data['isPublish'] ? 1 : '';
+            this.NoIndex = data['NoIndex'];
+            this.isPlace = data['isPlace'] ? 1 : '';
+            this.condition = data['condition'] || '';
+            this.FileStartTimes = data['FileStartTimes'] || '';
+            this.FileEndTimes = data['FileEndTimes'] || '';
+
             for(let key in data){
-                if(key == 'libKey' || key == 'equal' || key == 'orgKey' || key == 'begYear' || key == 'endYear' || key == 'noPublishAD'){
+                if(key == 'FileStartTimes' || key == 'FileEndTimes' || key == 'condition' || key == 'NoIndex' || key == 'isPublish' || key == 'isPlace' || key == 'fileName' || key == 'keyWord' || key == 'startTime' || key == 'endTime' || key == 'libKey' || key == 'equal' || key == 'orgKey' || key == 'begYear' || key == 'endYear' || key == 'noPublishAD'){
 
                 }else{
                     keyWordObj[key] = data[key];
                 }
             }
             this.keyWordObj = keyWordObj;
+            
             this.getJiapuList();
         },
         changeParameters(data){
@@ -191,8 +223,12 @@ export default {
             this.begYear = data['begYear'] || '';
             this.endYear = data['endYear'] || '';
             this.noPublishAD = data['noPublishAD'] ? 1 : '';
+            this.NoIndex = data['NoIndex'];
+            this.FileStartTimes = data['FileStartTimes'] || '';
+            this.FileEndTimes = data['FileEndTimes'] || '';
+
             for(let key in data){
-                if(key == 'libKey' || key == 'equal' || key == 'orgKey' || key == 'begYear' || key == 'endYear' || key == 'noPublishAD'){
+                if(key == 'FileStartTimes' || key == 'FileEndTimes' || key == 'NoIndex' || key == 'libKey' || key == 'equal' || key == 'orgKey' || key == 'begYear' || key == 'endYear' || key == 'noPublishAD'){
 
                 }else{
                     keyWordObj[key] = data[key];
@@ -213,7 +249,7 @@ export default {
         },
         async getJiapuAllList(){// 全部谱目列表
             this.loading = true;
-            let data=await api.getAxios('catalog/back?siteKey='+this.stationKey+'&noPublishAD='+this.noPublishAD+'&begYear='+this.begYear+'&endYear='+this.endYear+'&libKey='+this.libKey+'&orgKey='+this.orgKey+'&equal='+this.equal+'&keyWordObj='+JSON.stringify(this.keyWordObj)+'&prop='+this.prop+'&order='+this.order+'&page=0&limit=3000');
+            let data=await api.getAxios('catalog/back?siteKey='+this.stationKey+'&startFileTimes=&endFileTimes='+'&condition='+this.condition+'&isPublish='+this.isPublish+'&isPlace='+this.isPlace+'&fileName='+this.fileName+'&keyWord='+this.keyWord+'&startTime='+this.startTime+'&endTime='+this.endTime+'&noPublishAD='+this.noPublishAD+'&begYear='+this.begYear+'&endYear='+this.endYear+'&libKey='+this.libKey+'&orgKey='+this.orgKey+'&equal='+this.equal+'&keyWordObj='+JSON.stringify(this.keyWordObj)+'&prop='+this.prop+'&order='+this.order+'&page=0&limit=3000');
             this.loading = false;
             if(data.status == 200){
                 this.checkList = data.result.list;

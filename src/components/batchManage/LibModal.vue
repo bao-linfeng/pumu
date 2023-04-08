@@ -4,7 +4,7 @@
             <vxe-select v-model="type" placeholder="数据类型">
                 <vxe-option v-for="(item,index) in dataType" :key="'type'+index" :value="item.value" :label="item.label"></vxe-option>
             </vxe-select>
-            <vxe-select v-model="libKey" placeholder="数据源">
+            <vxe-select v-model="libKey" :disabled="stationKey == '1379194999' ? false : true" placeholder="数据源">
                 <vxe-option v-for="(item,index) in lib" :key="'lib'+index" :value="item.value" :label="item.label"></vxe-option>
             </vxe-select>
             <vxe-select v-model="templateKey" placeholder="模板">
@@ -52,7 +52,7 @@ export default {
     },
     mounted:function(){
         this.getDataType();
-        this.getField();
+        // this.getField();
     },
     methods:{
         getDataType:async function(){
@@ -62,7 +62,7 @@ export default {
                 data.data.map((item)=>{dataType.push({'label':item.showName,'value':item.type})});
                 this.type = dataType.length ? dataType[0].value : '';
                 this.dataType = dataType;
-                this.getLib();
+                this.getField();
             }else{
                 this.$XModal.message({ message: data.msg, status: 'warning' })
             }
@@ -81,9 +81,15 @@ export default {
         getLib:async function(){
             let data=await api.getAxios('lib?siteKey='+this.stationKey);
             if(data.status == 200){
+                console.log(this.orgId);
                 let lib = [];
-                data.data.map((item)=>{lib.push({'label':item.libCode,'value':item._key})});
-                this.libKey = lib.length ? lib[0].value : '';
+                data.data.map((item)=>{
+                    lib.push({'label':item.libCode,'value':item._key});
+                    if(item.orgKey == this.orgId){
+                        this.libKey = item._key;
+                    }
+                });
+                // this.libKey = lib.length ? lib[0].value : '';
                 this.lib = lib;
             }else{
                 this.$XModal.message({ message: data.msg, status: 'warning' })
@@ -119,11 +125,17 @@ export default {
             userName: state => state.nav.userName,
             userId: state => state.nav.userId,
             stationKey: state => state.nav.stationKey,
+            orgId: state => state.nav.orgId,
         })
     },
     watch:{
         'type':function(newV,oldV){
-            this.isFirst ? null : this.getTemplate()
+            if(this.isFirst){
+
+            }else{
+                this.getField();
+                this.getTemplate();
+            }
         },
         'libKey':function(newV,oldV){
             this.getTemplate();

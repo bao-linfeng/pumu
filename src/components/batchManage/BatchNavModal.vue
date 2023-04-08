@@ -1,8 +1,9 @@
 <template>  
-    <NavModal :title="batchId+'批次工作台'+(l ? '(总条数'+l : '')+(repeatNum ? '-重复数据'+repeatNum+'条)' : ')')">
+    <NavModal :title="fileName+' 工作台 '+(l ? '(总条数'+l : '')+(repeatNum ? '-重复数据'+repeatNum+'条)' : ')')">
         <div class="toolbar">
-            <vxe-button content="批量删除" v-if="role >= 1 && role <= 2 && active == 2" @click="setUnRepeatInBatchConfirm"></vxe-button>
-            <vxe-button content="批量审核通过" v-if="role >= 1 && role <= 2" @click="dataVertify"></vxe-button>
+            <el-checkbox v-if="active == 3 && needReview" v-model="Tobediscussed">待议谱</el-checkbox>
+            <!-- <vxe-button content="批量删除" @click="setUnRepeatInBatchConfirm"></vxe-button> -->
+            <vxe-button v-if="hasRoot" content="批量审核通过" @click="dataVertify"></vxe-button>
             <i class="el-icon-setting refresh marginR10" title="管理" @click="changeIsManage"></i>
             <vxe-select v-if="active == 3" v-model="caozheng" placeholder="计划入库" :style="{'width':'120px','margin-right':'10px'}">
                 <vxe-option v-for="(item,index) in caozhengs" :key="'hasIn'+index" :value="item.value" :label="item.label"></vxe-option>
@@ -12,9 +13,9 @@
             </vxe-select>
             <!-- <vxe-button content="补充资料" v-if="role >= 1 && role <= 3 && active == 4" @click="dataVertify"></vxe-button> -->
             <vxe-button content="批量计划入库" v-if="isPiL" @click="suggInBatch"></vxe-button>
-            <i class="el-icon-delete refresh" v-if="(role >= 4 && active <= 3) || (role == 3 && active <= 4) || (role >= 1 && role <= 2)" title="删除批次" @click="removeBatchAll"></i>
-            <i class="el-icon-refresh refresh" title="刷新" @click="getDataCheckLog"></i>
-            <i class="el-icon-arrow-left refresh" title="返回上一级" @click="navTo"></i>
+            <i class="el-icon-delete refresh" title="删除批次" @click="removeBatchAll"></i>
+            <!-- <i class="el-icon-refresh refresh" title="刷新" @click="getDataCheckLog"></i>
+            <i class="el-icon-arrow-left refresh" title="返回上一级" @click="navTo"></i> -->
         </div>
     </NavModal>
 </template>
@@ -39,6 +40,9 @@ export default {
         active:{
             type: Number
         },
+        needReview: {
+            type: Number
+        },
         caozhengs:{
             type: Array
         },
@@ -59,10 +63,15 @@ export default {
         return {
             caozheng: '',
             examine: '',
+            fileName: '',
+            hasRoot: '',
+            Tobediscussed: true,
         };
     },
     mounted:function(){
-        
+        let search = window.location.search, param = ADS.params(search);
+        this.fileName = param['f'] ? decodeURIComponent(param['f']) : '';
+        this.hasRoot = ADS.getQueryVariable('hasRoot');
     },
     methods:{
         changeLoading(flag = true){
@@ -75,6 +84,7 @@ export default {
             this.$emit('data-vertify','return');
         },
         setUnRepeatInBatchConfirm(){
+            console.log(this.selectRecords);
             if(!this.selectRecords.length){
                 return this.$XModal.message({ message: '请勾选家谱', status: 'warning' });
             }
@@ -127,7 +137,7 @@ export default {
             }).catch(() => {});
         },
         removeBatchData:async function(){// 删除该批次所有数据
-            let data=await api.deleteAxios('batch',{'batchKey':this.batchId,'userRole':this.role,'userKey':this.userId});
+            let data=await api.deleteAxios('batch',{'batchKey':this.batchId,'userRole':this.role,'userKey':this.userId, 'siteKey': this.stationKey, 'orgKey': this.orgId});
             if(data.status == 200){
                 this.$notify({
                     title: '提示',
@@ -163,9 +173,13 @@ export default {
             userId: state => state.nav.userId,
             stationKey: state => state.nav.stationKey,
             role: state => state.nav.role,
+            orgId: state => state.nav.orgId
         })
     },
     watch:{
+        'Tobediscussed': function(nv, ov){
+            this.$emit('change-Tobediscussed', nv);
+        },
         'caozheng':function(newV,oldV){
             this.$emit('change-value',{'label':'caozheng','value':newV});
             this.getDataCheckLog();

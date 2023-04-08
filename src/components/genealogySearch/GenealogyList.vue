@@ -1,8 +1,43 @@
 <template>
-  <div class="genealogyList">
+  <div class="genealogyList-wrap">
     <Scroll />
-    <!-- <p class="title">找到{{total}}部家谱<span v-if="personTotalNum">,{{personTotalNum}}多找个相关人物</span></p> -->
-    <div class="tableTh">
+    <table class="adai-table">
+        <thead class="thead">
+            <tr>
+                <th>姓氏</th>
+                <th>谱名</th>
+                <th>谱籍地</th>
+                <th>卷数</th>
+                <th>实拍册数</th>
+                <th>缺卷</th>
+                <th>堂号</th>
+                <th>出版时间</th>
+                <th>作者姓名</th>
+                <th>版本类型</th>
+                <th>状态</th>
+                <th>影像</th>
+                <th>全文</th>
+            </tr>
+        </thead>
+        <tbody class="tbody">
+            <tr v-for="(item,index) in data" :key="index"  @click="gotoSummary(item)">
+                <td>{{item.surname || '不详'}}</td>
+                <td>{{item.genealogyName || '不详'}}</td>
+                <td>{{item.place || '不详'}}</td>
+                <td>{{item.volume || '不详'}}</td>
+                <td>{{item.hasVolume || '不详'}}</td>
+                <td>{{item.lostVolume || '不详'}}</td>
+                <td>{{item.hall || '不详'}}</td>
+                <td>{{item.publish || '不详'}}</td>
+                <td>{{item.authors || '不详'}}</td>
+                <td>{{item.version || '不详'}}</td>
+                <td>{{item.condition}}</td>
+                <td>{{item.hasImage ? '有' : '无'}}</td>
+                <td>{{item.delivered == 2 ? '有' : '无'}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <!-- <div class="tableTh">
         <span class="hide pro w5">姓氏</span>
         <span class="name">谱名</span>
         <span class="place">谱籍地</span>
@@ -13,10 +48,8 @@
         <span class="hide pro">馆藏地</span>
         <span class="w5">影像</span>
         <span class="w5">全文</span>
-        <!-- <span class="hide">页码</span>
-        <span class="hide">已识别页数</span> -->
-    </div>
-    <div class="tableTh genealogy" v-for="(item,index) in data" :key="'genealogy'+index">
+    </div> -->
+    <!-- <div class="tableTh genealogy" v-for="(item,index) in data" :key="'genealogy'+index">
         <router-link class="genealogy_wrap" @click="gotoSummary(item)" :to="'/'+pathname+'/gd?id='+item._key">
             <span class="hide pro w5">{{item.surname || '不详'}}</span>
             <span class="name">{{item.genealogyName || '不详'}}</span>
@@ -28,15 +61,13 @@
             <span class="hide pro">{{item.libs && item.libs.length ? item.libs.join(',') : '不详'}}</span>
             <span class="w5">{{item.hasImage ? '有' : '无'}}</span>
             <span class="w5">{{item.delivered == 2 ? '有' : '无'}}</span>
-            <!-- <span class="hide">{{item.imagePages || 0}}</span>
-            <span class="hide">{{item.ocrCount || 0}}</span> -->
         </router-link>
         <ul class="persons_wrap">
             <li v-for="(item1,index1) in item.persons" :key="'person'+index1" @click.stop="gotoView(item,item1)">
                 <i>{{item1.name}}</i> <p v-show="item1.father">父:{{item1.father}}</p> <p v-show="item1.mother">母:{{item1.mother}}</p>
             </li>
         </ul>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -94,7 +125,7 @@ export default {
 };
 </script>
 <style scoped lang="scss">
-.genealogyList{
+.genealogyList-wrap{
     position: relative;
     width: 100%;
     box-sizing: border-box;
@@ -230,6 +261,42 @@ export default {
         }
     }
     
+}
+.adai-table{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    border: none;
+    border-collapse: collapse;
+    .thead{
+        position: relative;
+        width: 100%;
+        height: 40px;
+        background: #D1D1D1;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        tr{
+            th{
+                padding: 5px 0;
+                min-width: 60px;
+            }
+        }
+    }
+    .tbody{
+        position: relative;
+        width: 100%;
+        height: calc(100% - 42px);
+        tr{
+            cursor: pointer;
+            td{
+                padding: 5px 0;
+                min-width: 60px;
+                max-width: 250px;
+            }
+        }
+    }
 }
 </style>
 

@@ -81,6 +81,7 @@
         </div>
     </div>
     <Footer />
+    <OrgModule v-if="isOrg <= 2" :isOrg="isOrg" v-on:close="isOrg = 3" />
     <Loading v-show="flag" />
   </div>
 </template>
@@ -92,6 +93,7 @@ import GenealogyList from "../components/genealogySearch/GenealogyList.vue";
 import GenealogyBox from "../components/genealogySearch/GenealogyBox.vue";
 import GenealogyMap from "../components/genealogySearch/GenealogyMap.vue";
 import PageTurn from "../components/genealogySearch/PageTurn.vue";
+import OrgModule from "../components/genealogySearch/OrgModule.vue";
 import api from "../api.js";
 import ADS from "../ADS.js";
 import { mapState, mapActions, mapGetters } from "vuex";
@@ -104,9 +106,11 @@ export default {
         GenealogyBox,
         GenealogyMap,
         PageTurn,
+        OrgModule,
     },
     data: () => {
         return {
+            isOrg: 3,
             searchIsShow:true,
             isFilter:true,
             isImage:2,
@@ -137,7 +141,7 @@ export default {
             personTotalNum:0,
             groupFilter:[],
             facetActive:'',
-            facet:{0:'谱籍地',1:'堂号',2:'版本类型',3:'馆藏地',4:'是否全文'},
+            facet:{0:'谱籍地',1:'堂号',2:'版本类型',3:'馆藏地',4:'影像'},
             facetType:{0:'place',1:'hall',2:'version',3:'owner',4:'isImage'},
             type:0,
             userRole:99,
@@ -166,6 +170,7 @@ export default {
                 this.userKey = window.localStorage.getItem('userId') || '';
                 this.siteKey = window.localStorage.getItem('stationKey') || '';
                 this.userRole = window.localStorage.getItem('role') || 0;
+                this.isInOrg(this.userKey);
                 this.clickBtn();
                 this.getUserAndStarInfoAndRole();
             }else{
@@ -178,6 +183,35 @@ export default {
         }
     },
     methods:{
+        async isInOrg(userKey){
+            let data = await api.getAxios('org/user/isInOrg?siteKey=1528234980&userKey='+userKey);
+            if(data.status == 200){
+                if(this.siteKey != '1528234980'){
+                    return;
+                }
+                if(this.role >= 1 && this.role <= 3){
+                    window.localStorage.setItem('orgAdmin', '');
+                    return;
+                }
+
+                let orgId = data.orgKey;
+                let orgAdmin = data.isAdmin ? 'admin' : '';
+                this.isOrg = data.data;
+                window.localStorage.setItem('isOrg', this.isOrg);
+                this.$store.dispatch("setPropertyValue", {'property': 'isOrg','value': this.isOrg});
+
+                window.localStorage.setItem('orgId', orgId);
+                this.$store.dispatch("setPropertyValue", {'property': 'orgId','value': orgId});
+
+                window.localStorage.setItem('orgAdmin', orgAdmin);
+                this.$store.dispatch("setPropertyValue", {'property': 'orgAdmin','value': orgAdmin});
+
+                this.$store.dispatch('setPropertyValue',{'property':'orgName','value': data.orgName || ''});
+                window.localStorage.setItem('orgName',data.orgName || '');
+                this.$store.dispatch('setPropertyValue',{'property':'organizationNo', 'value': data.organizationNo || ''});
+                window.localStorage.setItem('organizationNo', data.organizationNo || '');
+            }
+        },
         clear(key){
             this[key] = '';
         },
@@ -198,6 +232,7 @@ export default {
             pluginURL = 'https://pumu.qingtime.cn';
             domain = pathname.substr(1,lastIndex-1);
             window.localStorage.setItem('pathname',domain);
+            this.$store.dispatch('setPropertyValue',{'property': 'pathname', 'value': domain});
             let data=await api.getAxios('https://kintime.qingtime.cn/sgbh/plugin/userAndStarInfoNew?token='+token+'&domain='+domain +'&pluginURL='+encodeURIComponent(pluginURL),true);
             let result='';
             if(data.statusCode == 200){
@@ -205,6 +240,7 @@ export default {
                 window.localStorage.setItem('userId',result.userInfo._key);
                 window.localStorage.setItem('userName',result.userInfo.profile && (result.userInfo.profile.trueName || result.userInfo.profile.nickName));
                 window.localStorage.setItem('profile',result.userInfo.profile ? JSON.stringify(result.userInfo.profile) : '');
+                window.localStorage.setItem('email',result.userInfo.profile && result.userInfo.profile.email || '');
                 window.localStorage.setItem('role',result.role);
                 window.localStorage.setItem('stationKey',result.siteKey);
                 window.localStorage.setItem('stationName',result.starInfo.name);
@@ -217,14 +253,17 @@ export default {
                 this.$store.dispatch("changeProperty",{'token':token,'sitekey':result.siteKey});
                 this.$store.dispatch('setPropertyValue',{'property':'role','value': result.role || 99});
                 this.$store.dispatch('setPropertyValue',{'property':'userId','value':result.userInfo._key});
+                this.$store.dispatch('setPropertyValue',{'property':'email','value': result.userInfo.profile && result.userInfo.profile.email || ''});
                 this.$store.dispatch('setPropertyValue',{'property':'userName','value':result.userInfo.profile && (result.userInfo.profile.trueName || result.userInfo.profile.nickName)});
                 this.$store.dispatch('setPropertyValue',{'property':'stationKey','value':result.siteKey});
                 this.$store.dispatch('setPropertyValue',{'property':'stationName','value':result.starInfo.name});
                 this.$store.dispatch('setPropertyValue',{'property':'stationlogo','value':result.starInfo.logo});
                 this.$store.dispatch("changeUserRole",{'stationName':result.starInfo.name,'userRole':this.userRole});
                 this.$store.dispatch("saveDomain",domain);
+
+                this.isInOrg(this.userKey);
                 
-                this.saveUser(result.role || 99,token,result.userInfo._key,result.userInfo.profile && (result.userInfo.profile.trueName || result.userInfo.profile.nickName),result.userInfo.mobile,result.siteKey,result.starInfo.name,result.starInfo.cover,result.userInfo.profile && result.userInfo.profile.avatar,result.starInfo.ownerKey);
+                this.saveUser(result.role || 99,token,result.userInfo._key,result.userInfo.profile && (result.userInfo.profile.trueName || result.userInfo.profile.nickName),result.userInfo.mobile,result.siteKey,result.starInfo.name,result.starInfo.cover,result.userInfo.profile && result.userInfo.profile.avatar,result.starInfo.ownerKey, result.userInfo.profile && result.userInfo.profile.email || '');
                 this.getGenealogy();
                 this.getCatalogFilter();
             }else{
@@ -233,8 +272,20 @@ export default {
                 this.$router.push({path: '/'+pathname});
             }
         },
-        saveUser: async function(userRole,token,userKey,userName,mobile,siteKey,siteName,siteLogo,userAvatar,rooterId){
-            let data=await api.postAxios('user',{'userRole':userRole,'token':token,'userKey':userKey,'userName':userName,'mobile':mobile,'siteKey':siteKey,'siteName':siteName,'siteLogo':siteLogo,'userAvatar':userAvatar,'rooterId':rooterId});
+        saveUser: async function(userRole,token,userKey,userName,mobile,siteKey,siteName,siteLogo,userAvatar,rooterId, email){
+            let data=await api.postAxios('user',{
+                'userRole':userRole,
+                'token':token,
+                'userKey':userKey,
+                'userName':userName,
+                'mobile':mobile,
+                'siteKey':siteKey,
+                'siteName':siteName,
+                'siteLogo':siteLogo,
+                'userAvatar':userAvatar,
+                'rooterId':rooterId,
+                'email': email,
+            });
             if(data.status == 200){
             
             }else{
@@ -314,6 +365,7 @@ export default {
         ...mapState({
             activeSurname: state => state.surname.activeSurname,
             activeSurnameIndex:state => state.surname.activeSurnameIndex,
+            role: state => state.nav.role
         })
     },
 };
@@ -466,22 +518,20 @@ export default {
     }
 }
 .content{
+    position: relative;
     width: 100%;
     min-height: 200px;
     box-sizing: border-box;
-    // padding-left: 350px;
     display: flex;
+    justify-content: space-between;
     .facet{
         position: relative;
         padding-top: 30px;
         box-sizing: border-box;
-        width: 336px;
-        // float: left;
-        // margin-left: -350px;
+        width: 300px;
         color: #666;
         font-size: 20px;
         background: #fff;
-        margin-left: 20px;
         .facetResult{
             margin: 10px 20px 30px 20px;
         }
@@ -531,7 +581,7 @@ export default {
     .genealogyList{
         position: relative;
         padding-bottom: 60px;
-        width: 100%;
+        width: calc(100% - 330px);
         background: #fff;
     }
 }

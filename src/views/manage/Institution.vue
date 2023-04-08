@@ -7,8 +7,8 @@
                     <vxe-button v-if="role >= 1 && role <= 2" content="新增" @click="insertEvent(-1)"></vxe-button>
                 </div>
             </NavModal>
-            <div class="select-wrap" v-if="role >= 1 && role <= 2">
-                <input class="name" type="text" v-model="name" @keyup.enter="getOrgList" />
+            <div class="select-wrap" v-if="role >= 1 && role <= 3">
+                <input class="name" type="text" v-model="name" @keyup.enter="getOrgList" placeholder="请输入机构名称" />
                 <vxe-button status="primary" content="检索" @click="getOrgList"></vxe-button>
             </div>
             <div class="vex-table-box">
@@ -25,15 +25,18 @@
                     :edit-config="{trigger: 'click', mode: 'row',showStatus: true,activeMethod:activeCellMethod}"
                     @edit-closed="editClosedEvent"
                     :data="tableData">
+                    <vxe-table-column field="organizationNo" title="机构序号" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
                     <vxe-table-column field="name" title="机构名称" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                    <vxe-table-column field="englishName" title="机构英文名" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
                     <vxe-table-column field="memberCount" title="机构人数"></vxe-table-column>
                     <vxe-table-column title="操作" :cell-render="{name:'AdaiActionButton',attr:{data:actionData},events:{'look':navTo,'addUser':addUser,'deleteOrg':deleteOrg}}"></vxe-table-column>
                 </vxe-table>
             </div>
         </div>
-        <div class="org-user-wrap" v-if="isShow" @click="closeModel">
-            <div class="org-user-box" @click.stop="">
-                <h3>{{orgKey ? '添加' : ''}}组员{{orgKey ? '('+orgKey+')' : ''}}</h3>
+        <div class="org-user-wrap" v-if="isShow">
+            <div class="org-user-box">
+                <h3>{{orgKey ? '添加' : ''}}组员</h3>
+                <img class="close" @click="closeModel" src="../../assets/close.svg" alt="">
                 <input v-if="orgKey && ((role >= 1 && role <= 2) || orgAdmin == 'admin')" type="text" v-model="keyWord" @keyup.enter="getUserSearch" placeholder="请输入手机号或姓名" />
                 <ul v-if="orgKey" class="user-search style1">
                     <li v-for="(user,index) in userList" :key="index">
@@ -45,7 +48,7 @@
                     </li>
                 </ul>
                 <p v-if="orgKey && ((role >= 1 && role <= 2) || orgAdmin == 'admin')">组员</p>
-                <ul class="user-search style1">
+                <ul class="user-search active style1">
                     <li v-for="(user,index) in memberList" :key="index">
                         <img :src="user.userAvatar+'?imageView2/2/w/40'" @error="error(user._key,1)" alt="">
                         <div class="user-add">
@@ -140,6 +143,9 @@ export default {
         getUserSearch:async function(){
             let data=await api.getAxios('org/user/search?keyWord='+this.keyWord+'&orgKey='+this.orgKey+'&siteKey='+this.stationKey);
             if(data.status == 200){
+                if(!data.data.length){
+                    this.$XModal.message({ message: '没有该成员', status: 'warning' })
+                }
                 this.userList = data.data;
             }else{
                 this.$XModal.message({ message: data.msg, status: 'warning' })
@@ -203,7 +209,7 @@ export default {
             await this.$refs.xTable.setActiveCell(newRow, 'type')
         },
         addOrg:async function(row){
-            let data=await api.postAxios('org',{orgKey: row._key, name: row.name, userKey: this.userId, siteKey: this.stationKey});
+            let data=await api.postAxios('org',{orgKey: row._key, name: row.name, 'organizationNo': row.organizationNo, 'englishName': row.englishName, userKey: this.userId, siteKey: this.stationKey});
             if(data.status == 200){
                 this.getOrgList();
             }else{
@@ -211,7 +217,7 @@ export default {
             }
         },
         getOrgList:async function(){
-            let data = await api.getAxios('org?siteKey='+this.stationKey+'&name='+this.name+'&orgKey='+(this.role >= 1 && this.role <= 2 ? '' : this.orgId));
+            let data = await api.getAxios('org?siteKey='+this.stationKey+'&name='+this.name+'&orgKey='+(this.role >= 1 && this.role <= 3 ? '' : this.orgId));
             if(data.status == 200){
                 this.tableData = data.data;
             }else{
@@ -315,13 +321,20 @@ export default {
     align-items: center;
     z-index: 100000;
     .org-user-box{
+        position: relative;
         padding: 20px;
-        width: 360px;
+        width: 350px;
         max-height: 100%;
         min-height: 300px;
         display: inline-block;
         background-color: #fff;
         border-radius: 30px;
+        .close{
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            cursor: pointer;
+        }
         h3{
             text-align: center;
             margin-bottom: 10px;
@@ -339,6 +352,9 @@ export default {
             max-height: 150px;
             overflow-y: auto;
             margin-top: 10px;
+            &.active{
+                max-height: 250px;
+            }
             li{
                 display: flex;
                 align-items: center;

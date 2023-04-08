@@ -4,7 +4,7 @@
     <div class="center">
         <div class="genealogyContent">
             <div class="main">
-                <GDetail :data="genealogyDetail" v-on:toggle-aide="aideTogglefn" />
+                <GDetail :genealogyDetail="genealogyDetail" :fieldFilters="fieldFilters" v-on:toggle-aide="aideTogglefn" />
                 <!-- <TitleVue id="gongyi" :title="'公益赞助'" :url="'/person'" /> -->
                 <!-- <Sponsor v-if="genealogyDetail" :gid="id" :gname="genealogyDetail && genealogyDetail.genealogyName" /> -->
                 <TitleVue id="commentTitle" :title="'评论留言'" :url="'/person'" />
@@ -73,6 +73,7 @@ export default {
             xs_footer:true,
             isWeixin:true,
             profile:'',
+            fieldFilters: [],
         };
     },
     mounted:function(){
@@ -80,12 +81,23 @@ export default {
         this.id = ADS.getQueryVariable('id');
         this.token = window.localStorage.getItem('token') || '';
         this.profile = window.localStorage.getItem('profile')  ? JSON.parse(window.localStorage.getItem('profile')) : '';
-
+        this.getFieldFilterList();
         this.getGenealogyDetail();
     },
     methods:{
+        getFieldFilterList:async function(){// 检索字段列表
+            let data=await api.getAxios('field/filter?type=家谱');
+            if(data.status == 200){
+                let fieldFilters = [];
+                data.data.map((item)=>{fieldFilters.push({'label':item.fieldMeans,'value':item.fieldName})});
+                this.fieldFilters = fieldFilters;
+            }else{
+                this.$XModal.message({ message: data.msg, status: 'warning' })
+            }
+        },
         getGenealogyDetail: async function(){
             let data = await api.getAxios('data/detail?dataKey='+this.id);
+            data.data.hasImage = data.data.hasImage ? '有' : '无';
             this.genealogyDetail = data.data;
         },
         moveToComment(){

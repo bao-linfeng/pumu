@@ -91,7 +91,7 @@ export default {
     },
     methods:{
         activeCellMethod({row,column}){
-            if(((this.role < 1 || this.role > 2) && this.stationKey == '1379194999') || this.stationKey != '1379194999' || row.reserved == 1){
+            if(((this.role < 1 || this.role > 2) && this.stationKey == '1379194999') || this.stationKey != '1379194999'){// || row.reserved == 1
                 return false;
             }
             return true;

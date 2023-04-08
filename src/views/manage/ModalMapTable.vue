@@ -246,7 +246,8 @@ export default {
     },
     watch:{
         'type':function(newV,oldV){
-            this.isFirst ? null : this.getTemplate()
+            this.isFirst ? null : this.getTemplate();
+            this.isFirst ? null : this.getField();
         },
         'libKey':function(newV,oldV){
             this.getTemplate();

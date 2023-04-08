@@ -1,10 +1,17 @@
 <template>
     <div class="search-modal-wrap">
-        <h3 class="search-modal-title">家谱资源</h3>
-        <div class="search-modal-box">
-            <div class="search-input-modal" v-for="(item,index) in [{label:'家谱编码',value:'_key'}].concat(fieldFilters)" :key="'fieldFilters'+index">
+        <div class="head-box">
+            <h3 class="search-modal-title">家谱资源</h3>
+            <span class="btn" @click="isShow = !isShow">{{isShow ? '收起' : '展开'}}</span>
+        </div>
+        <div class="search-modal-box" v-show="isShow">
+            <div class="search-input-modal" v-for="(item,index) in fieldFilterList" :key="'fieldFilters'+index">
                 <input type="text" :placeholder="'请输入'+item.label" v-model.trim="parameters[item.value]" @keyup.enter="handleKeyUp" @blur="changeParameters" />
                 <div class="tag_close" v-show="parameters[item.value]" @click="clear(item.value)"><i class="el-icon-close"></i></div>
+            </div>
+            <div class="search-input-modal">
+                <input type="text" :placeholder="'请输入文件标题'" v-model.trim="parameters['fileName']" @keyup.enter="handleKeyUp" @blur="changeParameters" />
+                <div class="tag_close" v-show="parameters.fileName" @click="clear('fileName')"><i class="el-icon-close"></i></div>
             </div>
             <el-select v-model="parameters.batchKey" placeholder="请选择批次" class="w15 marginB10">
                 <el-option
@@ -14,33 +21,9 @@
                     :value="item.value">
                 </el-option>
             </el-select>
-            <el-select v-model="parameters.creator" placeholder="请选择上传者" class="w15 marginB10">
-                <el-option
-                    v-for="item in userList"
-                    :key="item._key"
-                    :label="item.userName"
-                    :value="item._key">
-                </el-option>
-            </el-select>
             <el-select v-model="parameters.hasImage" placeholder="请选择影像" class="w15 marginB10">
                 <el-option
                     v-for="item in imageList"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                </el-option>
-            </el-select>
-            <el-select v-model="parameters.libKey" placeholder="请选择来源" class="w15 marginB10">
-                <el-option
-                    v-for="item in libList"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                </el-option>
-            </el-select>
-            <el-select v-model="parameters.equal" placeholder="请选择包含关系" class="w15 marginB10">
-                <el-option
-                    v-for="item in nolibList"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value">
@@ -60,7 +43,7 @@
                 value-format="yyyy"
                 placeholder="版本结束年">
             </el-date-picker>
-            <el-select v-if="role >= 1 && role <= 2" v-model="parameters.orgKey" placeholder="请选择机构" class="w15 marginB10">
+            <el-select v-if="role >= 1 && role <= 3" v-model="parameters.orgKey" multiple placeholder="请选择机构" class="w15 marginB10">
                 <el-option
                     v-for="item in orgList"
                     :key="item.value"
@@ -68,10 +51,102 @@
                     :value="item.value">
                 </el-option>
             </el-select>
+            <el-select v-model="parameters.condition" multiple placeholder="请选择状态" class="w15 marginB10">
+                <el-option
+                    v-for="item in conditionList"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                </el-option>
+            </el-select>
+            <el-select v-model="parameters.NoIndex" placeholder="索引(NoIndex)" class="w15 marginB10">
+                <el-option
+                    v-for="item in NoIndexList"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                </el-option>
+            </el-select>
+            <el-date-picker
+                v-model="time"
+                type="daterange"
+                unlink-panels
+                start-placeholder="导入开始时间"
+                end-placeholder="导入结束时间"
+            />
+            <el-date-picker
+                class="w15 marginB10"
+                v-model="parameters.FileStartTimes"
+                type="date"
+                placeholder="档案开始时间">
+            </el-date-picker>
+            <el-date-picker
+                class="w15 marginB10"
+                v-model="parameters.FileEndTimes"
+                type="date"
+                placeholder="档案结束时间">
+            </el-date-picker>
             <div class="w15 marginB10 noPublishAD">
                 <el-checkbox v-model="parameters.noPublishAD">无公元年</el-checkbox>
             </div>
-            <div class="search-input-modal" v-for="item in (6-((fieldFilters.length+(role >= 1 && role <= 2 ? 11 : 10))%6 || 6))" :key="'kon'+item"></div>
+            <div class="w15 marginB10 noPublishAD">
+                <el-checkbox v-model="parameters.isPublish">无出版时间</el-checkbox>
+            </div>
+            <div class="w15 marginB10 noPublishAD">
+                <el-checkbox v-model="parameters.isPlace">无谱籍地</el-checkbox>
+            </div>
+            <div class="search-input-modal">
+                <input type="text" :placeholder="'作者、谱籍地、始迁祖、一世祖'" v-model.trim="parameters['keyWord']" @keyup.enter="handleKeyUp" @blur="changeParameters" />
+                <div class="tag_close" v-show="parameters.keyWord" @click="clear('keyWord')"><i class="el-icon-close"></i></div>
+            </div>
+            <div class="search-input-modal" v-for="item in (6-((fieldFilterList.length+(role >= 1 && role <= 3 ? 15 : 12))%6 || 6))" :key="'kon'+item"></div>
+            <div class="search-input-modal"></div>
+        </div>
+        <div class="search-modal-box" v-if="!isShow">
+            <div class="search-input-modal">
+                <input type="text" :placeholder="'谱ID'" v-model.trim="parameters['_key']" @keyup.enter="handleKeyUp" @blur="changeParameters" />
+                <div class="tag_close" v-show="parameters._key" @click="clear('_key')"><i class="el-icon-close"></i></div>
+            </div>
+            <div class="search-input-modal">
+                <input type="text" :placeholder="'谱名'" v-model.trim="parameters['genealogyName']" @keyup.enter="handleKeyUp" @blur="changeParameters" />
+                <div class="tag_close" v-show="parameters.genealogyName" @click="clear('genealogyName')"><i class="el-icon-close"></i></div>
+            </div>
+            <div class="search-input-modal">
+                <input type="text" :placeholder="'文件标题'" v-model.trim="parameters['fileName']" @keyup.enter="handleKeyUp" @blur="changeParameters" />
+                <div class="tag_close" v-show="parameters.fileName" @click="clear('fileName')"><i class="el-icon-close"></i></div>
+            </div>
+            <div class="search-input-modal">
+                <input type="text" :placeholder="'姓氏'" v-model.trim="parameters['surname']" @keyup.enter="handleKeyUp" @blur="changeParameters" />
+                <div class="tag_close" v-show="parameters.surname" @click="clear('surname')"><i class="el-icon-close"></i></div>
+            </div>
+            <div class="search-input-modal">
+                <input type="text" :placeholder="'堂号'" v-model.trim="parameters['hall']" @keyup.enter="handleKeyUp" @blur="changeParameters" />
+                <div class="tag_close" v-show="parameters.hall" @click="clear('hall')"><i class="el-icon-close"></i></div>
+            </div>
+            <el-select v-model="parameters.condition" multiple placeholder="谱目状态" class="w15 marginB10">
+                <el-option
+                    v-for="item in conditionList"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                </el-option>
+            </el-select>
+            <el-select v-if="role >= 1 && role <= 3" v-model="parameters.orgKey" multiple placeholder="上传机构" class="w15 marginB10">
+                <el-option
+                    v-for="item in orgList"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                </el-option>
+            </el-select>
+            <div class="search-input-modal">
+                <input type="text" :placeholder="'作者、谱籍地、始迁祖、一世祖'" v-model.trim="parameters['keyWord']" @keyup.enter="handleKeyUp" @blur="changeParameters" />
+                <div class="tag_close" v-show="parameters.keyWord" @click="clear('keyWord')"><i class="el-icon-close"></i></div>
+            </div>
+            <div class="search-input-modal" v-for="(item, index) in 4" :key="index"></div>
+        </div>
+        <div class="search-modal-box">
+            <div class="search-input-modal"></div>
             <div class="search-button-modal" @click="getGenealogy">
                 <span>搜索</span>
             </div>
@@ -102,36 +177,71 @@ export default {
                 libKey: '',
                 equal: 1,
                 _key:'',
-                orgKey: '',
+                orgKey: [],
                 begYear: '',
                 endYear: '',
                 noPublishAD: false,
+                NoIndex: '',
+                startTime: '',
+                endTime: '',
+                fileName: '',
+                isPublish: '',
+                isPlace: '',
+                condition: [],
+                keyWord: '',
+                FileStartTimes: '',
+                FileEndTimes: '',
             },
             batchArr: [],
             sourcelist: [],
             userList: [],
+            NoIndexList: [
+                {'label': '全部索引', 'value': ''},
+                {'label': '可索引', 'value': 0},
+                {'label': '不可索引', 'value': 1},
+            ],
+            conditionList: [{'label': '全部状态', 'value': ''}, {'label': 'f', 'value': 'f'}, {'label': 'nf', 'value': 'nf'}, {'label': 'd', 'value': 'd'}, {'label': 'r', 'value': 'r'}, {'label': 'm', 'value': 'm'}],
             imageList: [{'label':'影像资料','value':2},{'label':'有影像','value':1},{'label':'无影像','value':0}],
             libList: [],
             nolibList: [{'label':'等于','value':1},{'label':'不等于','value':0}],
             orgList: [],
+            fieldFilterList: [{label:'家谱编码',value:'_key'}],
+            time: '',
+            isShow: false,
         };
     },
     created:function(){
         this.getBatchList();
-        this.getUserList();
         this.getLib();
-        this.role >= 1 && this.role <= 2 ? this.getOrgList() : null;
+        this.getOrgList();
     },
     mounted:function(){
-        
+        if(this.role >= 1 && this.role <= 3){
+
+        }else{
+            this.parameters.orgKey = [this.orgId];
+            this.$emit('change-parameters',this.parameters);
+        }
+        this.initFieldFilter();
     },
     methods:{
+        initFieldFilter(){
+            let fieldFilterList = [];
+            this.fieldFilterList.concat(this.fieldFilters).forEach((ele) => {
+                if(['condition', 'volume', 'lostVolume', 'authorJob', 'hasVolume', 'genealogyGroupID'].indexOf(ele.value) > -1){
+                    
+                }else{
+                    fieldFilterList.push(ele);
+                }
+            });
+            this.fieldFilterList = fieldFilterList;
+        },
         getOrgList:async function(){
             let data=await api.getAxios('org?siteKey='+this.stationKey+'&name=');
             if(data.status == 200){
-                let orgList = [{'label':'全部','value':''}];
+                let orgList = [{'label':'全部机构','value':''}];
                 data.data.map((item)=>{
-                    orgList.push({'label': item.name,'value': item._key});
+                    orgList.push({'label': item.organizationNo,'value': item._key});
                 });
                 this.orgList = orgList;
             }else{
@@ -160,13 +270,6 @@ export default {
                 this.$XModal.message({ message: data.msg, status: 'warning' })
             }
         },
-        getUserList:async function(){// 用户列表
-            let data=await api.getAxios('user?userName=&page=1&limit=1000');
-            if(data.status && data.result){
-                let userList = data.result.list;
-                this.userList = [{'_key':'','userName':'全部创建者'}].concat(userList);
-            }
-        },
         getGenealogy(){
             this.$emit('get-genealogy',this.parameters);
         },
@@ -188,9 +291,31 @@ export default {
             stationKey: state => state.nav.stationKey,
             stationName: state => state.nav.stationName,
             stationlogo: state => state.nav.stationlogo,
+            orgAdmin: state => state.nav.orgAdmin,
+            orgId: state => state.nav.orgId,
         })
     },
     watch:{
+        'time': function(nv, ov){
+            if(nv){
+                this.parameters.startTime = new Date(nv[0]).getTime();
+                this.parameters.endTime = new Date(nv[1]).getTime();
+            }else{
+                this.parameters.startTime = '';
+                this.parameters.endTime = '';
+            }
+        },
+        'fieldFilters': function(nv, ov){
+            this.initFieldFilter();
+        },
+        'orgAdmin': function(nv ,ov){
+            if(this.role >= 1 && this.role <= 3){
+
+            }else{
+                this.parameters.orgKey = this.orgId;
+                this.$emit('change-parameters',this.parameters);
+            }
+        },
         'parameters.creator':function(nl,ol){
             console.log(nl);
             this.getBatchList();
@@ -199,10 +324,6 @@ export default {
             console.log(nv);
             this.$emit('change-parameters',this.parameters);
         }
-        // 'parameters': function(nv, ov){
-        //     console.log(nv);
-        //     this.$emit('change-parameters',this.parameters);
-        // },
     }
 };
 </script>
@@ -215,9 +336,6 @@ export default {
     margin: 20px;
     width: calc(100% - 80px);
     .search-modal-title{
-        position: absolute;
-        top: 10px;
-        left: 0;
         font-size: 16px;
         color: #344B5A;
         height: 16px;
@@ -231,6 +349,26 @@ export default {
         display: flex;
         justify-content: space-between;
         flex-wrap:wrap;
+        .simple-search-wrap{
+            position: relative;
+            width: 85%;
+            display: flex;
+            justify-content: space-between;
+        }
+    }
+}
+.head-box{
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .btn{
+        margin-right: 20px;
+        cursor: pointer;
     }
 }
 .search-input-modal{

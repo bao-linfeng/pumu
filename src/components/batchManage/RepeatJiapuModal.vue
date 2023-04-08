@@ -1,10 +1,11 @@
 <template>  
     <div class="section-box">
         <div class="section-box-tab">
-            <span :class="tabIndex == index ? 'active' : ''" v-for="(item,index) in ['重复可疑数据','附近相关数据','单条检索']" :key="'tab'+index" @click="tabIndex = index">{{item}}{{index == 2 ? '' : ('('+(index == 1 ? nearAllData.length : dubiousData.length)+')')}}</span>
-            <span>{{row && row.genealogyName}}</span>
+            <!-- ,'单条检索' -->
+            <span :class="tabIndex == index ? 'active' : ''" v-for="(item,index) in ['重复可疑数据','附近相关数据']" :key="'tab'+index" @click="tabIndex = index">{{item}}{{index == 2 ? '' : ('('+(index == 1 ? nearAllData.length : dubiousData.length)+')')}}</span>
+            <span>{{row && row.genealogyName}}  {{row.prov}}{{row.city}}{{row.district}}</span>
         </div>
-        <div class="table-wrap" v-show="tabIndex === 0">
+        <div class="table-wrap" v-if="isDataRepeat" v-show="tabIndex === 0">
             <vxe-table
                 border
                 class="adai-table"
@@ -14,20 +15,21 @@
                 :height="h*0.4"
                 :align="'center'"
                 :edit-config="{trigger: 'click', mode: 'row',showStatus: true,activeMethod:activeCellMethod}"
-                @edit-closed="editClosedEvent"
                 @cell-click="cellClickEvent"
                 :data="dubiousData">
-                <vxe-table-column field="rules" title="命中规则与风险" width="140"></vxe-table-column>
-                <vxe-table-column field="batch" title="批次号" width="100"></vxe-table-column>
-                <vxe-table-column field="_key" title="谱编码" width="100"></vxe-table-column>
-                <vxe-table-column v-for="(item) in repeatDetailFieldO" width="100" :key="item.fieldName" :field="item.fieldName" :title="item.fieldMeans" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column field="toggle" title="折叠信息" width="80"></vxe-table-column>
-                <vxe-table-column field="imageLink" title="关联影像" width="100"></vxe-table-column>
-                <vxe-table-column title="阅读影像" :width="80" :cell-render="{name:'AdaiActionButton',attr:{data:[{'label':'阅读','value':'readBook'}]},events:{'readBook':readBook}}"></vxe-table-column>
+                <vxe-table-colgroup title="家谱信息" fixed="left">
+                    <vxe-table-column field="rules" title="命中规则与风险" width="140"></vxe-table-column>
+                    <vxe-table-column field="genealogyName" title="谱名" width="100"></vxe-table-column>
+                    <vxe-table-column field="place" title="谱籍地" width="100"></vxe-table-column>
+                    <vxe-table-column field="publish" title="出版年" width="100"></vxe-table-column>
+                    <vxe-table-column field="_key" title="谱目ID" width="100"></vxe-table-column>
+                </vxe-table-colgroup>
+                
                 <vxe-table-column v-for="(item,index) in repeatDetailField" :visible="collapsable" width="100" :key="'dubious'+index" :field="item.fieldName" :title="item.fieldMeans" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-colgroup title="操作" fixed="right" width="170">
+                <vxe-table-column title="阅读影像" :width="80" :cell-render="{name:'AdaiActionButton',attr:{data:[{'label':'阅读','value':'readBook'}]},events:{'readBook':readBook}}"></vxe-table-column>
+                <vxe-table-colgroup title="操作" fixed="right" width="80">
                     <vxe-table-column field="repeatMark" title="标记家谱" width="90" :cell-render="{name:'repeatMarkModal',attr:{label:'标记'},events:{'click':repeatMark}}"></vxe-table-column>
-                    <vxe-table-column title="删除" width="80" :cell-render="{name:'AdaiActionButton',attr:{data:[{'label':'删除','value':'deleteJia'}]},events:{'deleteJia':deleteGenealogy}}"></vxe-table-column>
+                    <!-- <vxe-table-column title="删除" width="80" :cell-render="{name:'AdaiActionButton',attr:{data:[{'label':'删除','value':'deleteJia'}]},events:{'deleteJia':deleteGenealogy}}"></vxe-table-column> -->
                 </vxe-table-colgroup>
             </vxe-table> 
         </div>
@@ -43,6 +45,7 @@
                 <vxe-table-colgroup title="谱名" fixed="left" width="160">
                     <vxe-table-column field="distance" title="距离(km)" width="60"></vxe-table-column>
                     <vxe-table-column field="genealogyName" title="谱名" width="100"></vxe-table-column>
+                    <vxe-table-column field="_key" title="谱目ID" width="100"></vxe-table-column>
                 </vxe-table-colgroup>
                 <vxe-table-column v-for="(item,index) in nearDataField"  width="100" :key="'near'+index" :field="item.fieldName" :title="item.fieldMeans"></vxe-table-column>
                 <vxe-table-column title="阅读影像" :width="80" :cell-render="{name:'AdaiActionButton',attr:{data:[{'label':'阅读','value':'readBook'}]},events:{'readBook':readBook}}"></vxe-table-column>
@@ -103,7 +106,7 @@ export default {
             dubiousData: [],
             h2: 1080,
             isMore: false,
-            collapsable: false,
+            collapsable: true,
             repeatDetailFieldO: [],
             repeatDetailField: [],
 
@@ -123,6 +126,13 @@ export default {
             fieldFilters:[],
             loading: false,
             checkList: [],
+            startTime: '',
+            endTime: '',
+            fileName: '',
+            isPublish: '',
+            isPlace: '',
+            condition: '',
+            isDataRepeat: true,
         };
     },
     mounted:function(){
@@ -136,30 +146,59 @@ export default {
             }else{
                 nearDataField.push(ele);
             }
-            if(ele.fieldName === 'genealogyName' 
-            || ele.fieldName === 'publish' 
-            || ele.fieldName === 'publishAD' 
-            || ele.fieldName === 'address' 
-            || ele.fieldName === 'place' 
-            || ele.fieldName === 'surname' 
-            || ele.fieldName === 'authors' 
-            || ele.fieldName === 'volume' 
-            || ele.fieldName === 'lostVolume' 
-            || ele.fieldName === 'hall' 
-            || ele.fieldName === 'hasVolume'){
-                repeatDetailFieldO.push(ele);
-            }else{
-                repeatDetailField.push(ele);
-            }
+            // if(ele.fieldName === 'genealogyName' 
+            // || ele.fieldName === 'publish' 
+            // || ele.fieldName === 'publishAD' 
+            // || ele.fieldName === 'address' 
+            // || ele.fieldName === 'place' 
+            // || ele.fieldName === 'surname' 
+            // || ele.fieldName === 'authors' 
+            // || ele.fieldName === 'volume' 
+            // || ele.fieldName === 'lostVolume' 
+            // || ele.fieldName === 'hall' 
+            // || ele.fieldName === 'hasVolume'){
+            //     repeatDetailFieldO.push(ele);
+            // }else{
+            //     repeatDetailField.push(ele);
+            // }
         });
+
+        // 重复可以数据表头
+        repeatDetailField = [
+        // {'fieldName': 'genealogyName', 'fieldMeans': '谱名'},
+        // {'fieldName': 'publish', 'fieldMeans': '出版年'},
+        // {'fieldName': 'place', 'fieldMeans': '谱籍地'},
+        {'fieldName': 'surname', 'fieldMeans': '姓氏'},
+        {'fieldName': 'authors', 'fieldMeans': '作者'},
+        {'fieldName': 'volume', 'fieldMeans': '卷数'},
+        {'fieldName': 'hall', 'fieldMeans': '堂号'},
+        {'fieldName': 'missVolumeSupplement', 'fieldMeans': '缺卷补充'},
+        {'fieldName': 'lostVolume', 'fieldMeans': '缺卷'},
+        {'fieldName': 'hasVolume', 'fieldMeans': '实拍册数'},
+        {'fieldName': 'LocalityModern', 'fieldMeans': '谱籍现代地名'},
+        {'fieldName': 'prov', 'fieldMeans': '省'},
+        {'fieldName': 'city', 'fieldMeans': '市'},
+        {'fieldName': 'district', 'fieldMeans': '区'},
+        {'fieldName': 'bookId', 'fieldMeans': '谱书编号'},
+        {'fieldName': 'DGS', 'fieldMeans': 'DGS 号码'},
+        {'fieldName': 'film', 'fieldMeans': '微卷编号'},
+        {'fieldName': 'genealogyGroupID', 'fieldMeans': '家谱群组ID'},
+        {'fieldName': 'Projectid', 'fieldMeans': '项目ID'},
+        {'fieldName': 'capturedate', 'fieldMeans': '拍摄日期'},
+        {'fieldName': 'Media', 'fieldMeans': 'Media号'},
+        {'fieldName': 'memo', 'fieldMeans': '备注'},
+        {'fieldName': 'Dupbookid', 'fieldMeans': '重复谱书编号'},
+        {'fieldName': 'Filetimes', 'fieldMeans': '档案时间'},
+        {'fieldName': 'Filenames', 'fieldMeans': '档名'},
+        {'fieldName': 'code', 'fieldMeans': '代号'},
+        {'fieldName': 'VolumeFst', 'fieldMeans': '序号'},
+        {'fieldName': 'condition', 'fieldMeans': '状态'},
+        {'fieldName': 'explain', 'fieldMeans': '说明'}
+        ];
         
         this.nearDataField = nearDataField;
         this.repeatDetailFieldO = repeatDetailFieldO;
         this.repeatDetailField = repeatDetailField;
-        // [{'fieldName': 'genealogyName','fieldMeans': '谱名'},{'fieldName': 'publish','fieldMeans': '出版年'},{'fieldName': 'publishAD','fieldMeans': '公元年'},
-        //     {'fieldName': 'address','fieldMeans': '现代谱籍地'},{'fieldName': 'place','fieldMeans': '谱籍地'},{'fieldName': 'surname','fieldMeans': '姓氏'},
-        //     {'fieldName': 'authors','fieldMeans': '作者'},{'fieldName': 'volume','fieldMeans': '卷数'},{'fieldName': 'lostVolume','fieldMeans': '缺卷'},
-        //     {'fieldName': 'hall','fieldMeans': '堂号'},{'fieldName': 'hasVolume','fieldMeans': '实拍册数'}]
     },
     methods:{
         cellClickEvent({row,column}){
@@ -191,8 +230,14 @@ export default {
             this.begYear = data['begYear'] || '';
             this.endYear = data['endYear'] || '';
             this.noPublishAD = data['noPublishAD'] ? 1 : '';
+            this.startTime = data['startTime'] || '';
+            this.endTime = data['endTime'] || '';
+            this.fileName = data['fileName'] || '';
+            this.isPublish = data['isPublish'] ? 1 : '';
+            this.isPlace = data['isPlace'] ? 1 : '';
+            this.condition = data['condition'] || '';
             for(let key in data){
-                if(key == 'libKey' || key == 'equal' || key == 'orgKey' || key == 'begYear' || key == 'endYear' || key == 'noPublishAD'){
+                if(key == 'condition' || key == 'isPublish' || key == 'isPlace' || key == 'fileName' || key == 'startTime' || key == 'endTime' || key == 'libKey' || key == 'equal' || key == 'orgKey' || key == 'begYear' || key == 'endYear' || key == 'noPublishAD'){
 
                 }else{
                     keyWordObj[key] = data[key];
@@ -203,7 +248,7 @@ export default {
         },
         getJiapuList:async function(){// 谱目列表
             this.loading = true;
-            let data = await api.getAxios('catalog/back?siteKey='+this.stationKey+'&noPublishAD='+this.noPublishAD+'&begYear='+this.begYear+'&endYear='+this.endYear+'&libKey='+this.libKey+'&orgKey='+this.orgKey+'&equal='+this.equal+'&keyWordObj='+JSON.stringify(this.keyWordObj)+'&prop='+this.prop+'&order='+this.order+'&page='+this.page+'&limit='+this.limit);
+            let data = await api.getAxios('catalog/back?siteKey='+this.stationKey+'&startFileTimes=&endFileTimes='+'&condition='+this.condition+'&isPublish='+this.isPublish+'&isPlace='+this.isPlace+'&noPublishAD='+this.noPublishAD+'&fileName='+this.fileName+'&startTime='+this.startTime+'&endTime='+this.endTime+'&begYear='+this.begYear+'&endYear='+this.endYear+'&libKey='+this.libKey+'&orgKey='+this.orgKey+'&equal='+this.equal+'&keyWordObj='+JSON.stringify(this.keyWordObj)+'&prop='+this.prop+'&order='+this.order+'&page='+this.page+'&limit='+this.limit);
             this.loading = false;
             if(data.status == 200){
                 this.list = data.result.list;
@@ -222,15 +267,20 @@ export default {
             this.checkList = data;
         },
         readBook({row}){// 阅读影像
-            if(row.hasImage){
-                if(row.readType === 'jump'){
-                    window.open(row.imageLink);
-                }else{
-                    this.$router.push('/'+window.localStorage.getItem('pathname')+'/view?gid='+row._key+'&volume=1&page=1');
-                }
-                // this.$router.push('/'+window.localStorage.getItem('pathname')+'/view?gid='+row._key+'&volume=1&page=1');
+            // if(row.hasImage){
+            //     if(row.readType === 'jump'){
+            //         window.open(row.imageLink);
+            //     }else{
+            //         this.$router.push('/'+window.localStorage.getItem('pathname')+'/view?gid='+row._key+'&volume=1&page=1');
+            //     }
+            //     // this.$router.push('/'+window.localStorage.getItem('pathname')+'/view?gid='+row._key+'&volume=1&page=1');
+            // }else{
+            //     this.$XModal.message({ message: '暂无影像', status: 'warning' });
+            // }
+            if(row.imageLink){
+                window.open(row.imageLink);
             }else{
-                this.$XModal.message({ message: '暂无影像', status: 'warning' });
+                this.$XModal.message({ message: '暂无无法查看影像', status: 'warning' });
             }
         },
         activeCellMethod({row,column}){//控制编辑
@@ -238,27 +288,6 @@ export default {
                 return false;
             }
             return true;
-        },
-        editClosedEvent({row}){
-            if(this.active == 3 && row._key){
-                this.editCatalog(row);
-            }else{
-                this.$XModal.message({ message: '暂时无法编辑', status: 'warning' });
-            }
-        },
-        editCatalog:async function(row){// 编辑谱目
-            let dataObj = {};
-            this.pumuThead.map((item)=>{
-                dataObj[item.fieldName] = row[item.fieldName];
-            });
-            this.changeLoading();
-            let data=await api.patchAxios('data/edit',{'dataKey':row._key,'dataObj':dataObj});
-            this.changeLoading(false);
-            if(data.status == 200){
-                
-            }else{
-                this.$XModal.message({ message: data.msg, status: 'warning' });
-            }
         },
         deleteGenealogy:async function({row}){//删除
             if(row._key){
@@ -310,9 +339,11 @@ export default {
             }
         },
         getDataRepeatDetail:async function(dataKey){// 重复可疑数据
+            this.isDataRepeat = false;
             this.changeLoading();
             let data=await api.getAxios('data/repeatDetail?dataKey='+dataKey);
             this.changeLoading(false);
+            this.isDataRepeat = true;
             if(data.status == 200){
                 let dubiousData = data.data;
                 dubiousData.map((item)=>{
@@ -376,7 +407,7 @@ export default {
             }
         },
         'pumuThead': function(nv,ov){
-            console.log(nv);
+            // console.log(nv);
             let nearDataField = [],repeatDetailField = [],repeatDetailFieldO = [];
             nv.forEach((ele) => {
                 if(ele.fieldName === 'genealogyName'){
@@ -384,26 +415,26 @@ export default {
                 }else{
                     nearDataField.push(ele);
                 }
-                if(ele.fieldName === 'genealogyName' 
-                || ele.fieldName === 'publish' 
-                || ele.fieldName === 'publishAD' 
-                || ele.fieldName === 'address' 
-                || ele.fieldName === 'place' 
-                || ele.fieldName === 'surname' 
-                || ele.fieldName === 'authors' 
-                || ele.fieldName === 'volume' 
-                || ele.fieldName === 'lostVolume' 
-                || ele.fieldName === 'hall' 
-                || ele.fieldName === 'hasVolume'){
-                    repeatDetailFieldO.push(ele);
-                }else{
-                    repeatDetailField.push(ele);
-                }
+                // if(ele.fieldName === 'genealogyName' 
+                // || ele.fieldName === 'publish' 
+                // || ele.fieldName === 'publishAD' 
+                // || ele.fieldName === 'address' 
+                // || ele.fieldName === 'place' 
+                // || ele.fieldName === 'surname' 
+                // || ele.fieldName === 'authors' 
+                // || ele.fieldName === 'volume' 
+                // || ele.fieldName === 'lostVolume' 
+                // || ele.fieldName === 'hall' 
+                // || ele.fieldName === 'hasVolume'){
+                //     repeatDetailFieldO.push(ele);
+                // }else{
+                //     repeatDetailField.push(ele);
+                // }
             });
             
             this.nearDataField = nearDataField;
             this.repeatDetailFieldO = repeatDetailFieldO;
-            this.repeatDetailField = repeatDetailField;
+            // this.repeatDetailField = repeatDetailField;
         }
     }
 };

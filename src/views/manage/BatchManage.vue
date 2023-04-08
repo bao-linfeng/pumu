@@ -4,25 +4,36 @@
         <div class="content">
             <NavModal :title="'装载批次列表'+(total ? '('+total+')' : '')">
                 <div class="toolbar">
-                    <vxe-button v-if="role < 1 || role > 2" content="导入目录" @click="isLeadExcel=true"></vxe-button>
-                    <vxe-button v-if="role >= 1 && role <= 2" content="删除脏数据" @click="removeSigleEvent({'row':{'hasMarkISGN':1,'batchID':''}})"></vxe-button>
-                    <vxe-button content="刷新" @click="refresh"></vxe-button>
+                    <el-button type="primary" @click="(isLeadExcel=true)">导入目录</el-button>
+                    <!-- <vxe-button v-if="role >= 1 && role <= 3" content="删除脏数据" @click="removeSigleEvent({'row':{'hasMarkISGN':1,'batchID':''}})"></vxe-button> -->
                 </div>
             </NavModal>
             <div class="select-wrap">
-                <vxe-select v-model="type" placeholder="按数据类型查询">
-                    <vxe-option v-for="(item,index) in dataType" :key="'type'+index" :value="item.value" :label="item.label"></vxe-option>
-                </vxe-select>
-                <vxe-select v-if="role >= 1 && role <= 2" v-model="userKey" placeholder="操作员">
-                    <vxe-option v-for="(item,index) in userList" :key="'site'+index" :value="item.value" :label="item.label"></vxe-option>
-                </vxe-select>
-                <vxe-select v-model="stage" placeholder="风控决策阶段">
-                    <vxe-option v-for="(item,index) in stageArr" :key="'risk'+index" :value="item.value" :label="item.label"></vxe-option>
-                </vxe-select>
-                <vxe-select v-model="batchId" placeholder="批次号">
-                    <vxe-option v-for="(item,index) in batchArr" :key="'batchid'+index" :value="item.value" :label="item.label"></vxe-option>
-                </vxe-select>
-                <vxe-button content="检索" @click="getBatch"></vxe-button>
+                <el-select class="width100" v-model="type" placeholder="按数据类型查询">
+                    <el-option
+                        v-for="item in dataType"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                    </el-option>
+                </el-select>
+                <el-date-picker
+                    v-model="time"
+                    type="daterange"
+                    unlink-panels
+                    start-placeholder="开始时间"
+                    end-placeholder="结束时间"
+                />
+                <el-select class="width100" v-model="stage" placeholder="风控决策阶段">
+                    <el-option
+                        v-for="item in stageArr"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                    </el-option>
+                </el-select>
+                <el-input class="width100" v-model="fileName" placeholder="文件标题" @keyup.enter="refresh"></el-input>
+                <el-button type="primary" @click="refresh">检索</el-button>
             </div>
             <div class="vex-table-box">
                 <vxe-table
@@ -36,22 +47,16 @@
                     :height="h"
                     :align="'center'"
                     :data="tableData">
-                    <vxe-table-column field="batchID" title="批次" width="120"></vxe-table-column>
-                    <vxe-table-column field="hasClean" title="清洗" width="80" :edit-render="{name: '$select', options: stageState}"></vxe-table-column>
-                    <vxe-table-column field="hasCheckInBatch" title="自查重" :edit-render="{name: '$select', options: stageState}"></vxe-table-column>
-                    <vxe-table-column field="hasCheckInISGN" title="大库查重" :edit-render="{name: '$select', options: stageState}"></vxe-table-column>
-                    <vxe-table-column field="hasSubmit" title="提交审核" :edit-render="{name: '$select', options: stageState}"></vxe-table-column>
-                    <vxe-table-column field="needReview" title="打回" :edit-render="{name: '$select', options: stageState}"></vxe-table-column>
+                    <vxe-table-column field="fileName" title="文件标题" width="200"></vxe-table-column>
+                    <vxe-table-column field="hasSubmitO" title="提交审核" :edit-render="{name: '$select', options: stageState}"></vxe-table-column>
+                    <vxe-table-column field="needReviewO" title="打回" :edit-render="{name: '$select', options: stageState}"></vxe-table-column>
                     <vxe-table-column field="hasPast" title="通过审核" :edit-render="{name: '$select', options: stageState}"></vxe-table-column>
                     <vxe-table-column field="excelDataNum" title="表格总数"></vxe-table-column>
                     <vxe-table-column field="dataNum" title="已导入数"></vxe-table-column>
                     <vxe-table-column field="hasMarkISGNNum" title="已入库数"></vxe-table-column>
-                    <vxe-table-column field="lib" title="数据源"></vxe-table-column>
-                    <vxe-table-column field="templateName" title="模板"></vxe-table-column>
-                    <vxe-table-column field="fileName" title="文件标题"></vxe-table-column>
-                    <vxe-table-column field="createUser" title="操作员"></vxe-table-column>
+                    <vxe-table-column field="libO" title="机构"></vxe-table-column>
                     <vxe-table-column field="createTime" title="导入时间" :formatter="['formatDate', '']"></vxe-table-column>
-                    <vxe-table-column title="操作" width="140" :cell-render="{name:'AdaiActionButton',attr:{data:actionData},events:{'look':navTo,'download':downloadExcel,'linkImage':linkImage}}"></vxe-table-column>
+                    <vxe-table-column title="操作" width="300" :cell-render="{name:'AdaiActionButton',attr:{data:actionData},events:{'look':navTo,'download':downloadExcel, 'downloadNaturalExcel':downloadNaturalExcel, 'upload': uploadImage,'linkImage':linkImage}}"></vxe-table-column>
                 </vxe-table>
             </div>
             <vxe-pager
@@ -60,7 +65,7 @@
                 :current-page.sync="page"
                 :page-size.sync="limit"
                 :total="total"
-                :layouts="['PrevJump', 'PrevPage', 'JumpNumber','NextPage', 'NextJump', 'Sizes', 'FullJump', 'Total']">
+                :layouts="['PrevJump', 'PrevPage', 'JumpNumber','NextPage', 'NextJump', 'FullJump', 'Total']">
             </vxe-pager>
         </div>
         <LeadExcelModal v-if="isLeadExcel" v-on:close-lead-excel="closeLeadExcel" />
@@ -70,6 +75,8 @@
             <el-button class="reconnect" type="primary" @click="reconnect">重新连接</el-button>
             <el-progress type="circle" :percentage="Number((100*Upage/Utotal).toFixed(2))"></el-progress>
         </div>
+        <!-- 批次关联影像、审核时查看 -->
+        <UploadImages v-if="isShow" :batchData="batchData" v-on:close="isShow = 0" />
     </div>
 </template>
 
@@ -81,11 +88,12 @@ import NavModal from "../../components/dictionary/NavModal.vue";
 import LeadExcelModal from "../../components/batchManage/LeadExcelModal.vue";
 import ExcelErrorModal from "../../components/batchManage/ExcelErrorModal.vue";
 import HasImageModal from "../../components/batchManage/HasImageModal.vue";
+import UploadImages from '../../components/batchManage/UploadImages.vue';
 import { mapState, mapActions, mapGetters } from "vuex";
 export default {
     name: "batchmanage",
     components: {
-        Sidebar,NavModal,LeadExcelModal,ExcelErrorModal,HasImageModal,
+        Sidebar,NavModal,LeadExcelModal,ExcelErrorModal,HasImageModal, UploadImages, 
     },
     data: () => {
         return {
@@ -95,17 +103,24 @@ export default {
             fieldData:[],
             stage:'',
             stageArr:[{'label':'全部阶段','value':''},
-            {'label':'数据清洗','value':'hasClean'},
-            {'label':'完整性校验','value':'hasCheck'},
-            {'label':'查重自审','value':'hasCheckInBatch'},
-            {'label':'大库查重','value':'hasCheckInISGN'},
+            // {'label':'数据清洗','value':'hasClean'},
+            // {'label':'完整性校验','value':'hasCheck'},
+            // {'label':'查重自审','value':'hasCheckInBatch'},
+            // {'label':'大库查重','value':'hasCheckInISGN'},
+            {'label':'待提交','value': 'unSubmit'},
             {'label':'提交审核','value':'hasSubmit'},
+            {'label':'打回','value':'needReview'},
             {'label':'审核通过','value':'hasPast'}],
             batchId:'',
             batchArr:[],
             isLeadExcel:false,
             stageState:[{'label':'√','value':1},{'label':'','value':null},{'label':'','value':0}],
-            actionData:[{'label':'查看','value':'look'},{'label':'下载','value':'download'}],
+            actionData:[
+                {'label':'查看','value':'look'},
+                {'label':'修正Excel','value':'download'}, 
+                {'label':'原始Excel','value':'downloadNaturalExcel'}, 
+                {'label':'上传', 'value':'upload'}
+            ],
             total:0,
             errorList:[],
             isExcelError:false,
@@ -115,19 +130,77 @@ export default {
             page: 1,
             limit: 20,
             total:0,
+            orgList: [],
+            orgKey: '',
+            libList: [],
+            libListCheck: [],
+            time: '',
+            startTime: '',
+            endTime: '',
+            isShow: 0,
+            batchData: {},
+            fileName: '',
         };
     },
     created:function(){
         let search = window.location.search, param = ADS.params(search);
         this.h = window.innerHeight - 60 - 54 - 50;
+        this.type = ADS.getQueryVariable('type') ? decodeURIComponent(ADS.getQueryVariable('type')) : '';
+        this.fileName = ADS.getQueryVariable('fileName') ? decodeURIComponent(ADS.getQueryVariable('fileName')) : '';
+        // this.libListCheck = ADS.getQueryVariable('libListCheck') ? ADS.getQueryVariable('libListCheck').split(',') : '';
+        this.startTime = ADS.getQueryVariable('startTime');
+        this.endTime = ADS.getQueryVariable('endTime');
+        this.stage = ADS.getQueryVariable('stage');
+        this.page = ADS.getQueryVariable('page') ? Number(ADS.getQueryVariable('page')) : 1;
     },
     mounted:function(){
         this.getDataType();
-        this.role <=3  && this.role >=1 ? this.getUserList() : null;
+        // this.getUserList();
+        this.getLibList();
         this.getBatchList(); 
-        this.getBatch();
+        if(this.role <= 3  && this.role >=1){
+            this.getOrgList();
+        }else{
+            this.orgKey = this.orgId;
+        }
     },
     methods:{
+        uploadImage({row}){
+            this.batchData = row;
+            this.isShow = 1;
+        },
+        async getLibList(){
+            let data = await api.getAxios('lib?siteKey='+this.stationKey);
+            if(data.status == 200){
+                let libList = [{'label':'全部机构序号','value':''}];
+                data.data.map((item)=>{
+                    libList.push({'label': item.libCode,'value': item._key});
+                    if(this.role >= 1 && this.role <= 3){
+
+                    }else{
+                        if(item.orgKey == this.orgId){
+                            this.libListCheck = [item._key];
+                        }
+                    }
+                });
+                this.libList = libList;
+                this.getBatch();
+            }else{
+                this.$XModal.message({ message: data.msg, status: 'warning' })
+            }
+        },
+        getOrgList:async function(){
+            let data = await api.getAxios('org?siteKey='+this.stationKey+'&name=');
+            if(data.status == 200){
+                let orgList = [{'label':'全部','value':''}];
+                data.data.map((item)=>{
+                    orgList.push({'label': item.name,'value': item._key});
+                });
+                this.orgList = orgList;
+            }else{
+                this.$XModal.message({ message: data.msg, status: 'warning' })
+            }
+        },
         changePage({currentPage}){// 页码切换回调
             this.page = currentPage;
             this.getBatch();
@@ -167,18 +240,29 @@ export default {
             row.hasCheckInISGN ? state = 3 : null;
             row.hasSubmit ? state = 4 : null;
             row.hasPast ? state = 5 : null;
-            this.$router.push('/'+window.localStorage.getItem('pathname')+'/batchdatastage?batchID='+row._key+'&state='+state);
+            this.$router.push('/'+window.localStorage.getItem('pathname')+'/batchdatastage?batchID='+row._key+'&state='+state+'&f='+encodeURIComponent(row.fileName));
         },
         async downloadExcel({row}){//下载excel
-            if(row.hasPast == 1){
-                let data = await api.postAxios('data/feedbackMark',{'batchKey':row._key});
-                if(data.status == 200){
-                    ADS.downliadLink(data.result);
-                }else{
-                    this.$XModal.message({ message: data.msg, status: 'warning' })
-                }
+            let data = await api.postAxios('data/feedbackMark',{'batchKey':row._key});
+            if(data.status == 200){
+                ADS.downliadLink(data.result);
             }else{
-                this.$XModal.message({ message: '审核通过后才可下载', status: 'warning' })
+                this.$XModal.message({ message: data.msg, status: 'warning' })
+            }
+            // if(row.hasPast == 1){
+                
+            // }else{
+            //     this.$XModal.message({ message: '审核通过后才可下载', status: 'warning' })
+            // }
+        },
+        downloadNaturalExcel({row}){
+            console.log(row);
+            if(row.uploadOriginalFileName){
+                console.log('https://view.officeapps.live.com/op/view.aspx?src='+this.baseURL+'catalogFile/'+row.uploadOriginalFileName);
+                // window.open(this.baseURL+'catalogFile/'+row.uploadOriginalFileName);
+                window.open('https://view.officeapps.live.com/op/view.aspx?src='+this.baseURL+'catalogFile/'+row.uploadOriginalFileName);
+            }else{
+                ADS.message('暂无原始Excel!');
             }
         },
         closeLeadExcel(data){// 关闭excel导入回调
@@ -192,6 +276,7 @@ export default {
             }
         },
         refresh(){// 刷新
+            this.page = 1;
             this.getBatch();
         },
         removeBatchAll({row}){// 删除批次所有数据确认函数
@@ -234,7 +319,7 @@ export default {
             }
         },
         async getUserList(){// 上传者
-            let data = await api.getAxios('site/dataUser?siteKey='+this.stationKey);
+            let data = await api.getAxios('site/dataUser?siteKey='+this.stationKey+'&orgKey='+this.orgKey);
             if(data.status && data.result){
                 let userList = [{'label':'全部操作员','value':''}];
                 data.result.map((item)=>{
@@ -254,10 +339,17 @@ export default {
             }
         },
         async getBatch(){// 批次列表
-            let data = await api.getAxios('batch?type='+this.type+'&libKey=&batchKey='+this.batchId+'&siteKey='+this.stationKey+'&stage='+this.stage+'&userKey='+this.userId+'&creator='+this.userKey+'&userRole='+this.role+'&page='+this.page+'&limit='+this.limit);
+            let data = await api.getAxios('batch?type='+this.type+'&fileName='+this.fileName+'&libListCheck='+this.libListCheck.join()+'&startTime='+this.startTime+'&endTime='+this.endTime+'&orgKey='+this.orgKey+'&batchKey='+this.batchId+'&siteKey='+this.stationKey+'&stage='+this.stage+'&userKey='+this.userId+'&creator=&userRole='+this.role+'&page='+this.page+'&limit='+this.limit);
             if(data.status == 200){
-                this.tableData = data.data;
+                this.tableData = data.data.map((ele) => {
+                    ele.libO = ele.lib+'('+ele.libCode+')';
+                    ele.unSubmitO = ele.hasSubmit != 1 && (!ele.repulseTime ? 1 : 0);
+                    ele.hasSubmitO = ele.hasSubmit == 1 || (ele.repulseTime ? 1 : 0) || ele.hasPass == 1;
+                    ele.needReviewO = ele.needReview == 1 && ele.hasPass != 1 && (ele.repulseTime ? 1 : 0);
+                    return ele;
+                });
                 this.total = data.total;
+                this.$router.push('/'+window.localStorage.getItem('pathname')+'/batchmanage?type='+this.type+'&fileName='+this.fileName+'&startTime='+this.startTime+'&endTime='+this.endTime+'&stage='+this.stage+'&page='+this.page);
             }else{
                 this.$XModal.message({ message: data.msg, status: 'warning' })
             }
@@ -271,10 +363,21 @@ export default {
             role: state => state.nav.role,
             Utotal: state => state.nav.Utotal,
             Upage: state => state.nav.Upage,
+            orgId: state => state.nav.orgId,
+            orgAdmin: state => state.nav.orgAdmin,
+            baseURL: state => state.nav.baseURL,
         })
     },
     watch:{
-        
+        'time': function(nv, ov){
+            if(nv){
+                this.startTime = new Date(nv[0]).getTime();
+                this.endTime = new Date(nv[1]).getTime();
+            }else{
+                this.startTime = '';
+                this.endTime = '';
+            }
+        },
     },
 };
 </script>
@@ -330,6 +433,19 @@ export default {
     position: absolute;
     top: 20px;
     right: 20px;
+}
+.input{
+    width: 150px;
+    height: 30px;
+    line-height: 30px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    text-indent: 10px;
+    outline: none;
+    margin-right: 10px;
+}
+.width100{
+    width: 150px;
 }
 </style>
 

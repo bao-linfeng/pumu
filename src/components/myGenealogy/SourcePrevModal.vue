@@ -111,6 +111,7 @@ export default {
     computed: {
         ...mapState({
             APIURL: state => state.nav.APIURL,
+            baseURL: state => state.nav.baseURL,
         })
     },
 };

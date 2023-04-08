@@ -149,7 +149,7 @@ export default {
             this.scaleIndex = this.scaleIndex + 1;
         },
         getImage:async function(){//图片列表
-            let data=await api.getAxios('catalog/imageList?catalogKey='+this.gid+'&volume=&siteKey='+this.stationKey+'&userRole='+this.role);
+            let data=await api.getAxios('catalog/imageList?catalogKey='+this.gid+'&volume=&siteKey='+this.stationKey+'&userRole='+this.role+'&userKey='+this.userId);
             if(data.status == 200){
                 this.viewList = data.result;
                 this.total = data.result.length;
@@ -158,7 +158,7 @@ export default {
         },
         getImageDetail:async function(){//图片详情
             this.flag = true;
-            let data = await api.getAxios('catalog/image/detail?imageKey='+this.viewList[this.page-1]+'&userKey='+this.userId);
+            let data = await api.getAxios('catalog/image/detail?imageKey='+this.viewList[this.page-1]+'&userKey='+this.userId+'&siteKey='+this.stationKey);
             this.flag = false;
             if(data.status == 200){
                 this.base64 = data.result.image;

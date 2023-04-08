@@ -32,15 +32,17 @@ VXETable.renderer.add('RuKuModal', {
     let { attr,events } = renderOpts
     let arr = [];
     // console.log(row.willIn);
-    if(row.willIn == 1){
-      arr.push(<button class="RuKuModal" onClick={ () => events.click({'_key':row._key,'willIn':1,'suggIn': row.suggIn}) }>是</button>);
-      arr.push(<button class="RuKuModal disabled" onClick={ () => events.click({'_key':row._key,'willIn':2,'suggIn': row.suggIn}) }>否</button>);
-    }else if(row.willIn == 2){
-      arr.push(<button class="RuKuModal disabled" onClick={ () => events.click({'_key':row._key,'willIn':1,'suggIn': row.suggIn}) }>是</button>);
-      arr.push(<button class="RuKuModal" onClick={ () => events.click({'_key':row._key,'willIn':2,'suggIn': row.suggIn}) }>否</button>);
-    }else{
-      arr.push(<button class="RuKuModal" onClick={ () => events.click({'_key':row._key,'willIn':1,'suggIn': row.suggIn}) }>是</button>);
-      arr.push(<button class="RuKuModal" onClick={ () => events.click({'_key':row._key,'willIn':2,'suggIn': row.suggIn}) }>否</button>);
+    if(row){
+      if(row.willIn == 1){
+        arr.push(<button class="RuKuModal" onClick={ () => events.click({'_key':row._key,'willIn':1,'suggIn': row.suggIn, 'data': row}) }>是</button>);
+        arr.push(<button class="RuKuModal disabled" onClick={ () => events.click({'_key':row._key,'willIn':2,'suggIn': row.suggIn, 'data': row}) }>否</button>);
+      }else if(row.willIn == 2){
+        arr.push(<button class="RuKuModal disabled" onClick={ () => events.click({'_key':row._key,'willIn':1,'suggIn': row.suggIn, 'data': row}) }>是</button>);
+        arr.push(<button class="RuKuModal" onClick={ () => events.click({'_key':row._key,'willIn':2,'suggIn': row.suggIn, 'data': row}) }>否</button>);
+      }else{
+        arr.push(<button class="RuKuModal" onClick={ () => events.click({'_key':row._key,'willIn':1,'suggIn': row.suggIn, 'data': row}) }>是</button>);
+        arr.push(<button class="RuKuModal" onClick={ () => events.click({'_key':row._key,'willIn':2,'suggIn': row.suggIn, 'data': row}) }>否</button>);
+      }
     }
     
     return arr;
@@ -127,8 +129,25 @@ VXETable.renderer.add('AdaiActionButton', {
     let { attr,events } = renderOpts
     attr.data.map((item)=>{
       if(row.status && item.value != 'look'){
-        arr.push(<button class="AdaiActionButton disabled" onClick={() => events[item.value](params)}>{item.label}</button>)
+        if(['nf', 'd', 'r', 'm'].indexOf(item.value) > -1){
+          if(row.DupProjectIDStatus == 1 || !row.DupProjectIDStatus){
+            arr.push(<button class="AdaiActionButton" onClick={() => events[item.value](params)}>{item.label}</button>)
+          }
+        }else if(item.value == 'resume'){
+          arr.push(<button class="AdaiActionButton" onClick={() => events[item.value](params)}>{item.label}</button>)
+        }
+        else{
+          arr.push(<button class="AdaiActionButton disabled" onClick={() => events[item.value](params)}>{item.label}</button>)
+        }
       }else if(row.checkDoneTimeO < 0 && item.value == 'setCommon'){
+        arr.push(<button class="AdaiActionButton disabled" onClick={() => events[item.value](params)}>{item.label}</button>)
+      }else if(row.reviewStatus != 1 && item.value == 'volumeReturn'){
+        arr.push(<button class="AdaiActionButton disabled" onClick={() => events[item.value](params)}>{item.label}</button>)
+      }else if(row.reviewStatus != 1 && item.value == 'volumeLook'){
+        arr.push(<button class="AdaiActionButton disabled" onClick={() => events[item.value](params)}>{item.label}</button>)
+      }else if(!row.imageLink && item.value == 'readBook'){
+        arr.push(<button class="AdaiActionButton disabled" onClick={() => events[item.value](params)}>{item.label}</button>)
+      }else if(row.condition != 'nf' && item.value == 'catalogPass'){
         arr.push(<button class="AdaiActionButton disabled" onClick={() => events[item.value](params)}>{item.label}</button>)
       }else{
         arr.push(<button class="AdaiActionButton" onClick={() => events[item.value](params)}>{item.label}</button>)
@@ -142,13 +161,34 @@ VXETable.renderer.add('AdaiActionButton', {
   }
 })
 
+VXETable.renderer.add('AdaiActionButton2', {
+  renderDefault(h, renderOpts, params){
+    let arr = [];
+    let { row,column } = params
+    let { attr,events } = renderOpts
+    attr.data.map((item)=>{
+      arr.push(<button class="AdaiActionButton" onClick={() => events[item.value](params)}>{item.label}</button>);
+    })
+    return arr
+  },
+  exportMethod(params){
+    const { row, column } = params
+    return '自定义内容'
+  }
+})
+
 Vue.filter("getLocalTime", ADS.getLocalTime);
 
 Vue.prototype.logout = ADS.logout;
 
+let APIURL='https://pumudata.qingtime.cn/';
+if(window.location.origin.indexOf('genealogy.1jiapu.com') > -1){
+    APIURL = 'https://genealogydata.1jiapu.com/';
+}
+// APIURL = 'https://genealogydata.1jiapu.com/';
 Vue.use(new VueSocketio({
   debug: true,
-  connection: 'https://pumudata.qingtime.cn/',
+  connection: APIURL,
   vuex: {
   }
 }))

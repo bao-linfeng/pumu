@@ -8,8 +8,15 @@
         </div>
         <div class="navRight">
             <ul class="navLink">
+                <li title="谱目审核" v-if="(role >= 1 && role <= 4) || isOrg == 3">
+                    <router-link :to="'/'+pathname+(role >= 1 && role <= 3 ? '/bookaudit?type=&fileName=&libListCheck=&startTime=&endTime=&stage=&page=1' : '/batchmanage?type=&fileName=&startTime=&endTime=&stage=&page=1')">谱目审核</router-link>
+                </li>
+                <li title="待议谱" v-if="(role >= 1 && role <= 4) || isOrg == 3">
+                    <router-link :to="'/'+pathname+'/toBeDiscussedGC'">待议谱</router-link>
+                </li>
+                <li title="影像审核" v-if="(role >= 1 && role <= 4) || isOrg == 3"><router-link :to="'/'+pathname+'/takeCamera?i='+(role >= 1 && role <= 3 ? 14: 13)+'&hasRoot=1&genealogyName=&gcKey=&place=&singleOrTwo=&isLeadImages=&startTime=&endTime=&orgListCheck=&page=1'">影像审核</router-link></li>
                 <li @click="gotoLink('/'+pathname+'/genealogySearch')"><span class="search">家谱检索</span></li>
-                <li title="管理" v-if="isShow"><router-link :to="'/'+pathname+'/myGenealogy'"><span class="menu">管理</span></router-link></li>
+                <li title="管理" v-if="(role >= 1 && role <= 4) || isOrg == 3"><router-link :to="'/'+pathname+'/myGenealogy'"><span class="menu">管理</span></router-link></li>
                 <li @click="logout()" title="退出"><span>退出</span></li>
             </ul>
             <i class="el-icon-menu navmenu" v-if="flag" @click="toggleNav(false)"></i>
@@ -17,7 +24,7 @@
             <ul class="navLink_xs" v-show="!flag">
                 <li @click="gotoLink('/'+pathname)"><span>首页</span></li>
                 <li @click="gotoLink('/'+pathname+'/genealogySearch')"><span>家谱检索</span></li>
-                <li @click="gotoLink('/'+pathname+'/myGenealogy')" v-if="isShow"><span>管理</span></li>
+                <li @click="gotoLink('/'+pathname+'/myGenealogy')" v-if="(role >= 1 && role <= 3) || isOrg == 3"><span>管理</span></li>
                 <li @click="gotoLink()"><span>退出</span></li>
             </ul>
         </div>
@@ -69,7 +76,7 @@ export default {
         this.stationNames = window.localStorage.getItem('stationName') || '';
         this.pathname = window.localStorage.getItem('pathname') || '';
 
-        if(window.localStorage.getItem('role') && window.localStorage.getItem('role') <= 4 && window.localStorage.getItem('role') >= 1){
+        if((this.role >= 1 && this.role <= 3) || (this.isOrg == 3)){// 站长、管理员、编辑、已经加入机构
             this.isShow = true;
         }
         if(window.innerWidth < 600){
@@ -83,6 +90,7 @@ export default {
             userRole: state => state.nav.userRole,
             stationName: state => state.nav.stationName,
             role: state => state.nav.role,
+            isOrg: state => state.nav.isOrg,
         })
     },
     watch: {
@@ -162,6 +170,7 @@ export default {
         margin-left: 20px;
         color: #fff;
         cursor: pointer;
+        font-size: 14px;
         span{
             font-size: 14px;
             padding-left: 22px;

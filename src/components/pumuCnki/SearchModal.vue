@@ -51,7 +51,7 @@ export default {
             if(!ADS.objectValue2String(this.pumuForm)){
                 return ADS.message('输入框必填一项');
             }
-            let url='catalog/back?surname='+this.pumuForm.surname+'&genealogyName='+this.pumuForm.genealogyName+'&place='+this.pumuForm.place+'&hall='+this.pumuForm.hall+'&celebrity=&generationName=&batch='+this.pumuForm.batch+'&version=&writeTime='+this.pumuForm.writeTime+'&author=&hasImage=2&siteKey='+this.siteKey+'&source=&hasCheck=&creator=&page=1&limit=200';
+            let url='catalog/back?surname='+this.pumuForm.surname+'&startFileTimes=&endFileTimes='+'&genealogyName='+this.pumuForm.genealogyName+'&place='+this.pumuForm.place+'&hall='+this.pumuForm.hall+'&celebrity=&generationName=&batch='+this.pumuForm.batch+'&version=&writeTime='+this.pumuForm.writeTime+'&author=&hasImage=2&siteKey='+this.siteKey+'&source=&hasCheck=&creator=&page=1&limit=200';
             let data=await api.getAxios(url);
             if(data.status == 200 && data.result){
                 console.log(data.result);

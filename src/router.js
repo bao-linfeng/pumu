@@ -56,10 +56,28 @@ import SupplierManage from "./views/manage/SupplierManage.vue";
 import UserManage from "./views/manage/UserManage.vue";
 import MonthReport from "./views/manage/MonthReport.vue";
 import Institution from "./views/manage/Institution.vue";
+import AuditOrg from './views/manage/AuditOrg.vue';
 import BookAudit from './views/manage/BookAudit.vue';
 import BookAuditList from './views/manage/BookAuditList.vue';
 import TakeCamera from './views/manage/TakeCamera.vue';
 import CameraDetail from './views/manage/CameraDetail.vue';
+import CameraImage from './views/manage/CameraImage.vue';
+import Bill from './views/manage/Bill.vue';
+import CameraDevice from './views/manage/CameraDevice.vue';
+import LogManage from './views/manage/LogManage.vue';
+import ClaimLog from './views/manage/ClaimLog.vue';
+import GenealogyRecheck from './views/manage/GenealogyRecheck';
+import DupProjectID from './views/manage/DupProjectID.vue';
+import RecycleBin from './views/manage/RecycleBin.vue';
+import VolumeError from './views/manage/VolumeError.vue';
+import ToBeDiscussedGC from './views/manage/ToBeDiscussedGC.vue';
+import WorkloadAccount from './views/manage/WorkloadAccount.vue';
+import VolumeStatusAccount from './views/manage/VolumeStatusAccount.vue';
+import QuickRegistration from './views/manage/QuickRegistration.vue';
+import SingleRecheck from './views/manage/SingleRecheck.vue';
+import CatalogSearch from './views/manage/CatalogSearch.vue';
+import VolumeSearch from './views/manage/VolumeSearch.vue';
+import SingleQuickSearch from './views/manage/SingleQuickSearch.vue';
 
 Vue.use(Router);
 
@@ -68,6 +86,134 @@ const routes = [
     path: "/404",
     name: "notfound",
     component: NotFound
+  },
+  {
+    path: "/:id/singleQuickSearch",
+    name: "SingleQuickSearch",
+    meta: {
+      requireAuth: true,
+    },
+    component: SingleQuickSearch
+  },
+  {
+    path: "/:id/volumeSearch",
+    name: "VolumeSearch",
+    meta: {
+      requireAuth: true,
+    },
+    component: VolumeSearch
+  },
+  {
+    path: "/:id/catalogSearch",
+    name: "CatalogSearch",
+    meta: {
+      requireAuth: true,
+    },
+    component: CatalogSearch
+  },
+  {
+    path: "/:id/singleRecheck",
+    name: "SingleRecheck",
+    meta: {
+      requireAuth: true,
+    },
+    component: SingleRecheck
+  },
+  {
+    path: "/:id/quickRegistration",
+    name: "QuickRegistration",
+    meta: {
+      requireAuth: true,
+    },
+    component: QuickRegistration
+  },
+  {
+    path: "/:id/volumeStatusAccount",
+    name: "VolumeStatusAccount",
+    meta: {
+      requireAuth: true,
+    },
+    component: VolumeStatusAccount
+  },
+  {
+    path: "/:id/workloadAccount",
+    name: "WorkloadAccount",
+    meta: {
+      requireAuth: true,
+    },
+    component: WorkloadAccount
+  },
+  {
+    path: "/:id/toBeDiscussedGC",
+    name: "ToBeDiscussedGC",
+    meta: {
+      requireAuth: true,
+    },
+    component: ToBeDiscussedGC
+  },
+  {
+    path: "/:id/volumeError",
+    name: "volumeError",
+    meta: {
+      requireAuth: true,
+    },
+    component: VolumeError
+  },
+  {
+    path: "/:id/recycleBin",
+    name: "recycleBin",
+    meta: {
+      requireAuth: true,
+    },
+    component: RecycleBin
+  },
+  {
+    path: "/:id/dupProjectID",
+    name: "dupProjectID",
+    meta: {
+      requireAuth: true,
+    },
+    component: DupProjectID
+  },
+  {
+    path: "/:id/genealogyRecheck",
+    name: "genealogyRecheck",
+    meta: {
+      requireAuth: true,
+    },
+    component: GenealogyRecheck
+  },
+  {
+    path: "/:id/logManage",
+    name: "LogManage",
+    meta: {
+      requireAuth: true,
+    },
+    component: LogManage
+  },
+  {
+    path: "/:id/claimLog",
+    name: "ClaimLog",
+    meta: {
+      requireAuth: true,
+    },
+    component: ClaimLog
+  },
+  {
+    path: "/:id/cameraDevice",
+    name: "CameraDevice",
+    meta: {
+      requireAuth: true,
+    },
+    component: CameraDevice
+  },
+  {
+    path: "/:id/bill",
+    name: "Bill",
+    meta: {
+      requireAuth: true,
+    },
+    component: Bill
   },
   {
     path: "/:id/takeCamera",
@@ -84,6 +230,14 @@ const routes = [
       requireAuth: true,
     },
     component: CameraDetail
+  },
+  {
+    path: "/:id/cameraImage",
+    name: "CameraImage",
+    meta: {
+      requireAuth: true,
+    },
+    component: CameraImage
   },
   {
     path: "/:id/DORlist",
@@ -116,6 +270,14 @@ const routes = [
       requireAuth: true,
     },
     component: Institution
+  },
+  {
+    path: "/:id/auditOrg",
+    name: "auditOrg",
+    meta: {
+      requireAuth: true,
+    },
+    component: AuditOrg
   },
   {
     path: "/:id/monthreport",
@@ -330,6 +492,11 @@ const routes = [
   },
   {
     path: "/:id",
+    name: "home",
+    component: Home
+  },
+  {
+    path: "/",
     name: "home",
     component: Home
   },

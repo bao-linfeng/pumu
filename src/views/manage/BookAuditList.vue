@@ -3,16 +3,20 @@
         <div class="content">
             <ul class="nav-wrap">
                 <li>
-                    <h3>谱目审核列表</h3>
+                    <h3>谱目审核列表-{{fileName}}(总共{{tableData.length}}条数据)</h3>
                 </li>
                 <li>
+                    <!-- <el-checkbox v-if="active == 4" v-model="showAll">显示全部</el-checkbox> -->
                     <!-- <vxe-button content="一键可拍" v-if="active == 4" @click="setCanTakeBatch"></vxe-button> -->
-                    <vxe-button content="打回" v-if="active == 4" @click="dataVertify('return')"></vxe-button>
-                    <vxe-button content="通过" v-if="active == 4" @click="dataVertify('past')"></vxe-button>
-                    <!-- <vxe-button content="返回" @click="goBack"></vxe-button> -->
+                    <vxe-button content="查看影像" @click="isShow = 1"></vxe-button>
+                    <!-- <vxe-button content="批量审核通过" v-if="role >= 1 && role <= 3" @click="batchInBase"></vxe-button> -->
+                    <vxe-button content="打回" v-if="active == 4" @click="dataVertifyHnadle('return')"></vxe-button>
+                    <vxe-button content="通过" v-if="active == 4" @click="dataVertifyHnadle('past')"></vxe-button>
+                    <i v-if="stationKey != '1528234980'" class="el-icon-delete refresh" title="删除批次" @click="removeBatchAll"></i>
                 </li>
             </ul>
-            <div class="table-wrap">
+            <p class="condition">谱状态说明:f,审核通过且已拍摄;nf,审核通过未拍摄;r,无效谱;d,谱书重复;m,待议谱。</p>
+            <div class="table-wrap" v-if="isTable">
                 <vxe-table
                     border
                     class="adai-table"
@@ -25,53 +29,34 @@
                     :align="'center'"
                     :data="tableData"
                     :row-class-name="rowClassName"
+                    @edit-closed="editClosedEvent"
+                    :edit-config="{trigger: 'click', mode: 'row',showStatus: true, activeMethod:activeCellMethod}"
                     @cell-click="cellClickEvent">
-                    <vxe-table-column title="可拍信息" fixed="left" width="620">
-                        <vxe-table-column field="_key" width="100" title="统一编码" fixed="left"></vxe-table-column>
-                        <vxe-table-column field="repeatCount" width="100" title="重复可疑" fixed="left"></vxe-table-column>
-                        <vxe-table-column fixed="left" v-if="role >= 1 && role <= 3 && active == 4" field="canTake" title="可拍摄" width="160" :cell-render="{name:'AdaiTabButton', events:{'click':changeCanTake}}"></vxe-table-column>
-                        <vxe-table-column fixed="left" v-if="role >= 1 && role <= 3 && active == 4" field="needFill" title="补充字段" width="80" :cell-render="{name:'AdaiSwitchButton',attr:{property:'needFill'},events:{'click':changeStatus}}"></vxe-table-column>
-                        <vxe-table-column fixed="left" v-if="role >= 1 && role <= 3 && active == 4" field="needImage" title="补充影像" width="80" :cell-render="{name:'AdaiSwitchButton',attr:{property:'needImage'},events:{'click':changeStatus}}"></vxe-table-column>
-                    </vxe-table-column>
-                    <vxe-table-column width="100" field="genealogyName" title="谱名" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <vxe-table-column width="100" field="publish" title="出版年" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <vxe-table-column width="160" field="place" title="谱籍地" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <vxe-table-column width="100" field="surname" title="姓氏" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <vxe-table-column width="100" field="authors" title="作者" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <vxe-table-column width="100" field="volume" title="卷数" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <vxe-table-column width="100" field="hall" title="堂号" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <vxe-table-column width="100" field="lostVolume" title="缺卷" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <vxe-table-column width="100" field="hasVolume" title="实拍册数" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                     <vxe-table-column width="100" field="hasImage" title="影像" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <vxe-table-column field="toggle" title="折叠信息"></vxe-table-column>
-                    <vxe-table-column v-for="(item,index) in pumuTheads" :key="'column'+index" :visible="collapsable" width="100" :field="item.fieldName" :title="item.fieldMeans"></vxe-table-column>
-                    
-                    <!-- <vxe-table-column v-if="active >= 3 && !needReview" field="willIns" :visible="collapsable" title="计划入库" width="80"></vxe-table-column> -->
-                    <vxe-table-column v-if="active == 3 && !needReview" field="suggIn" :visible="collapsable" width="100" title="系统建议入库"></vxe-table-column>
-                    <vxe-table-column v-if="active <= 3 && !needReview" field="bIdExist" :visible="collapsable" width="100" title="编码重复"></vxe-table-column>
-                    <vxe-table-column v-if="active <= 3 && !needReview" field="seemISGN" :visible="collapsable" width="100" title="疑似ISGN"></vxe-table-column>
-                    <vxe-table-column v-if="active <= 3 && !needReview" field="repeatRisk" :visible="collapsable" width="100" title="规则认定综合风险"></vxe-table-column>
-                    <vxe-table-column v-if="active <= 3 && !needReview" field="lackFieldsNum" :visible="collapsable" width="100" title="残缺字段数"></vxe-table-column>
-                    <vxe-table-column v-if="active <= 3 && !needReview" field="lackFields" :visible="collapsable" width="100" title="残缺字段"></vxe-table-column>
-                    <vxe-table-column v-if="active <= 3 && !needReview" field="repeatInBatchArr" :visible="collapsable" width="100" title="同批次重复记录"></vxe-table-column>
-                    <vxe-table-column v-if="active <= 3 && !needReview" field="repeatInISGNArr" :visible="collapsable"  width="100" title="ISGN重复记录"></vxe-table-column>
-                    <vxe-table-column v-if="active <= 3 && !needReview" field="repeatInISGNCount" :visible="collapsable" width="100" title="SGN重复数"></vxe-table-column>
-                    <vxe-table-column v-if="active == 3 && needReview" field="addInformation" title="不可拍备注" width="140"></vxe-table-column>
-                    <!-- <vxe-table-column v-if="active >= 3" field="hasIn" width="100" title="可拍摄"></vxe-table-column> -->
-                    <vxe-table-column v-if="active >= 3" field="annex" title="待提交原因" width="75" :cell-render="{name:'AdaiActionButton',attr:{data:[{'label':'附件','value':'annex'}]},events:{'annex':annex}}"></vxe-table-column>
+                    <vxe-table-colgroup title="可拍信息" fixed="left" width="620">
+                        <vxe-table-column fixed="left" v-if="active == 4" field="canTake" title="操作" width="160" :cell-render="{name:'AdaiTabButton', events:{'click':changeCanTake}}"></vxe-table-column>
+                        <vxe-table-column v-for="(item,index) in field_main" :key="'main'+index" width="100" :field="item.fieldName" :title="item.fieldMeans" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                        <vxe-table-column field="_key" title="谱目ID" width="100"></vxe-table-column>
+                        <vxe-table-column fixed="left" v-if="active == 4" field="needFill" title="补充字段" width="80" :cell-render="{name:'AdaiSwitchButton',attr:{property:'needFill'},events:{'click':changeStatus}}"></vxe-table-column>
+                        <vxe-table-column fixed="left" v-if="active == 4" field="needImage" title="补充影像" width="80" :cell-render="{name:'AdaiSwitchButton',attr:{property:'needImage'},events:{'click':changeStatus}}"></vxe-table-column>
+                    </vxe-table-colgroup>
+                    <vxe-table-column v-for="(item,index) in field_branch" :key="'branch'+index" width="100" :field="item.fieldName" :title="item.fieldMeans" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                    <vxe-table-column fixed="right" field="annex" title="影像页查看" width="160" :cell-render="{name:'AdaiActionButton',attr:{data:[{'label':'附件','value':'annex'}, {'label':'快捷查询','value':'singleQuick'}]},events:{'annex':annex, 'singleQuick': singleQuick}}"></vxe-table-column>
                 </vxe-table>
             </div>
-            <RepeatJiapuModal v-if="active >= 2" :row="row" :h="h" :pumuThead="pumuThead" :isF="true" />
+            <RepeatJiapuModal v-if="active >= 2" :row="row" :h="h" :pumuThead="pumuThead" :isF="false" />
         </div>
         <AnnexModal v-if="isShowAnnex" :gid="gid" :createUser="createUser" :row="annexRow" v-on:close-annex="isShowAnnex = false" :active="active" />
         <div class="needFill-box" v-if="isNeedFill">
             <h3>补充字段</h3>
             <img class="needFill-close" src="../../assets/close.svg" @click="isNeedFill = false" alt="">
             <vxe-select v-model="needFillList" placeholder="补充字段" multiple>
-                <vxe-option v-for="(item,index) in pumuThead" :key="index" :value="item.fieldMeans" :label="item.fieldMeans"></vxe-option>
+                <vxe-option v-for="(item,index) in needFillThead" :key="index" :value="item.fieldMeans" :label="item.fieldMeans"></vxe-option>
             </vxe-select>
+            <input class="summary" type="text" v-model="remark" placeholder="备注" />
             <vxe-button content="保存" @click="saveNeedFill"></vxe-button>
         </div>
+        <!-- 批次关联影像、审核时查看 -->
+        <UploadImages v-if="isShow" :batchData="{'_key': this.batchId, 'look': 1}" v-on:close="isShow = 0" />
     </div>
 </template>
 
@@ -81,10 +66,11 @@ import ADS from "../../ADS.js";
 import AnnexModal from "../../components/QingTimeGenealogy/AnnexModal.vue";
 import RepeatJiapuModal from "../../components/batchManage/RepeatJiapuModal.vue";
 import { mapState, mapActions, mapGetters } from "vuex";
+import UploadImages from '../../components/batchManage/UploadImages.vue';
 export default {
     name: "bookAuditList",
     components: {
-        AnnexModal,RepeatJiapuModal,
+        AnnexModal,RepeatJiapuModal, UploadImages, 
     },
     data: () => {
         return {
@@ -93,7 +79,7 @@ export default {
             filter: true,
             active: 0,
             row: {},
-            caozheng:'',
+            caozheng:'1',
             caozhengs: [],
             total: 0,
             createUser: '',
@@ -111,33 +97,117 @@ export default {
             needReview: '',
             pumuThead: [],
             pumuTheads: [],
-            isShow: false,
+            isShow: 0,
             isManage: false,
             repeatNum: 0,
             collapsable: false,
             needFillList: [],
             isNeedFill: false,
+            needFillThead: [],
             dataStatus: '',
+            remark: '',
+            fileName: '',
+            field_main: [],
+            field_branch: [],
+            isTable: false,
+            showAll: true,
         };
     },
     created:function(){
         let search = window.location.search,param=ADS.params(search);
         this.batchId = param['batchID'] || '';
+        this.fileName = param['f'] ? decodeURIComponent(param['f']) : '';
         this.active = param['state'] ? Number(param['state']) : 0;
         this.h = window.innerHeight - 110;
+        console.log(this.fileName);
+
+        this.field_main = [
+            {'fieldMeans': '家谱姓氏', 'fieldName': 'surname'},
+            {'fieldMeans': '家谱谱名', 'fieldName': 'genealogyName'},
+            {'fieldMeans': '出版年', 'fieldName': 'publish'},
+            {'fieldMeans': '谱籍_现代地名', 'fieldName': 'place'},
+            {'fieldMeans': '卷数', 'fieldName': 'volume'},
+            {'fieldMeans': '堂号', 'fieldName': 'hall'},
+        ];
+
+        this.field_branch = [
+            {'fieldMeans': '省市区', 'fieldName': 'address'},
+            {'fieldMeans': '作者姓名', 'fieldName': 'authors'},
+            {'fieldMeans': '实拍册数', 'fieldName': 'hasVolume'},
+            {'fieldMeans': '缺卷', 'fieldName': 'lostVolume'},
+            {'fieldMeans': '版本类型', 'fieldName': 'version'},
+            {'fieldMeans': '作者职务', 'fieldName': 'authorJob'},
+
+            {'fieldMeans': '一世祖', 'fieldName': 'firstAncestor'},
+            {'fieldMeans': '始迁祖', 'fieldName': 'migrationAncestor'},
+            {'fieldMeans': '备注', 'fieldName': 'memo'},
+            {'fieldMeans': '重复谱书编号', 'fieldName': 'Dupbookid'},
+            {'fieldMeans': '状态', 'fieldName': 'condition'},
+            {'fieldMeans': '说明', 'fieldName': 'explain'},
+            {'fieldMeans': '档案时间', 'fieldName': 'Filetimes'},
+            {'fieldMeans': '档名', 'fieldName': 'Filenames'},
+            {'fieldMeans': '代号', 'fieldName': 'code'},
+            {'fieldMeans': '谱籍_依谱书所载', 'fieldName': 'LocalityModern'},
+            {'fieldMeans': '谱书编号', 'fieldName': 'bookId'},
+            {'fieldMeans': 'DGS 号码', 'fieldName': 'DGS'},
+            {'fieldMeans': '微卷编号', 'fieldName': 'film'},
+            {'fieldMeans': '家谱群组ID', 'fieldName': 'genealogyGroupID'},
+            {'fieldMeans': '项目ID', 'fieldName': 'Projectid'},
+            {'fieldMeans': '拍摄日期', 'fieldName': 'capturedate'},
+            {'fieldMeans': 'Media', 'fieldName': 'Media'},
+            {'fieldMeans': '重复专案ID', 'fieldName': 'DupProjectID'},
+            {'fieldMeans': '认领单位', 'fieldName': 'claim'},
+            {'fieldMeans': '认领日期', 'fieldName': 'claimDate'},
+            {'fieldMeans': '拍摄期限', 'fieldName': 'shootingPeriod'},
+            {'fieldMeans': '前次认领单位1', 'fieldName': 'pervious1'},
+            {'fieldMeans': '前次认领日期1', 'fieldName': 'perviousDate1'},
+            {'fieldMeans': '前次认领单位2', 'fieldName': 'pervious2'},
+            {'fieldMeans': '前次认领日期2', 'fieldName': 'perviousDate2'},
+            {'fieldMeans': '前次认领单位3', 'fieldName': 'pervious3'},
+            {'fieldMeans': '前次认领日期3', 'fieldName': 'perviousDate3'},
+            {'fieldMeans': '序号', 'fieldName': 'VolumeFst'},
+            {'fieldMeans': '起年', 'fieldName': 'startYear'},
+        ];
     },
     mounted:function(){
         this.getPumuTable();
         this.getDataCheckLog();
     },
     methods:{
+        singleQuick({ row }){
+            console.log(row);
+            window.open('/'+this.pathname+'/singleQuickSearch?id='+row._key, '_blank');
+        },
+        removeBatchAll(){//删除批次所有数据确认函数
+            this.$confirm('此操作将永久删除该批次所有数据, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                this.removeBatchData();
+            }).catch(() => {});
+        },
+        removeBatchData:async function(){// 删除该批次所有数据
+            let data=await api.deleteAxios('batch',{'batchKey':this.batchId,'userRole':this.role,'userKey':this.userId, 'siteKey': this.stationKey, 'orgKey': this.orgId});
+            if(data.status == 200){
+                this.$notify({
+                    title: '提示',
+                    message: this.userName+'删除了'+this.batchId+'批次数据',
+                    duration: 0,
+                    type: 'success'
+                });
+                this.$router.push('/'+window.localStorage.getItem('pathname')+'/batchmanage');
+            }else{
+                this.$XModal.message({ message: data.msg, status: 'warning' })
+            }
+        },
         saveNeedFill(){
             console.log(this.needFillList);
-            if(this.needFillList && this.needFillList.length){
+            if((this.needFillList && this.needFillList.length) || this.remark){
                 this.isNeedFill = false;
-                this.changeDataStatus(this.dataStatus,this.needFillList);
+                this.changeDataStatus(this.dataStatus, this.needFillList, this.remark);
             }else{
-                this.$XModal.message({ message: '请选择补充字段', status: 'warning' });
+                this.$XModal.message({ message: '请选择补充字段或填写备注', status: 'warning' });
             }
         },
         setCanTakeBatch:async function(){
@@ -182,21 +252,35 @@ export default {
         changeLoading(flag = true){
             this.$store.dispatch('setPropertyValue',{'property':'loading','value': flag});
         },
-        dataVertify:async function(operate){// 补充资料/审核通过
-            let isF = false;
+        dataVertifyHnadle(operate){
+            let isF = false, toBeRediscussed;
             if(operate == 'past'){
                 this.tableData.forEach((ele) => {
                     if(ele.canTake == 1){
                         isF = true;
                     }
+                    if(ele.canTake == 3){
+                        toBeRediscussed = 3;
+                    }
                 });
-                if(!isF){
-                    ADS.message('请选择可拍，在通过');
-                    return;
+                // if(!isF){
+                //     return ADS.message('请选择可拍，在通过');
+                // }
+                if(toBeRediscussed == 3){
+                    return ADS.message('有打回谱目，暂时无法审核通过！');
                 }
             }
+            this.$confirm('此操作将永久改变该批次谱目数据, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                this.dataVertify(operate);
+            }).catch(() => {});
+        },
+        async dataVertify(operate){// 补充资料/审核通过
             this.changeLoading();
-            let data = await api.postAxios('data/vertify',{'batchKey':this.batchId,'operate':operate, 'userKey': this.userId});
+            let data = await api.postAxios('data/vertify',{'batchKey':this.batchId,'operate':operate, 'userKey': this.userId, 'orgKey': this.orgId});
             this.changeLoading(false);
             if(data.status == 200){
                 if(operate == 'return'){
@@ -207,27 +291,39 @@ export default {
                         this.$router.push({'path': ('/'+window.localStorage.getItem('pathname')+'/bookaudit')});
                     }, 200);
                 }else{
+                    this.active = 5;
                     this.getDataCheckLog();
                 }
             }else{
                 this.$XModal.message({ message: data.msg, status: 'warning' });
             }
         },
-        annex({row}){
+        async batchInBase(){// 批量审核通过
+            this.changeLoading();
+            let data = await api.postAxios('batchInBase',{'batchKey':this.batchId, 'userKey': this.userId});
+            this.changeLoading(false);
+            if(data.status == 200){
+                this.getDataCheckLog();
+            }else{
+                this.$XModal.message({ message: data.msg, status: 'warning' });
+            }
+        },
+        annex({row}){   
             this.annexRow = row;
             this.gid = row._key;
             this.isShowAnnex = true;
         },
-        changeCanTake:async function(data){
+        changeCanTake:async function(data){// 谱目状态标记
             console.log(data);
             if(data.row.hasIn == '否'){
                 this.changeLoading();
-                let result = await api.patchAxios('data/status',{'dataKey':data.row._key,'canTake':data.status});
+                let result = await api.patchAxios('data/status',{'dataKey':data.row._key,'canTake':data.status, 'userKey': this.userId, 'siteKey': this.stationKey});
                 this.changeLoading(false);
                 if(result.status == 200){
                     this.tableData.map((item)=>{
                         if(item._key == data.row._key){
                             item.canTake = data.status;
+                            item.condition = data.status == 3 ? 'm' : data.status == 2 ? 'r' : data.status == 1 ? 'nf' : 'd';
                         }
                     });
                     this.getVertifyOption();
@@ -243,17 +339,18 @@ export default {
             this.dataStatus = data;
             if(data.property === 'needFill' && !data.row.needFill && data.row.canTake == 3){
                 this.isNeedFill = true;
+                this.getDataCheckLog();
             }else{
-                this.changeDataStatus(data);
+                this.changeDataStatus(data, [], '');
             }
         },
-        changeDataStatus:async function(data, needFillFields = ''){//改变状态
+        changeDataStatus:async function(data, needFillFields = '', remark = ''){//改变状态
             if(data.row.hasIn == '否'){
                 if(data.row.canTake != 3){
                     return false;
                 }
                 this.changeLoading();
-                let result = await api.patchAxios('data/status',{'dataKey':data.row._key,[data.property]:data.row[data.property] ? '' : 1,'needFillFields': needFillFields});
+                let result = await api.patchAxios('data/status',{'dataKey':data.row._key,[data.property]:data.row[data.property] ? '' : 1,'needFillFields': needFillFields, 'remark': remark, 'userKey': this.userId, 'siteKey': this.stationKey});
                 this.changeLoading(false);
                 if(result.status == 200){
                     this.tableData.map((item)=>{
@@ -274,6 +371,43 @@ export default {
             const xTable = this.$refs.xTable;
             xTable.refreshColumn();
         },
+        activeCellMethod({row,column}){//控制编辑
+            if(this.active != 4){
+                return false;
+            }
+            if(['willIn', 'suggIn', 'hasIn', 'annex', 'delete', 'needFill', 'needImage'].indexOf(column.property) > -1){
+                return false;
+            }
+            return true;
+        },
+        editClosedEvent({row}){
+            this.editCatalog(row);
+        },
+        async editCatalog(row){// 编辑谱目
+            let dataObj = {};
+            this.field_main.map((item)=>{
+                dataObj[item.fieldName] = row[item.fieldName];
+            });
+            this.field_branch.map((item)=>{
+                if(item.fieldName == 'condition'){
+                    if(this.role >= 1 && this.role <= 3){
+                        dataObj[item.fieldName] = row[item.fieldName];
+                    }else{
+                        
+                    }
+                }else{
+                    dataObj[item.fieldName] = row[item.fieldName];
+                }
+            });
+            this.changeLoading();
+            let data=await api.patchAxios('data/edit',{'dataKey':row._key,'dataObj':dataObj,'userKey': this.userId, siteKey: this.stationKey});
+            this.changeLoading(false);
+            if(data.status == 200){
+                // this.getDataCheckLog();
+            }else{
+                this.$XModal.message({ message: data.msg, status: 'warning' });
+            }
+        },
         cellClickEvent({row,column}){
             if(column.property == 'toggle'){
                 this.collapsableEvent();
@@ -291,7 +425,9 @@ export default {
             }
         },
         getDataCheckLog:async function(){// 批次列表谱目
-            let data=await api.getAxios('data/checkLog/new?batchKey='+this.batchId+'&userRole='+this.role+'&userKey='+this.userId+'&willIn='+this.caozheng+'&needFill='+(this.examine == 'needFill' ? 1 : '')+'&canTake='+(this.examine == 'needFill' || this.examine == 'needImage' ? '' : this.examine)+'&needImage='+(this.examine == 'needImage' ? 1 : ''));
+            this.isTable = false;
+            let data = await api.getAxios('data/checkLog/new?batchKey='+this.batchId+'&userRole='+this.role+'&userKey='+this.userId+'&willIn='+(this.active == 5 || this.active == 3 ? '' : (this.active == 4 ? this.showAll ? '' : 1 : ''))+'&needFill='+(this.examine == 'needFill' ? 1 : '')+'&canTake='+(this.examine == 'needFill' || this.examine == 'needImage' ? '' : this.examine)+'&needImage='+(this.examine == 'needImage' ? 1 : ''));
+            this.isTable = true;
             if(data.status == 200){
                 let batch = data.batch,state = 0,repeatNum = 0;
                 batch.hasClean ? state = 1 : null;
@@ -304,7 +440,10 @@ export default {
                 this.needReview = batch.needReview;
                 this.createUser = batch.createUser;
                 data.data.map((item)=>{
-                    item.toggle = '>';
+                    // item.fileName = this.fileName;
+                    // item.toggle = '>';
+                    item.address = item.prov+' '+item.city+' '+item.district;
+                    item.Filetimes = ADS.getLocalTime(item.Filetimes, '/', 1) || item.Filetimes;
                     item.addInformation = (item.needFill ? '补充字段 ' : '')+(item.needImage ? '临时影像' : '');
                     item.suggIn = item.suggIn ? '是' : '否';
                     item.hasIn = item.hasIn ? '是' : '否';
@@ -319,7 +458,6 @@ export default {
                 console.log(this.repeatNum);
                 this.tableData = data.data;
                 this.total = data.total;
-                this.$refs.xTable.refreshColumn();
             }else{
                 this.$XModal.message({ message: data.msg, status: 'warning' })
             }
@@ -328,16 +466,23 @@ export default {
             let data=await api.getAxios('field?type=家谱');
             if(data.status == 200){
                 let pumuTheads = [];
-                // this.pumuThead = data.data;
+                let needFillThead = [{'fieldName': 'firstAncestor', 'fieldMeans': '一世祖'}, {'fieldName': 'migrationAncestor', 'fieldMeans': '始迁祖'}, {'fieldName': 'lostVolume', 'fieldMeans': '缺卷'}];
                 data.data.map((item)=>{
-                    if(['hasVolume','hasImage','genealogyName','publish','place','surname','authors','volume','hall','publishAD','address','authorFst','LocalityModern','lostVolume'].indexOf(item.fieldName) > -1){
-                        // console.log(item.fieldMeans);
+                    if(['Dupbookid', 'missVolumeSupplement', 'hasVolume','hasImage','genealogyName','publish','place','surname','authors','volume','hall','publishAD','address','authorFst','LocalityModern','lostVolume'].indexOf(item.fieldName) > -1){
+                        
                     }else{
                         pumuTheads.push(item);
+                    }
+                    if(['firstAncestor', 'migrationAncestor', 'lostVolume'].indexOf(item.fieldName) > -1){
+
+                    }else{
+                        needFillThead.push(item);
                     }
                 });
                 this.pumuTheads = pumuTheads;
                 this.pumuThead = data.data;
+
+                this.needFillThead = needFillThead;
             }else{
                 this.$XModal.message({ message: data.msg, status: 'warning' })
             }
@@ -349,6 +494,8 @@ export default {
             userId: state => state.nav.userId,
             stationKey: state => state.nav.stationKey,
             role: state => state.nav.role,
+            orgId: state => state.nav.orgId,
+            pathname: state => state.nav.pathname,
         })
     },
     watch:{
@@ -359,6 +506,9 @@ export default {
             if(nv >= 3){
                 this.getVertifyOption();
             }
+        },
+        'showAll': function(){
+            this.getDataCheckLog();
         },
     },
 };
@@ -382,6 +532,10 @@ export default {
             line-height: 60px;
             justify-content: space-between;
             align-items: center;
+            li{
+                display: flex;
+                align-items: center;
+            }
         }
         .table-wrap{
             width: 100%;
@@ -415,6 +569,21 @@ export default {
         width: 20px;
         height: 20px;
     }
+    .summary{
+        width: 100%;
+        height: 30px;
+        line-height: 30px;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        text-indent: 10px;
+        display: block;
+        margin: 10px 0;
+        outline: none;
+    }
+}
+.refresh{
+    margin-left: 20px;
+    cursor: pointer;
 }
 </style>
 

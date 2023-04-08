@@ -88,9 +88,9 @@ function getLocalTime(nS, symbol, index) {
         index = index || 5;
         var date = new Date(nS),
             Y, M, D, h, m, s;
-        Y = date.getFullYear() + symbol;
-        M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + symbol;
-        D = date.getDate() + ' ';
+        Y = date.getFullYear();
+        M = symbol+(date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1);
+        D = symbol+(date.getDate() >= 10 ? date.getDate() : ('0'+date.getDate())) + ' ' ;
         h = Appendzero(date.getHours()) + ':';
         m = Appendzero(date.getMinutes()) + ':';
         s = Appendzero(date.getSeconds());
@@ -204,10 +204,16 @@ function message(msg = 'ok', flag = false) {// 提示信息
         clearTimeout(timer);
     },3000);
 }
+
+let APIURL='https://pumudata.qingtime.cn/';
+if(window.location.origin.indexOf('genealogy.1jiapu.com') > -1){
+    APIURL = 'https://genealogydata.1jiapu.com/';
+}
+
 function downliadLink(fileName){
     var a = document.createElement('a');
     a.download = fileName;
-    a.href = 'https://pumudata.qingtime.cn/'+fileName;
+    a.href = APIURL+fileName;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -357,9 +363,25 @@ function getQueryVariable(variable){
     return '';
 }
 
+function getTodayZero(timestamp = ''){
+    if(timestamp){
+        return new Date(new Date(timestamp).toLocaleDateString()).getTime();
+    }else{
+        return new Date(new Date().toLocaleDateString()).getTime();
+    }
+}
+
+function getSurplusDays(timestamp){
+    return (getTodayZero() - getTodayZero(timestamp))/24/60/60/1000;
+}
+
+const dragablefn = {
+
+};
+
 export default {
     clearCacheTime,throttle,debounce,NumberToChinese,ChineseToNumber,Date2Timestamp,
     downliadLink,message,objectValue2String,params,unzip,zip,compile,uncompile,
     GetRandomNum,getLocalTime,timeago,ModalHelper,logout,
-    getQueryVariable, 
+    getQueryVariable, getSurplusDays, dragablefn,
 }

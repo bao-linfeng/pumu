@@ -8,7 +8,7 @@
             </div>
             <div class="lead-excel-button">
                 <el-upload
-                    :action="'https://pukudata.qingtime.cn/upload'"
+                    :action="baseURL+'upload'"
                     :limit="1"
                     :accept="'.xlsx'"
                     :show-file-list="false"
@@ -160,6 +160,7 @@ export default {
             userId: state => state.nav.userId,
             stationKey: state => state.nav.stationKey,
             role: state => state.nav.role,
+            baseURL: state => state.nav.baseURL,
         })
     },
 };

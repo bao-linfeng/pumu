@@ -12,13 +12,16 @@
             <div class="tab_box">
                 <span :class="{active:tabIndex == index}" v-for="(item,index) in tab" :key="'tab'+index" @click="changeTab(index)">{{item}}</span>
             </div>
-            <span class="allRead" v-if="tabIndex === 0 && list && list.length" @click="allRead">全部标记为已读</span>
+            <span class="allRead" v-if="tabIndex === 0 && list && list.length" @click="messageOneKeyRead">批量标记为已读</span>
         </div>
         <table class="mytable">
             <thead>
               <tr>
-                <th class="width60">
+                <th>
                   <span>事件</span>
+                </th>
+                <th>
+                  <span>类型</span>
                 </th>
                 <th>
                   <span>时间</span>
@@ -26,9 +29,16 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(item,index) in list" :key="'tr'+index">
-                <td class="width60" :title="item.content"><span>{{item.content}}</span></td>
-                <td><span>{{item.time | getLocalTime}}</span></td>
+              <tr v-for="(item,index) in list" :key="'tr'+index" @click="handleMsg(item)">
+                <td :title="item.content">
+                  <span>{{item.content}}</span>
+                </td>
+                <td>
+                  <span>{{item.logType}}</span>
+                </td>
+                <td>
+                  <span>{{item.time | getLocalTime}}</span>
+                </td>
               </tr>
             </tbody>
         </table>
@@ -74,6 +84,30 @@ export default {
     this.getMessage();
   },
   methods:{
+    handleMsg(data){
+      if(!data.status){
+        if(data.logType == '申诉回复'){
+          this.$router.push('/'+this.pathname+'/cameraImage?vid='+data.volumeKey);
+        }
+        if(data.logType == '申诉'){
+          this.$router.push('/'+this.pathname+'/cameraImage?vid='+data.volumeKey);
+        }
+        if(data.logType == '提交审阅'){
+          this.$router.push('/'+this.pathname+'/cameraImage?vid='+data.volumeKey);
+        }
+        this.messageRead(data);
+      }
+    },
+    async messageRead(data){// 消息已读
+      if(data.status === 0){// 未读消息
+        const result = await api.patchAxios('message/status', {'messageId': [data._key], 'status': 1});
+        if(result.status == 200){
+            this.getMessage();
+        }else{
+            createMsg(result.msg);
+        }
+      }
+    },
     allRead(){
         let ids = [];
         if(this.list && this.list.length){
@@ -107,6 +141,12 @@ export default {
             this.getMessage();
         }
     },
+    async messageOneKeyRead(){
+        let data=await api.postAxios('v3/review/messageOneKeyRead',{"siteKey": this.stationKey, "userKey": this.userId});
+        if(data.status == 200){
+          this.getMessage();
+        }
+    },
     getGenealogyListForPage(){//分页
         this.page=this.page + 1;
         this.getMessage(false);
@@ -122,6 +162,7 @@ export default {
             userId: state => state.nav.userId,
             stationKey: state => state.nav.stationKey,
             role: state => state.nav.role,
+            pathname: state => state.nav.pathname,
         })
     },
 };

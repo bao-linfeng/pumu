@@ -101,13 +101,15 @@ export default {
         if(this.pathname){
           this.$router.push({path: '/'+this.pathname+'/genealogySearch'});
         }else{
-          window.location.href = 'https://baokulogin.qingtime.cn?origin='+encodeURI(origin)+'&param='+this.pathname+'&router=genealogySearch';
+          window.location.href = 'https://account.qingtime.cn?apphigh=26&app=1&logo=https://cdn.qingtime.cn/pumu.svg&redirect='+encodeURI(origin+'/'+this.pathname+'/genealogySearch');
+          // window.location.href = 'https://baokulogin.qingtime.cn?origin='+encodeURI(origin)+'&param='+this.pathname+'&router=genealogySearch';
         }
       }else{
         let pathname=window.localStorage.getItem('pathname'),search=window.localStorage.getItem('path');
         search ? search = search.replace(pathname+'/','') : search = 'genealogySearch';
         let url = 'https://baokulogin.qingtime.cn';
-        window.location.href = url+'?origin='+encodeURI(origin)+'&param='+this.pathname+'&router='+(search == 'genealogySearch' ? 'genealogySearch' : '');
+        window.location.href = 'https://account.qingtime.cn?apphigh=26&app=1&logo=https://cdn.qingtime.cn/pumu.svg&redirect='+encodeURI(origin+'/'+this.pathname+'/genealogySearch');
+        // window.location.href = url+'?origin='+encodeURI(origin)+'&param='+this.pathname+'&router='+(search == 'genealogySearch' ? 'genealogySearch' : '');
       }
     },
   },

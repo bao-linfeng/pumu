@@ -1,5 +1,10 @@
 // const APIURL='http://192.168.1.108:8092/';
-const APIURL='https://pumudata.qingtime.cn/';
+let APIURL='https://pumudata.qingtime.cn/';
+// APIURL = 'http://genealogydata.1jiapu.com:9041/';
+if(window.location.origin.indexOf('genealogy.1jiapu.com') > -1){
+    APIURL = 'https://genealogydata.1jiapu.com/';
+}
+// APIURL = 'https://genealogydata.1jiapu.com/';
 function getAxios(url,type){
     return new Promise((resolve, reject) => {
         axios.get(type ? url : (APIURL+url))

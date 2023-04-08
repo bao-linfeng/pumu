@@ -26,6 +26,7 @@
                     <vxe-table-column type="checkbox" width="60"></vxe-table-column>
                     <vxe-table-column field="libCode" title="简称" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
                     <vxe-table-column field="libName" title="来源" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                    <vxe-table-column field="orgKey" title="机构" :edit-render="{name: '$select', options: orgList}"></vxe-table-column>
                     <vxe-table-column field="createUser" title="创建人"></vxe-table-column>
                     <vxe-table-column field="createTime" title="创建时间"></vxe-table-column>
                     <vxe-table-column v-if="role >= 1 && role <= 2" title="操作" width="80" :cell-render="{name:'AdaiActionButton',attr:{data:[{'label':'删除','value':'remove'}]},events:{'remove':removeSigleEvent}}"></vxe-table-column>
@@ -50,6 +51,7 @@ export default {
         return {
             tableData: [],
             h:300,
+            orgList: [],
         };
     },
     created:function(){
@@ -57,8 +59,21 @@ export default {
     },
     mounted:function(){
         this.getLib();
+        this.getOrgList();
     },
     methods:{
+        getOrgList:async function(){
+            let data = await api.getAxios('org?siteKey='+this.stationKey+'&name=');
+            if(data.status == 200){
+                let orgList = [{'label':'全部','value':''}];
+                data.data.map((item)=>{
+                    orgList.push({'label': item.name,'value': item._key});
+                });
+                this.orgList = orgList;
+            }else{
+                this.$XModal.message({ message: data.msg, status: 'warning' })
+            }
+        },
         activeCellMethod({row,column}){//控制编辑
             if(this.role < 1 || this.role > 2){
                 return false;
@@ -111,7 +126,7 @@ export default {
             }
         },
         async addLib(row){
-            let data = await api.postAxios('lib',{libKey:row._key,libCode:row.libCode, libName:row.libName,userKey:this.userId,siteKey:this.stationKey});
+            let data = await api.postAxios('lib',{'orgKey': row.orgKey,libKey:row._key,libCode:row.libCode, libName:row.libName,userKey:this.userId,siteKey:this.stationKey});
             if(data.status == 200){
                 this.getLib();
             }else{

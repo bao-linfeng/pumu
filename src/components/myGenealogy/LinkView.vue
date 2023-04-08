@@ -1,7 +1,7 @@
 <template>
     <el-upload
         class="upload-demo"
-        :action="'https://pukudata.qingtime.cn/upload'"
+        :action="baseURL+'upload'"
         :limit="1"
         :accept="'.xlsx'"
         :show-file-list="false"
@@ -31,7 +31,7 @@ export default {
             this.linkView(response.filePath);
         },
         linkView:async function(filePath){//文件关联家谱
-            let data=await api.postAxios('bindImageBatch',{'filePath':filePath, 'siteKey': this.stationKey, 'userKey':this.userId,});
+            let data=await api.postAxios('bindImageBatch',{'filePath':filePath, 'siteKey': this.stationKey, 'userKey':this.userId});
             if(data.status == 200){
                 // this.$socket.emit("login",{'userKey':this.userId,'siteKey':this.stationKey, 'role': this.role});
                 // if(data.errorArr && data.errorArr.length){
@@ -53,6 +53,7 @@ export default {
             TOKEN: state => state.nav.TOKEN,
             userId: state => state.nav.userId,
             stationKey: state => state.nav.stationKey,
+            baseURL: state => state.nav.baseURL,
         })
     },
 };

@@ -5,65 +5,94 @@
   </div>
 </template>
 <script>
+import api from "./api.js";
+import ADS from "./ADS.js";
 import { mapState, mapActions, mapGetters } from "vuex";
 export default {
   name: "app",
   sockets: {
-      connect:function() {
+      connect:function() {
         console.log(this.$socket.id);
         this.$store.dispatch("changeSocket",{'socketId':this.$socket.id});
         this.$socket.emit("login",{'userKey':this.userId,'siteKey':this.stationKey, 'role': this.role});
-      },
+      },
       reconnect: function(data){
         console.log('重新连接',data);
         this.$socket.emit("login",{'userKey':this.userId,'siteKey':this.stationKey, 'role': this.role});
       },
       disconnect: function(data){
         console.log('断开连接',data);
-        console.log('重新连接',this.$socket.connected);
         this.$socket.emit("login",{'userKey':this.userId,'siteKey':this.stationKey, 'role': this.role});
       },
-      message:function(data) {                                 
-        console.log(data);
-      },
-      phraseINPROCESS:function(data){                                
-        console.log('进度',data);
+      phraseINPROCESS:function(data){
         this.$store.dispatch("changeSocket",{'percentage':data});
-       },
+      },
       phraseOk(data){
         console.log('完成',data);
         this.$store.dispatch("changeSocket",{'phraseOk':true,'percentage':1,'allPage':1000});
       },
-      unRead:function(data) {                                 
-        console.log('进度',data);
-        this.$notify({
-          title: '提示',
-          message: data,
-          duration: 0,
-          type: 'success'
-        });
-      },
-      sumbmitNum:function(data){
+      unRead:function(data){// 谱目查重 => 谱目打回
+        // this.$notify({
+        //   title: '提示',
+        //   message: data,
+        //   duration: 3000,
+        //   type: 'success'
+        // });
+      },
+      sumbmitNum:function(data){// 谱目查重 => 提交审核
         console.log('提交审核',data);
         this.$store.dispatch('setPropertyValue',{'property': 'sumbmitNum', 'value': data});
       },
-      noBindNum:function(data){
+      noBindNum:function(data){// 谱目查重 => 审核通过 
         console.log('审核通过',data);
         this.$store.dispatch('setPropertyValue',{'property': 'noBindNum', 'value': data});
       },
-      returnNum:function(data){
+      returnNum:function(data){// 谱目查重 => 打回
         console.log('打回',data);
         this.$store.dispatch('setPropertyValue',{'property': 'returnNum', 'value': data});
       },
-      process: function(data){
-        // console.log(data);
+      process: function(data){// 谱目查重 => 上传谱目 => 进度
         this.Ptotal ? this.$store.dispatch('setPropertyValue',{'property': 'Ptotal', 'value': data.total}) : null;
         this.$store.dispatch('setPropertyValue',{'property': 'Ppage', 'value': data.page});
       },
-      importProcess: function(data){
-        // console.log(data);
+      importProcess: function(data){// 谱目查重 => 上传谱目 => 完成
         this.Utotal ? this.$store.dispatch('setPropertyValue',{'property': 'Utotal', 'value': data.total}) : null;
         this.$store.dispatch('setPropertyValue',{'property': 'Upage', 'value': data.page});
+      },
+      submitReview: function(data){//拍机人员->机构审核
+        // this.$notify({
+        //   title: '提示',
+        //   message: data.log,
+        //   onClick: () => {
+        //     this.$router.push('/'+this.pathname+'/cameraImage?vid='+data.volumeKey);
+        //     // this.$router.push('/'+this.pathname+'/cameraDetail?key='+data.catalogKey);
+        //   },
+        //   duration: 3000,
+        //   type: 'success'
+        // });
+        this.getWaitReviewNumber();
+      },
+      complain: function(data){// 申诉 => 微站审核员接收
+        // this.$notify({
+        //   title: '提示',
+        //   message: data.log,
+        //   onClick: () => {
+        //     this.$router.push('/'+this.pathname+'/cameraImage?vid='+data.volumeKey);
+        //   },
+        //   duration: 3000,
+        //   type: 'success'
+        // });
+      },
+      complainReply: function(data){// 申诉回复 => 机构管理员接收
+        // this.$notify({
+        //   title: '提示',
+        //   message: data.log,
+        //   onClick: () => {
+        //     this.$router.push('/'+this.pathname+'/cameraImage?vid='+data.volumeKey);
+        //   },
+        //   duration: 3000,
+        //   type: 'success'
+        // });
       },
       importOK: function(data){
         this.$store.dispatch('setPropertyValue',{'property': 'Utotal', 'value': 1});
@@ -71,9 +100,17 @@ export default {
         this.$notify({
           title: '提示',
           message: '批量上传成功,批次号为：'+data.batch,
-          duration: 0,
+          duration: 3000,
           type: 'success'
         });
+      },
+      checkUpdateVolume: function(data){// 微站审核员-编辑卷册信息
+        // this.$notify({
+        //   title: '提示',
+        //   message: data.log,
+        //   duration: 3000,
+        //   type: 'success'
+        // });
       },
       cleanOK: function(data){
         this.$store.dispatch('setPropertyValue',{'property': 'cleanOk', 'value': true});
@@ -93,7 +130,7 @@ export default {
             this.$notify({
               title: '提示',
               message: msg,
-              duration: 0,
+              duration: 3000,
               type: 'success'
             });
         }else{
@@ -101,7 +138,7 @@ export default {
         }
         
       }
-  },
+  },
   components: {
     
   },
@@ -115,6 +152,14 @@ export default {
     
   },
   methods:{
+    async getWaitReviewNumber(){//获取等待审核卷数（机构或微站）
+        let result = await api.getAxios('v3/review/waitReviewNumber?siteKey='+this.stationKey+'&userKey='+this.userId);
+        if(result.status == 200){
+            this.$store.dispatch('setPropertyValue',{'property': 'waitReviewNumber', 'value': result.data});
+        }else{
+            this.$XModal.message({ message: result.msg, status: 'warning' })
+        }
+    },
     handleOnResize(e){
       if(!this.timer){
         this.timer=true;
@@ -137,6 +182,7 @@ export default {
       Utotal: state => state.nav.Ptotal,
       bindTotal: state => state.nav.bindTotal,
       bindPage: state => state.nav.bindPage,
+      pathname: state => state.nav.pathname,
     })
   },
 };
@@ -309,6 +355,7 @@ table{
   background-color: #ddd;
 }
 .AdaiActionButton{
+  position: relative;
   padding: 2px 10px;
   border-radius: 5px;
   cursor: pointer;
@@ -317,6 +364,7 @@ table{
   background-color: #358acd;
   color: #fff;
   margin-right: 5px;
+  z-index: 100;
 }
 .disabled{
   background-color: #ddd;
@@ -391,6 +439,23 @@ table{
 	background-color: transparent;
 }
 
+/*  */
+.style3::-webkit-scrollbar-track{
+	border-radius: 2px;
+	background-color: transparent;
+}
+.style3::-webkit-scrollbar{
+	height: 16px;
+	background-color: transparent;
+}
+.style3::-webkit-scrollbar-thumb{
+	border-radius: 2px;
+	background: #358acd;
+}
+.style3::-webkit-scrollbar-corner{
+	background-color: transparent;
+}
+
 /* 表格滑条 */
 /*滚动条整体部分*/
 .table-scrollbar ::-webkit-scrollbar {
@@ -435,5 +500,35 @@ table{
     position: absolute;
     top: 20px;
     right: 20px;
+}
+.row-red{
+    color: #f00 !important;
+}
+.row-blue{
+    color: #358BCD;
+}
+.row-gray{
+  color: #ddd;
+}
+.condition{
+    position: absolute;
+    top: 40px;
+    left: 20px;
+    font-size: 8px;
+}
+
+.changeActive .el-input__inner{
+    color: #358acd;
+}
+.changeActive .el-textarea__inner{
+  color: #358acd;
+}
+.el-select-dropdown__item{
+  color: #000;
+  /* font-weight: bold; */
+}
+.el-select-dropdown__item.active{
+  color: #999;
+  /* font-weight: normal; */
 }
 </style>

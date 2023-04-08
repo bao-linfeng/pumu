@@ -8,7 +8,7 @@
             <ul class="edit-genealogy-ul style1">
                 <li v-for="(item,index) in fields" :key="'input'+index">
                     <label>{{item.fieldMeans}}</label>
-                    <input type="text" v-model="fieldO[item.fieldName]" :disabled="item.fieldName == 'hasImage' || isShow ? true : false" :placeholder="'请输入'+item.fieldMeans" />
+                    <input type="text" v-model="fieldO[item.fieldName]" :disabled="item.disabled" :placeholder="'请输入'+item.fieldMeans" />
                 </li>
             </ul>
             <div class="edit-genealogy-btn" v-if="!isShow">
@@ -20,6 +20,7 @@
 
 <script>
 import api from "../../api.js";
+import ADS from '../../ADS.js';
 import { mapState, mapActions, mapGetters } from "vuex";
 export default {
     name: "editGenealogyModal",
@@ -45,43 +46,83 @@ export default {
         };
     },
     mounted:function(){
-        this.getField();
+        this.initField();
     },
     methods:{
+        initField(){
+            let fieldO = {}, 
+            fields = [
+                {'fieldMeans': '谱籍_依谱书所载', 'fieldName': 'LocalityModern'},
+                {'fieldMeans': '家谱姓氏', 'fieldName': 'surname'},
+                {'fieldMeans': '家谱题名', 'fieldName': 'genealogyName'},
+                {'fieldMeans': '出版年', 'fieldName': 'publish'},
+                {'fieldMeans': '卷数', 'fieldName': 'volume'},
+                {'fieldMeans': '堂号', 'fieldName': 'hall'},
+                {'fieldMeans': '作者姓名', 'fieldName': 'authors'},
+                {'fieldMeans': '实拍册数', 'fieldName': 'hasVolume'},
+                {'fieldMeans': '缺卷', 'fieldName': 'lostVolume'},
+                {'fieldMeans': '谱籍_现代地名', 'fieldName': 'place'},
+                {'fieldMeans': '谱书编号', 'fieldName': 'bookId'},
+                {'fieldMeans': 'DGS 号码', 'fieldName': 'DGS'},
+                {'fieldMeans': '微卷编号', 'fieldName': 'film'},
+                {'fieldMeans': '家谱群组ID', 'fieldName': 'genealogyGroupID'},
+                {'fieldMeans': '项目ID', 'fieldName': 'Projectid'},
+                {'fieldMeans': '拍摄日期', 'fieldName': 'capturedate', 'disabled': true},
+                {'fieldMeans': 'Media号码', 'fieldName': 'Media'},
+                {'fieldMeans': '版本类型', 'fieldName': 'version'},
+                {'fieldMeans': '作者职务', 'fieldName': 'authorJob'},
+                {'fieldMeans': '一世祖', 'fieldName': 'firstAncestor'},
+                {'fieldMeans': '始迁祖', 'fieldName': 'migrationAncestor'},
+                {'fieldMeans': '备注', 'fieldName': 'memo'},
+                {'fieldMeans': '重复项目ID', 'fieldName': 'DupProjectID'},
+                {'fieldMeans': '重复谱书编号', 'fieldName': 'Dupbookid'},
+                {'fieldMeans': '档案时间', 'fieldName': 'Filetimes', 'disabled': true},
+                {'fieldMeans': '档名', 'fieldName': 'Filenames', 'disabled': true},
+                {'fieldMeans': '代号', 'fieldName': 'code', 'disabled': true},
+                {'fieldMeans': '序号', 'fieldName': 'VolumeFst'},
+                {'fieldMeans': '状态', 'fieldName': 'condition', 'disabled': this.role >= 1 && this.role <= 3 ? false : true},
+                {'fieldMeans': '说明', 'fieldName': 'explain'},
+                {'fieldMeans': '认领单位', 'fieldName': 'claim', 'disabled': true},
+                {'fieldMeans': '认领日期', 'fieldName': 'claimDate', 'disabled': true},
+                {'fieldMeans': '拍摄期限', 'fieldName': 'shootingPeriod', 'disabled': true},
+                {'fieldMeans': '前次认领单位1', 'fieldName': 'pervious1', 'disabled': true},
+                {'fieldMeans': '前次认领日期1', 'fieldName': 'perviousDate1', 'disabled': true},
+                {'fieldMeans': '前次认领单位2', 'fieldName': 'pervious2', 'disabled': true},
+                {'fieldMeans': '前次认领日期2', 'fieldName': 'perviousDate2', 'disabled': true},
+                {'fieldMeans': '前次认领单位3', 'fieldName': 'pervious3', 'disabled': true},
+                {'fieldMeans': '前次认领日期3', 'fieldName': 'perviousDate3', 'disabled': true}
+            ];
+
+            fields.forEach((ele) => {
+                if(['claimDate', 'shootingPeriod'].indexOf(ele.fieldName) > -1){
+                    fieldO[ele.fieldName] = this.pumu[ele.fieldName] ? ADS.getLocalTime(this.pumu[ele.fieldName]) : '';
+                }else{
+                    fieldO[ele.fieldName] = this.pumu[ele.fieldName];
+                }
+            });
+            this.fieldO = fieldO;
+            this.fields = fields;
+        },
         close(flag){
             this.$emit('close-edit',flag);
         },
-        addPuMu:async function(){// 编辑谱目
+        async addPuMu(){// 编辑谱目
             this.loading = true;
             let fieldO = {};
-            for(let key in this.fieldO){
-                if(key == 'hasImage'){
-                    fieldO[key] = this.fieldO[key] == '有' ? 1 : 0;
+            this.fields.forEach((ele) => {
+                if(ele.disabled){
+
                 }else{
-                    fieldO[key] = this.fieldO[key];
+                    fieldO[ele.fieldName] = this.fieldO[ele.fieldName] || '';
                 }
-            }
-            // console.log(fieldO);
-            // return;
-            let data = await api.patchAxios('data/edit',{'dataKey': this.gid,'dataObj': fieldO,'userKey': this.userId});
+            });
+        
+            let data = await api.patchAxios('data/edit',{'dataKey': this.gid, 'dataObj': fieldO, 'userKey': this.userId, siteKey: this.stationKey});
             this.loading = false;
             if(data.status == 200){
                 this.close(true);
             }else{
                 this.$XModal.message({ message: data.msg, status: 'warning' });
-            }
-        },
-        getField:async function(){
-            let data=await api.getAxios('field?type=家谱');
-            if(data.status == 200){
-                let fieldO = {};
-                data.data.map((item)=>{
-                    fieldO[item.fieldName] = this.pumu[item.fieldName];
-                });
-                this.fieldO = fieldO;
-                this.fields = data.data;
-            }else{
-                this.$XModal.message({ message: data.msg, status: 'warning' })
             }
         },
     },
@@ -90,6 +131,8 @@ export default {
             stationName: state => state.nav.stationName,
             stationlogo: state => state.nav.stationlogo,
             userId: state => state.nav.userId,
+            role: state => state.nav.role,
+            stationKey: state => state.nav.stationKey,
         })
     },
 };
@@ -126,7 +169,7 @@ export default {
         padding: 20px;
         background-color: #fff;
         border-radius: 5px;
-        max-height: calc(100% - 40px);
+        height: calc(100% - 80px);
         display: inline-block;
         &.active{
             position: absolute;
@@ -148,17 +191,18 @@ export default {
     }
 }
 .edit-genealogy-ul{
-    max-height: 400px;
+    position: relative;
+    height: calc(100% - 80px);
     overflow-y: auto;
     overflow-x: hidden;
-    width: 420px;
+    width: 900px;
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
     padding-right: 5px;
     padding-bottom: 20px;
     li{
-        width: 100%;
+        // width: 100%;
         display: flex;
         align-items: center;
         margin-top: 15px;
@@ -166,9 +210,11 @@ export default {
             height: 40px;
             line-height: 40px;
             width: 120px;
+            text-align: right;
+            padding-right: 20px;
         }
         input{
-            width: calc(100% - 120px);
+            width: 300px;
             height: 40px;
             line-height: 40px;
             line-height: 1;

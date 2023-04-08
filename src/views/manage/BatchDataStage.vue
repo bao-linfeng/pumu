@@ -1,141 +1,11 @@
 <template>  
     <div class="wrap">
         <div class="content">
-            <BatchNavModal v-on:set-unrepeat="setUnRepeatInBatch" :selectRecords="selectRecords" v-on:change-value="changeValue" v-on:data-vertify="dataVertify" v-on:get-jiapu="getDataCheckLog" v-on:change-is-manage="changeManange" :batchId="batchId" :l="tableData.length" :repeatNum="repeatNum" :active="active" :caozhengs="caozhengs" :examines="examines" :isPiL="active == 3 && !needReview && userId == createUser" />
+            <BatchNavModal v-on:change-Tobediscussed="changeTobediscussed" v-on:set-unrepeat="setUnRepeatInBatch" :selectRecords="selectRecords" v-on:change-value="changeValue" v-on:data-vertify="dataVertify" v-on:get-jiapu="getDataCheckLog" v-on:change-is-manage="changeManange" :batchId="batchId" :l="tableData.length" :repeatNum="repeatNum" :active="active" :caozhengs="caozhengs" :examines="examines" :needReview="needReview" :isPiL="active == 3 && !needReview && userId == createUser" />
+            <p class="condition">谱状态说明:f,审核通过且已拍摄;nf,审核通过未拍摄;r,无效谱;d,谱书重复;m,待议谱。</p>
             <AdaiStepModal :list="stage" :step="active" v-on:next-step="next" />
-            <div class="table-wrap" v-if="active === 0">
-                <vxe-table
-                    border
-                    class="adai-table"
-                    resizable
-                    :keep-source="true"
-                    :row-key="true"
-                    :auto-resize="true"
-                    show-overflow
-                    highlight-current-row
-                    ref="xTable0"
-                    :height="h*0.6"
-                    :align="'center'"
-                    :data="tableData"
-                    :keyboard-config="{isArrow: true}"
-                    :edit-config="{trigger: 'click', mode: 'row',showStatus: true,activeMethod:activeCellMethod}"
-                    @edit-closed="editClosedEvent"
-                    :row-class-name="rowClassName"
-                    @cell-click="cellClickEvent">
-                    <!-- <vxe-table-colgroup title="家谱信息" fixed="left" width="1280"> -->
-                        <vxe-table-column field="_key" width="100" title="统一编码"></vxe-table-column>
-                        <vxe-table-column width="100" field="repeatCount" title="重复可疑"></vxe-table-column>
-                        <vxe-table-column width="100" field="genealogyName" title="谱名" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="publish" title="出版年" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="surname" title="姓氏" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="authors" title="作者" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="volume" title="卷数" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="hall" title="堂号" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <!-- </vxe-table-colgroup> -->
-                    
-                    <vxe-table-column v-for="(item,index) in pumuTheads" width="100" :key="'column'+index" :field="item.fieldName" :title="item.fieldMeans" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <vxe-table-column width="100" field="bIdExist" title="编码重复"></vxe-table-column>
-                    <vxe-table-column width="100" field="seemISGN" title="疑似ISGN"></vxe-table-column>
-                    <vxe-table-column width="100" field="repeatRisk" title="规则认定综合风险"></vxe-table-column>
-                    <vxe-table-column width="100" field="lackFieldsNum" title="残缺字段数"></vxe-table-column>
-                    <vxe-table-column width="100" field="lackFields" title="残缺字段"></vxe-table-column>
-                    <vxe-table-column width="100" field="repeatInBatchArr" title="同批次重复记录"></vxe-table-column>
-                    <vxe-table-column width="100" field="repeatInISGNArr" title="ISGN重复记录"></vxe-table-column>
-                    <vxe-table-column width="100" field="repeatInISGNCount" title="SGN重复数"></vxe-table-column>
-                </vxe-table>
-            </div>
-            <div class="table-wrap" v-show="active === 1">
-                <vxe-table
-                    border
-                    class="adai-table"
-                    resizable
-                    :keep-source="true"
-                    :row-key="true"
-                    :auto-resize="true"
-                    show-overflow
-                    highlight-current-row
-                    ref="xTable1"
-                    :height="h*0.6"
-                    :align="'center'"
-                    :data="tableData"
-                    :keyboard-config="{isArrow: true}"
-                    :edit-config="{trigger: 'click', mode: 'row',showStatus: true,activeMethod:activeCellMethod}"
-                    @edit-closed="editClosedEvent"
-                    :row-class-name="rowClassName"
-                    @cell-click="cellClickEvent">
-                    <!-- <vxe-table-colgroup title="家谱信息" fixed="left" width="1280"> -->
-                        <vxe-table-column width="100" field="_key"  title="统一编码"></vxe-table-column>
-                        <vxe-table-column width="100" field="repeatCount" title="重复可疑"></vxe-table-column>
-                        <vxe-table-column width="100" field="genealogyName" title="谱名" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="publish" title="出版年" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="publishAD" title="公元年"></vxe-table-column>
-                        <vxe-table-column width="160" field="place" title="谱籍地" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="120" field="address" title="现代谱籍地"></vxe-table-column>
-                        <vxe-table-column width="100" field="surname" title="姓氏" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="authors" title="作者" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="authorFst" title="第一作者"></vxe-table-column>
-                        <vxe-table-column width="100" field="volume" title="卷数" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="hall" title="堂号" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <!-- </vxe-table-colgroup> -->
-                    
-                    <vxe-table-column v-for="(item,index) in pumuTheads" width="100" :key="'column'+index" :field="item.fieldName" :title="item.fieldMeans" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <vxe-table-column width="100" field="bIdExist" title="编码重复"></vxe-table-column>
-                    <vxe-table-column width="100" field="seemISGN" title="疑似ISGN"></vxe-table-column>
-                    <vxe-table-column width="100" field="repeatRisk" title="规则认定综合风险"></vxe-table-column>
-                    <vxe-table-column width="100" field="lackFieldsNum" title="残缺字段数"></vxe-table-column>
-                    <vxe-table-column width="100" field="lackFields" title="残缺字段"></vxe-table-column>
-                    <vxe-table-column width="100" field="repeatInBatchArr" title="同批次重复记录"></vxe-table-column>
-                    <vxe-table-column width="100" field="repeatInISGNArr" title="ISGN重复记录"></vxe-table-column>
-                    <vxe-table-column width="100" field="repeatInISGNCount" title="SGN重复数"></vxe-table-column>
-                </vxe-table>
-            </div>
-            <div class="table-wrap" v-if="active === 2">
-                <vxe-table
-                    border
-                    class="adai-table"
-                    resizable
-                    :keep-source="true"
-                    :row-key="true"
-                    :auto-resize="true"
-                    show-overflow
-                    highlight-current-row
-                    ref="xTable2"
-                    :height="h*0.6"
-                    :align="'center'"
-                    :data="tableData"
-                    :keyboard-config="{isArrow: true}"
-                    :edit-config="{trigger: 'click', mode: 'row',showStatus: true,activeMethod:activeCellMethod}"
-                    @checkbox-all="selectAllEvent"
-                    @checkbox-change="selectChangeEvent"
-                    @edit-closed="editClosedEvent"
-                    :row-class-name="rowClassName"
-                    @cell-click="cellClickEvent">
-                    <vxe-table-column type="checkbox" width="60"></vxe-table-column>
-                    <!-- <vxe-table-colgroup title="家谱信息" fixed="left" width="1280"> -->
-                        <vxe-table-column field="_key" width="100" title="统一编码"></vxe-table-column>
-                        <vxe-table-column width="100" field="repeatCount" title="重复可疑"></vxe-table-column>
-                        <vxe-table-column width="100" field="genealogyName" title="谱名" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="publish" title="出版年" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="160" field="place" title="谱籍地" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="surname" title="姓氏" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="authors" title="作者" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="volume" title="卷数" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="hall" title="堂号" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <!-- </vxe-table-colgroup> -->
-                    
-                    <vxe-table-column v-for="(item,index) in pumuTheads" width="100" :key="'column'+index" :field="item.fieldName" :title="item.fieldMeans" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <vxe-table-column width="100" field="bIdExist" title="编码重复"></vxe-table-column>
-                    <vxe-table-column width="100" field="seemISGN" title="疑似ISGN"></vxe-table-column>
-                    <vxe-table-column width="100" field="repeatRisk" title="规则认定综合风险"></vxe-table-column>
-                    <vxe-table-column width="100" field="lackFieldsNum" title="残缺字段数"></vxe-table-column>
-                    <vxe-table-column width="100" field="lackFields" title="残缺字段"></vxe-table-column>
-                    <vxe-table-column width="100" field="repeatInBatchArr" title="同批次重复记录"></vxe-table-column>
-                    <vxe-table-column width="100" field="repeatInISGNArr" title="ISGN重复记录"></vxe-table-column>
-                    <vxe-table-column width="100" field="repeatInISGNCount" title="SGN重复数"></vxe-table-column>
-                    <!-- <vxe-table-column width="100" field="delete" title="删除" :cell-render="{name:'AdaiActionButton',attr:{data:[{'label':'删除','value':'delete'}]},events:{'delete':deleteCatalog}}"></vxe-table-column> -->
-                </vxe-table>
-            </div>
-            <div class="table-wrap" v-if="active === 3">
+            
+            <div class="table-wrap" v-if="isShowTable">
                 <vxe-table
                     border
                     class="adai-table"
@@ -151,134 +21,33 @@
                     :data="tableData"
                     :keyboard-config="{isArrow: true}"
                     :edit-config="{trigger: 'click', mode: 'row',showStatus: true,activeMethod:activeCellMethod}"
-                    @edit-closed="editClosedEvent"
-                    :row-class-name="rowClassName"
-                    @cell-click="cellClickEvent">
-                    <vxe-table-column type="checkbox" width="60"></vxe-table-column>
-                    <!-- <vxe-table-colgroup title="家谱信息" fixed="left" width="1280"> -->
-                        <vxe-table-column field="_key" width="100" title="统一编码"></vxe-table-column>
-                        <vxe-table-column width="100" field="repeatInISGNCount" title="重复可疑"></vxe-table-column>
-                        <vxe-table-column width="100" field="genealogyName" title="谱名" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="publish" title="出版年" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="160" field="place" title="谱籍地" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="160" field="address" title="省市区" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="surname" title="姓氏" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="authors" title="作者" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="volume" title="卷数" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="hall" title="堂号" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <!-- </vxe-table-colgroup> -->
-                    <vxe-table-column field="addInformation" title="不可拍备注" width="140"></vxe-table-column>
-                    <vxe-table-column field="hasIn" title="可拍摄" width="100"></vxe-table-column>
-                    <vxe-table-column field="annex" title="附件上传" width="75" :cell-render="{name:'AdaiActionButton',attr:{data:[{'label':'附件','value':'annex'}]},events:{'annex':annex}}"></vxe-table-column>
-                    <vxe-table-column width="100" field="suggIn" title="系统建议入库"></vxe-table-column>
-                    <!-- <vxe-table-column field="willIns" title="待提交" width="80"></vxe-table-column> -->
-                    <vxe-table-column title="待提交" width="100" :cell-render="{name:'RuKuModal',attr:{value:'是'},events:{'click':dataWillInEvent}}"></vxe-table-column>
-                    <vxe-table-column width="100" field="lostVolume" title="缺卷" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <vxe-table-column width="100" field="hasVolume" title="实拍册数" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <vxe-table-column width="100" field="LocalityModern" title="谱籍现代地名" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <vxe-table-column field="toggle" title="折叠信息" width="80"></vxe-table-column>
-                    <vxe-table-column v-for="(item,index) in pumuTheads" :visible="collapsable" width="100" :key="'column'+index" :field="item.fieldName" :title="item.fieldMeans" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <vxe-table-column width="100" field="bIdExist" title="编码重复"></vxe-table-column>
-                    <vxe-table-column width="100" field="seemISGN" title="疑似ISGN"></vxe-table-column>
-                    <vxe-table-column width="100" field="repeatRisk" title="规则认定综合风险"></vxe-table-column>
-                    <vxe-table-column width="100" field="lackFieldsNum" title="残缺字段数"></vxe-table-column>
-                    <vxe-table-column width="100" field="lackFields" title="残缺字段"></vxe-table-column>
-                    <vxe-table-column width="100" field="repeatInBatchArr" title="同批次重复记录"></vxe-table-column>
-                    <vxe-table-column width="100" field="repeatInISGNArr" title="ISGN重复记录"></vxe-table-column>
-                    <vxe-table-column width="100" field="repeatInISGNCount" title="SGN重复数"></vxe-table-column>
-                </vxe-table>
-            </div>
-            <div class="table-wrap" v-if="active === 4">
-                <vxe-table
-                    border
-                    class="adai-table"
-                    resizable
-                    :keep-source="true"
-                    :row-key="true"
-                    :auto-resize="true"
-                    show-overflow
-                    highlight-current-row
-                    ref="xTable4"
-                    :height="h*0.6"
-                    :align="'center'"
-                    :data="tableData"
-                    :keyboard-config="{isArrow: true}"
-                    :edit-config="{trigger: 'click', mode: 'row',showStatus: true,activeMethod:activeCellMethod}"
-                    @edit-closed="editClosedEvent"
-                    :row-class-name="rowClassName"
-                    @cell-click="cellClickEvent">
-                    <vxe-table-column type="checkbox" width="60"></vxe-table-column>
-                    <!-- <vxe-table-colgroup title="家谱信息" fixed="left" width="1280"> -->
-                        <vxe-table-column field="_key" width="100" title="统一编码"></vxe-table-column>
-                        <vxe-table-column width="100" field="genealogyName" title="谱名" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="publish" title="出版年" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="160" field="place" title="谱籍地" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="surname" title="姓氏" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="authors" title="作者" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="volume" title="卷数" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="hall" title="堂号" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <!-- </vxe-table-colgroup> -->
-                    <vxe-table-column width="100" field="lostVolume" title="缺卷" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <vxe-table-column width="100" field="hasVolume" title="实拍册数" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <vxe-table-column width="100" field="LocalityModern" title="谱籍现代地名" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <vxe-table-column v-for="(item,index) in pumuTheads" width="100" :key="'column'+index" :field="item.fieldName" :title="item.fieldMeans" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <vxe-table-column field="hasIn" title="可拍摄" width="100"></vxe-table-column>
-                    <vxe-table-column field="annex" title="附件上传" width="75" :cell-render="{name:'AdaiActionButton',attr:{data:[{'label':'附件','value':'annex'}]},events:{'annex':annex}}"></vxe-table-column>
-                    <vxe-table-column field="willIns" title="待提交" width="80"></vxe-table-column>
-                </vxe-table>
-            </div>
-            
-            <div class="table-wrap" v-if="active === 5">
-                <vxe-table
-                    border
-                    class="adai-table"
-                    resizable
-                    :keep-source="true"
-                    :auto-resize="true"
-                    show-overflow
-                    highlight-current-row
-                    ref="xTable5"
-                    :height="h*0.6"
-                    :align="'center'"
-                    :data="tableData"
-                    :keyboard-config="{isArrow: true}"
-                    :edit-config="{trigger: 'click', mode: 'row',showStatus: true,activeMethod:activeCellMethod}"
+                    @checkbox-all="selectAllEvent"
+                    @checkbox-change="selectChangeEvent"
                     @edit-closed="editClosedEvent"
                     :row-class-name="rowClassName"
                     @cell-click="cellClickEvent">
                     <vxe-table-colgroup title="家谱信息" fixed="left">
-                        <vxe-table-column v-if="active == 2" width="100" field="delete" title="删除" :cell-render="{name:'AdaiActionButton',attr:{data:[{'label':'删除','value':'delete'}]},events:{'delete':deleteCatalog}}"></vxe-table-column>
-                        <vxe-table-column field="_key" width="100" title="统一编码"></vxe-table-column>
-                        <vxe-table-column v-if="active <= 3" width="100" field="repeatCount" title="重复可疑"></vxe-table-column>
-                        <vxe-table-column width="100" field="genealogyName" title="谱名" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="publish" title="出版年" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column v-if="active == 1" width="100" field="publishAD" title="公元年" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="160" field="place" title="谱籍地" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column v-if="active == 1" width="100" field="address" title="现代谱籍地" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="surname" title="姓氏" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="authors" title="作者" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column v-if="active == 1" width="100" field="authorFst" title="第一作者" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="volume" title="卷数" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column width="100" field="hall" title="堂号" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                        <vxe-table-column type="checkbox" width="60"></vxe-table-column>
+                        <vxe-table-column v-for="(item,index) in field_main" :key="'main'+index" width="100" :field="item.fieldName" :title="item.fieldMeans" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                        <vxe-table-column v-if="active == 3" field="addInformation" title="审核意见" width="140"></vxe-table-column>
                     </vxe-table-colgroup>
-                    <vxe-table-column width="100" field="hasVolume" title="实拍册数" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <vxe-table-column v-for="(item,index) in pumuTheads" width="100" :key="'column'+index" :field="item.fieldName" :title="item.fieldMeans" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <vxe-table-column v-if="active == 3 && !needReview" width="100" field="suggIn" title="系统建议入库"></vxe-table-column>
-                    <vxe-table-column v-if="active <= 3 && !needReview" width="100" field="bIdExist" title="编码重复"></vxe-table-column>
-                    <vxe-table-column v-if="active <= 3 && !needReview" width="100" field="seemISGN" title="疑似ISGN"></vxe-table-column>
-                    <vxe-table-column v-if="active <= 3 && !needReview" width="100" field="repeatRisk" title="规则认定综合风险"></vxe-table-column>
-                    <vxe-table-column v-if="active <= 3 && !needReview" width="100" field="lackFieldsNum" title="残缺字段数"></vxe-table-column>
-                    <vxe-table-column v-if="active <= 3 && !needReview" width="100" field="lackFields" title="残缺字段"></vxe-table-column>
-                    <vxe-table-column v-if="active <= 3 && !needReview" width="100" field="repeatInBatchArr" title="同批次重复记录"></vxe-table-column>
-                    <vxe-table-column v-if="active <= 3 && !needReview" width="100" field="repeatInISGNArr" title="ISGN重复记录"></vxe-table-column>
-                    <vxe-table-column v-if="active <= 3 && !needReview" width="100" field="repeatInISGNCount" title="SGN重复数"></vxe-table-column>
-                    <vxe-table-column v-if="active == 3 && needReview"  field="addInformation" title="不可拍备注" width="140"></vxe-table-column>
-                    <vxe-table-column v-if="active >= 3" field="hasIn" title="可拍摄" width="100"></vxe-table-column>
-                    <vxe-table-column v-if="active >= 3" field="annex" title="附件上传" width="75" :cell-render="{name:'AdaiActionButton',attr:{data:[{'label':'附件','value':'annex'}]},events:{'annex':annex}}"></vxe-table-column>
-                    <vxe-table-column v-if="active >= 3 && !needReview" field="willIns" title="待提交" width="80"></vxe-table-column>
-                    <vxe-table-column v-if="active == 3 && !needReview" title="待提交" fixed="right" width="100" :cell-render="{name:'RuKuModal',attr:{value:'是'},events:{'click':dataWillInEvent}}"></vxe-table-column>
+                    <vxe-table-column v-if="active >= 3 && active <= 4" field="hasIn" title="可拍摄" width="70"></vxe-table-column>
+                    <vxe-table-column v-if="active >= 3 && active <= 4" field="annex" title="附件上传" width="160" :cell-render="{name:'AdaiActionButton',attr:{data:[{'label':'附件','value':'annex'}, {'label':'快捷查询','value':'singleQuick'}]},events:{'annex':annex, 'singleQuick': singleQuick}}"></vxe-table-column>
+                    <vxe-table-column v-if="active == 3" width="100" field="suggIn" title="系统建议入库"></vxe-table-column>
+                    <vxe-table-column v-if="active == 3" title="待提交" width="100" :cell-render="{name:'RuKuModal',attr:{value:'是'},events:{'click':dataWillInEvent}}"></vxe-table-column>
+                    
+                    <vxe-table-column v-for="(item,index) in field_branch" :key="'branch'+index" width="100" :field="item.fieldName" :title="item.fieldMeans" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+
+                    <vxe-table-column v-if="active <= 3" width="100" field="bIdExist" title="编码重复"></vxe-table-column>
+                    <vxe-table-column v-if="active <= 3" width="100" field="seemISGN" title="疑似ISGN"></vxe-table-column>
+                    <vxe-table-column v-if="active <= 3" width="100" field="repeatRisk" title="规则认定综合风险"></vxe-table-column>
+                    <vxe-table-column v-if="active <= 3" width="100" field="lackFieldsNum" title="残缺字段数"></vxe-table-column>
+                    <vxe-table-column v-if="active <= 3" width="100" field="lackFields" title="残缺字段"></vxe-table-column>
+                    <vxe-table-column v-if="active <= 3" width="100" field="repeatInBatchArr" title="同批次重复记录"></vxe-table-column>
+                    <vxe-table-column v-if="active <= 3" width="100" field="repeatInISGNArr" title="ISGN重复记录"></vxe-table-column>
                 </vxe-table>
             </div>
+            
             <RepeatJiapuModal v-if="active >= 2" :row="row" :h="h" :active="active" :pumuThead="pumuThead" />
         </div>
         <AdaiSourceModal v-if="active == 2 && isShow" :stationKey="stationKey" v-on:close-source="closeSource" v-on:source-check="clickDataCheck" />
@@ -345,7 +114,7 @@ export default {
             {'label':'临时影像','value':'needImage'},
             {'label':'无效','value': 2},
             {'label':'重复','value': 0}],
-            needReview: '',
+            needReview: 0,
             actionData: [{'label':'确认','value':'link'}],
             pumuTheads: [],
             isShow: false,
@@ -357,18 +126,80 @@ export default {
             isSuggest: false,
             suggest: '',
             setInRow: '',
+            fileName: '',
+            field_main: [],
+            field_branch: [],
+            isShowTable: true,
+            Tobediscussed: true,
         };
     },
     created:function(){
         let search = window.location.search,param=ADS.params(search);
         this.batchId = param['batchID'] || '';
         this.active = param['state'] ? Number(param['state']) : 0;
+        this.fileName = param['f'] ? decodeURIComponent(param['f']) : '';
         this.h = window.innerHeight - 145 - 5;
+        
+
+        this.field_main = [
+            {'fieldMeans': '家谱姓氏', 'fieldName': 'surname'},
+            {'fieldMeans': '家谱谱名', 'fieldName': 'genealogyName'},
+            {'fieldMeans': '出版年', 'fieldName': 'publish'},
+            {'fieldMeans': '谱籍_依谱书所载', 'fieldName': 'LocalityModern'},
+            {'fieldMeans': '卷数', 'fieldName': 'volume'},
+            {'fieldMeans': '堂号', 'fieldName': 'hall'},
+            {'fieldMeans': '状态', 'fieldName': 'condition'},
+        ];
+
+        this.field_branch = [
+            {'fieldMeans': '作者姓名', 'fieldName': 'authors'},
+            {'fieldMeans': '实拍册数', 'fieldName': 'hasVolume'},
+            {'fieldMeans': '缺卷', 'fieldName': 'lostVolume'},
+            {'fieldMeans': '版本类型', 'fieldName': 'version'},
+            {'fieldMeans': '作者职务', 'fieldName': 'authorJob'},
+
+            {'fieldMeans': '一世祖', 'fieldName': 'firstAncestor'},
+            {'fieldMeans': '始迁祖', 'fieldName': 'migrationAncestor'},
+            {'fieldMeans': '备注', 'fieldName': 'memo'},
+            {'fieldMeans': '重复谱书编号', 'fieldName': 'Dupbookid'},
+            {'fieldMeans': '说明', 'fieldName': 'explain'},
+            {'fieldMeans': '档案时间', 'fieldName': 'Filetimes'},
+            {'fieldMeans': '档名', 'fieldName': 'Filenames'},
+            {'fieldMeans': '代号', 'fieldName': 'code'},
+            {'fieldMeans': '谱籍_现代地名', 'fieldName': 'place'},
+            {'fieldMeans': '谱书编号', 'fieldName': 'bookId'},
+            {'fieldMeans': 'DGS 号码', 'fieldName': 'DGS'},
+            {'fieldMeans': '微卷编号', 'fieldName': 'film'},
+            {'fieldMeans': '家谱群组ID', 'fieldName': 'genealogyGroupID'},
+            {'fieldMeans': '项目ID', 'fieldName': 'Projectid'},
+            {'fieldMeans': '拍摄日期', 'fieldName': 'capturedate'},
+            {'fieldMeans': 'Media', 'fieldName': 'Media'},
+            {'fieldMeans': '重复专案ID', 'fieldName': 'DupProjectID'},
+            {'fieldMeans': '认领单位', 'fieldName': 'claim'},
+            {'fieldMeans': '认领日期', 'fieldName': 'claimDate'},
+            {'fieldMeans': '拍摄期限', 'fieldName': 'shootingPeriod'},
+            {'fieldMeans': '前次认领单位1', 'fieldName': 'pervious1'},
+            {'fieldMeans': '前次认领日期1', 'fieldName': 'perviousDate1'},
+            {'fieldMeans': '前次认领单位2', 'fieldName': 'pervious2'},
+            {'fieldMeans': '前次认领日期2', 'fieldName': 'perviousDate2'},
+            {'fieldMeans': '前次认领单位3', 'fieldName': 'pervious3'},
+            {'fieldMeans': '前次认领日期3', 'fieldName': 'perviousDate3'},
+            {'fieldMeans': '序号', 'fieldName': 'VolumeFst'},
+            {'fieldMeans': '起年', 'fieldName': 'startYear'},
+        ];
     },
     mounted:function(){
         this.getPumuTable();
     },
     methods:{
+        singleQuick({ row }){
+            console.log(row);
+            window.open('/'+this.pathname+'/singleQuickSearch?id='+row._key, '_blank');
+        },
+        changeTobediscussed(data){
+            this.Tobediscussed = data;
+            this.active == 3 && this.needReview ? this.getDataCheckLog() : null;
+        },
         collapsableEvent () {
             this.collapsable = !this.collapsable;
             const xTable3 = this.$refs.xTable3;
@@ -430,14 +261,6 @@ export default {
         },
         dataVertify:async function(operate){// 补充资料/审核通过
             this.batchInBase();
-            // this.changeLoading();
-            // let data=await api.postAxios('data/vertify',{'batchKey':this.batchId,'operate':operate, 'userKey': this.userId});
-            // this.changeLoading(false);
-            // if(data.status == 200){
-            //     this.getDataCheckLog();
-            // }else{
-            //     this.$XModal.message({ message: data.msg, status: 'warning' });
-            // }
         },
         batchInBase: async function(){// 批量审核通过
             this.changeLoading();
@@ -500,6 +323,13 @@ export default {
         dataWillInEvent(row){
             console.log(row);
             this.setInRow = row;
+            if(this.active == 3 && this.needReview){
+                if(row.data.toBeRediscussed == 1 && row.data.condition == 'm'){
+
+                }else{
+                    return ADS.message('非待议谱，不允许操作！');
+                }
+            }
             if(row.willIn == 1 && row.suggIn == '否'){
                 this.isSuggest = true;
             }else{
@@ -510,6 +340,7 @@ export default {
             if(this.suggest){
                 this.isSuggest = false;
                 this.dataWillIn(this.setInRow, this.suggest);
+                this.suggest = '';
             }else{
                 this.$XModal.message({ message: '请填写待提交原因', status: 'warning' });
             }
@@ -524,12 +355,35 @@ export default {
                         this.userId == this.createUser && this.active === 1 ? this.dataCheck('inBatch','') : null;
                         break;
                     case 2:
-                        if(this.userId == this.createUser && this.active === 2){
-                            this.closeSource(true);
+                        if(this.active === 2){
+                            if(this.userId == this.createUser){
+                                // this.closeSource(true);
+                                // 大库查重 => 所有数据
+                                this.dataCheck('inISGN', '');
+                            }else{
+                                ADS.message('本人上传的谱目才能大库查重');
+                            }
+                        }else{
+                            ADS.message('暂时无法进行此操作');
                         }
+                        
                         break;
                     case 3:
-                        this.userId == this.createUser && this.active === 3 ? this.dataSubmit() : null;
+                        if(this.active === 3){
+                            if(this.userId == this.createUser){
+                                let isAll = this.tableData.every((ele) => { return ele.willIn >= 1 && ele.willIn <= 2; });
+                                console.log(isAll);
+                                if(isAll){
+                                    this.dataSubmit();
+                                }else{
+                                    ADS.message('有谱目未作处理，请手动处理待提交谱目');
+                                }
+                            }else{
+                                ADS.message('本人上传的谱目才能提交审核');
+                            }
+                        }else{
+                            ADS.message('暂时无法进行此操作');
+                        }
                         break;
                     case 4:
                         // this.role >= 1 && this.role <= 2 && this.active == 4 ? this.dataVertify('past') : null;
@@ -540,7 +394,7 @@ export default {
             }
         },
         activeCellMethod({row,column}){//控制编辑
-            if(this.active <= 0 || this.active == 2 || this.active == 4 || (this.active == 3 && !this.needReview)){
+            if(this.active <= 0 || this.active == 2 || this.active == 4 || (this.active == 3 && !this.needReview) || (this.active == 3 && row.canTake != 3)){
                 return false;
             }
             if(['willIn','suggIn','hasIn','annex','delete'].indexOf(column.property) > -1){
@@ -569,11 +423,20 @@ export default {
             }
         },
         rowClassName ({ row, rowIndex }) {
-            if(row.suggIn == '否') {
-                if(row.repeatRisk >= 90){
-                    return 'row-red'
-                }else{
-                    return 'row-orange'
+            if(this.active == 5){
+                if(row.condition == 'm'){
+                    return 'row-red';
+                } 
+                if(row.condition == 'd' || row.condition == 'r'){
+                    return 'row-orange';
+                }
+            }else{
+                if(row.suggIn == '否') {
+                    if(row.repeatRisk >= 90){
+                        return 'row-red'
+                    }else{
+                        return 'row-orange'
+                    }
                 }
             }
         },
@@ -612,7 +475,7 @@ export default {
                 return;
             }
             this.changeLoading();
-            let data=await api.postAxios('data/submit',{'batchKey':this.batchId,'userKey':this.userId});
+            let data=await api.postAxios('data/submit',{'batchKey':this.batchId, 'userKey':this.userId, 'siteKey': this.stationKey, 'orgKey': this.orgId});
             this.changeLoading(false);
             if(data.status == 200){
                 // this.active++;
@@ -623,7 +486,7 @@ export default {
         },
         dataCheck:async function(checkType,libKey){
             this.changeLoading();
-            let data=await api.postAxios('data/check',{'batchKey':this.batchId,'checkType':checkType,filter:this.filter ? 1 : '','libKey': libKey});
+            let data=await api.postAxios('data/check',{'batchKey':this.batchId,'checkType':checkType,filter:this.filter ? 1 : '','libKey': libKey, 'userKey': this.userId, 'siteKey': this.stationKey, 'orgKey': this.orgId});
             this.changeLoading(false);
             if(data.status == 200){
                 // this.active++;
@@ -633,8 +496,11 @@ export default {
             }
         },
         getDataCheckLog:async function(){// 批次列表谱目
+            this.isShowTable = false;
             let data=await api.getAxios('data/checkLog/new?batchKey='+this.batchId+'&userKey='+this.userId+'&willIn='+this.caozheng+'&needFill='+(this.examine == 'needFill' ? 1 : '')+'&canTake='+(this.examine == 'needFill' || this.examine == 'needImage' ? '' : this.examine)+'&needImage='+(this.examine == 'needImage' ? 1 : ''));
+            this.isShowTable = true;
             if(data.status == 200){
+                let tableData = [];
                 this.$store.dispatch('setPropertyValue',{'property': 'cleanOk', 'value': false});
                 let batch = data.batch,state = 0,repeatNum = 0;
                 batch.hasClean ? state = 1 : null;
@@ -644,9 +510,11 @@ export default {
                 batch.hasSubmit ? state = 4 : null;
                 batch.hasPast ? state = 5 : null;
                 this.active = state;
-                this.needReview = batch.needReview;
+                this.needReview = batch.needReview || 0;
                 this.createUser = batch.createUser;
                 data.data.map((item)=>{
+                    item.Filetimes = ADS.getLocalTime(item.Filetimes, '/', 1) || item.Filetimes;
+                    item.fileName = this.fileName;
                     item.toggle = '>';
                     item.addInformation = (item.needFill ? '补充字段 ' : '')+(item.needImage ? '补充影像' : '');
                     item.suggIn = item.suggIn ? '是' : '否';
@@ -657,10 +525,15 @@ export default {
                     if(item.suggIn == '否'){
                         repeatNum = repeatNum + 1;
                     }
+                    if(this.active == 3 && batch.needReview){
+                        if(item.toBeRediscussed == 1 && item.condition == 'm'){
+                            tableData.push(item);
+                        }
+                    }
                 });
                 this.repeatNum = repeatNum;
                 // console.log(this.repeatNum);
-                this.tableData = data.data;
+                this.tableData = this.active == 3 && batch.needReview && this.Tobediscussed ? tableData.length ? tableData : data.data : data.data;
                 this.total = data.total;
                 // this.$refs['xTable'+ this.active].refreshColumn();
                 if(state === 3){
@@ -678,7 +551,7 @@ export default {
             if(data.status == 200){
                 let pumuTheads = [];
                 data.data.map((item)=>{
-                    if(['genealogyName','publish','place','surname','authors','volume','hall','publishAD','address','authorFst','LocalityModern','lostVolume', 'hasVolume'].indexOf(item.fieldName) > -1){
+                    if(['missVolumeSupplement', 'genealogyName','publish','place','surname','authors','volume','hall','publishAD','address','authorFst','LocalityModern','lostVolume', 'hasVolume'].indexOf(item.fieldName) > -1){
                         // console.log(item.fieldMeans);
                     }else{
                         pumuTheads.push(item);
@@ -694,7 +567,7 @@ export default {
         },
         dataWillIn:async function(row, setInReason = ''){// 建议入库
             this.changeLoading();
-            let data = await api.patchAxios('data/willIn',{'dataKey':row._key,'willIn':row.willIn, 'setInReason': setInReason});
+            let data = await api.patchAxios('data/willIn',{'dataKey':row._key,'willIn':row.willIn, 'setInReason': setInReason, 'userKey': this.userId, 'siteKey': this.stationKey, 'orgKey': this.orgId});
             this.changeLoading(false);
             if(data.status == 200){
                 this.tableData.map((item,key)=>{
@@ -709,11 +582,26 @@ export default {
         },
         editCatalog:async function(row){// 编辑谱目
             let dataObj = {};
-            this.pumuThead.map((item)=>{
+            // this.pumuThead.map((item)=>{
+            //     dataObj[item.fieldName] = row[item.fieldName];
+            // });
+            this.field_main.map((item)=>{
+                if(item.fieldName == 'condition'){
+                    if(this.role >= 1 && this.role <= 3){
+                        dataObj[item.fieldName] = row[item.fieldName];
+                    }else{
+                        
+                    }
+                }else{
+                    dataObj[item.fieldName] = row[item.fieldName];
+                }
+                // dataObj[item.fieldName] = row[item.fieldName];
+            });
+            this.field_branch.map((item)=>{
                 dataObj[item.fieldName] = row[item.fieldName];
             });
             this.changeLoading();
-            let data=await api.patchAxios('data/edit',{'dataKey':row._key,'dataObj':dataObj});
+            let data=await api.patchAxios('data/edit',{'dataKey':row._key,'dataObj':dataObj,'userKey': this.userId, siteKey: this.stationKey});
             this.changeLoading(false);
             if(data.status == 200){
                 this.active == 1 || this.active == 5 ? this.dataCleanSingle(row._key) : null;
@@ -774,10 +662,12 @@ export default {
             userName: state => state.nav.userName,
             userId: state => state.nav.userId,
             stationKey: state => state.nav.stationKey,
+            orgId: state => state.nav.orgId,
             role: state => state.nav.role,
             Ptotal: state => state.nav.Ptotal,
             Ppage: state => state.nav.Ppage,
             cleanOk: state => state.nav.cleanOk,
+            pathname: state => state.nav.pathname,
         })
     },
     watch:{

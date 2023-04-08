@@ -31,6 +31,7 @@
                     <vxe-table-column type="checkbox" width="60"></vxe-table-column>
                     <vxe-table-column field="type" title="类型" :edit-render="{name: '$select', options: dataType}"></vxe-table-column>
                     <vxe-table-column field="libKey" title="数据源" :edit-render="{name: '$select', options: lib}"></vxe-table-column>
+                    <vxe-table-column field="orgKey" title="机构" :edit-render="{name: '$select', options: orgList}"></vxe-table-column>
                     <vxe-table-column field="templateName" title="模板名称" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
                     <vxe-table-column field="createUser" title="创建人"></vxe-table-column>
                     <vxe-table-column field="createTime" title="创建时间"></vxe-table-column>
@@ -62,6 +63,7 @@ export default {
             h: 300,
             actionData: [{'label':'查看','value':'check'}],
             w: 80,
+            orgList: [],
         };
     },
     created:function(){
@@ -74,8 +76,21 @@ export default {
     mounted:function(){
         this.getDataType();
         this.getLib();
+        this.getOrgList();
     },
     methods:{
+        getOrgList:async function(){
+            let data = await api.getAxios('org?siteKey='+this.stationKey+'&name=');
+            if(data.status == 200){
+                let orgList = [{'label':'全部','value':''}];
+                data.data.map((item)=>{
+                    orgList.push({'label': item.name,'value': item._key});
+                });
+                this.orgList = orgList;
+            }else{
+                this.$XModal.message({ message: data.msg, status: 'warning' })
+            }
+        },
         activeCellMethod({row,column}){//控制编辑
             if(this.role < 1 || this.role > 2){
                 return false;
@@ -169,7 +184,7 @@ export default {
             }
         },
         async addTemplate(row){
-            let data = await api.postAxios('template',{templateKey:row._key,libKey:row.libKey, templateName:row.templateName,type:row.type,userKey:this.userId,siteKey:this.stationKey});
+            let data = await api.postAxios('template',{'orgKey': row.orgKey, templateKey:row._key,libKey:row.libKey, templateName:row.templateName,type:row.type,userKey:this.userId,siteKey:this.stationKey});
             if(data.status == 200){
                 this.getTemplate();
             }else{

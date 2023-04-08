@@ -22,6 +22,7 @@
 </template>
 
 <script>
+import { mapState, mapActions, mapGetters } from "vuex";
 import api from "../../api.js";
 import ADS from "../../ADS.js";
 export default {
@@ -44,7 +45,7 @@ export default {
         getLib:async function(){// 来源
             let data=await api.getAxios('lib?siteKey='+this.stationKey);
             if(data.status == 200){
-                let libList = [{'label':'查重源','value':''}];
+                let libList = [{'label': this.stationName,'value':''}];
                 data.data.map((item)=>{
                     libList.push({'label':item.libName,'value':item._key});
                 });
@@ -60,6 +61,18 @@ export default {
         close(flag){
             this.$emit('close-source',flag);
         },
+    },
+    computed: {
+        ...mapState({
+            userName: state => state.nav.userName,
+            userId: state => state.nav.userId,
+            stationKey: state => state.nav.stationKey,
+            role: state => state.nav.role,
+            Utotal: state => state.nav.Utotal,
+            Upage: state => state.nav.Upage,
+            orgId: state => state.nav.orgId,
+            stationName: state => state.nav.stationName,
+        })
     },
 };
 </script>

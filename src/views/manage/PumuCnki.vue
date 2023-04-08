@@ -11,7 +11,7 @@
         <TableList :list="list" :total="total"  />
       </div>
     </div>
-    <LeadExcelModal v-if="isLeadExcel" v-on:close-lead-excel="closeLeadExcel" />
+    <!-- <LeadExcelModal v-if="isLeadExcel" v-on:close-lead-excel="closeLeadExcel" /> -->
     <Loading v-show="loading" />
   </div>
 </template>
@@ -22,11 +22,11 @@ import Sidebar from "../../components/sidebar/Sidebar.vue";
 import NavModal from "../../components/myGenealogy/NavModal.vue";
 import SearchModal from "../../components/pumuCnki/SearchModal.vue";
 import TableList from "../../components/pumuCnki/TableList.vue";
-import LeadExcelModal from "../../components/pumuCnki/LeadExcelModal.vue";
+// import LeadExcelModal from "../../components/pumuCnki/LeadExcelModal.vue";
 export default {
   name: "pumucnki",
   components: {
-    Sidebar,NavModal,SearchModal,TableList,LeadExcelModal,
+    Sidebar,NavModal,SearchModal,TableList,
   },
   data: () => {
     return {

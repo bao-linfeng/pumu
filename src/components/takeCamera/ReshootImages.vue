@@ -76,7 +76,7 @@ export default {
         async uploadImageApi(param){
             let result = await api.postAxios(this.uploadFileURL+'/uploadFile', param, true);
             if(result.statusCode == 200){
-                // ADS.message('上传成功！', true);
+                ADS.message('上传成功！', true);
                 this.url = this.uploadFileURL+'/photo/'+this.device+'/'+this.gid+'/'+this.vid+'/'+this.fileName;
             }else{
                 this.$XModal.message({message: result.msg, status: 'warning'})

@@ -332,8 +332,8 @@ export default {
 .search-modal-wrap{
     position: relative;
     background: #fff;
-    padding:30px 20px 20px 20px;
-    margin: 20px;
+    padding: 30px 20px 5px 20px;
+    margin: 5px 20px;
     width: calc(100% - 80px);
     .search-modal-title{
         font-size: 16px;
@@ -345,7 +345,7 @@ export default {
     }
     .search-modal-box{
         position: relative;
-        margin: 10px auto;
+        margin: 0 auto;
         display: flex;
         justify-content: space-between;
         flex-wrap:wrap;

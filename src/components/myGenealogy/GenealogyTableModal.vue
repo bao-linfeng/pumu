@@ -11,13 +11,14 @@
         </div>
         <div class="jiapu-vxe-wrap style3">
             <div class="jiapu-vxe-box">
+                <!-- show-overflow -->
                 <vxe-table
                     border
                     resizable
                     stripe
-                    show-overflow
                     highlight-hover-row
                     ref="xTable"
+                    :height="h"
                     @checkbox-change = "checkboxChange"
                     @checkbox-all = "checkboxChange"
                     :row-class-name="rowClassName"  
@@ -98,7 +99,8 @@ export default {
             isLog: 0,
             isRead: false,
             visible: true,
-            attr: [{'fieldMeans': '状态', 'fieldName': 'condition'}]
+            attr: [{'fieldMeans': '状态', 'fieldName': 'condition'}],
+            h: 500,
         };
     },
     created:function(){
@@ -112,6 +114,11 @@ export default {
         ];
 
         this.field_branch = [
+            {'fieldMeans': '谱籍_现代地名', 'fieldName': 'place'},
+            {'fieldMeans': '省', 'fieldName': 'prov'},
+            {'fieldMeans': '市', 'fieldName': 'city'},
+            {'fieldMeans': '区', 'fieldName': 'district'},
+
             {'fieldMeans': '作者姓名', 'fieldName': 'authors'},
             {'fieldMeans': '实拍册数', 'fieldName': 'hasVolume'},
             {'fieldMeans': '卷数', 'fieldName': 'volume'},
@@ -127,10 +134,6 @@ export default {
             {'fieldMeans': '微卷编号', 'fieldName': 'film'},
             {'fieldMeans': '家谱群组ID', 'fieldName': 'genealogyGroupID'},
 
-            {'fieldMeans': '省', 'fieldName': 'prov'},
-            {'fieldMeans': '市', 'fieldName': 'city'},
-            {'fieldMeans': '区', 'fieldName': 'district'},
-
             {'fieldMeans': '重复谱书编号', 'fieldName': 'Dupbookid'},
             {'fieldMeans': '档案时间', 'fieldName': 'Filetimes'},
             // {'fieldMeans': '档名', 'fieldName': 'Filenames'},
@@ -140,7 +143,6 @@ export default {
             {'fieldMeans': '说明', 'fieldName': 'explain'},
             {'fieldMeans': '是否录入', 'fieldName': 'NoIndexO'},
 
-            // {'fieldMeans': '谱籍_现代地名', 'fieldName': 'place'},
             // {'fieldMeans': '项目ID', 'fieldName': 'Projectid'},
             // {'fieldMeans': '拍摄日期', 'fieldName': 'capturedate'},
             // {'fieldMeans': 'Media', 'fieldName': 'Media'},
@@ -159,6 +161,7 @@ export default {
         ];
     },
     mounted:function(){
+        this.h = window.innerHeight - 50 - 50 - 60 - 195 - 40;
         if(this.role < 1 || this.role > 3){
             this.w = 240;
             this.actionButton = [
@@ -361,12 +364,12 @@ export default {
 <style scoped lang="scss">
 .jiapu-table-modal{
     width: calc(100% - 40px);
-    margin: 20px;
+    margin: 0 20px;
     background-color: #fff;
     .jiapu-table-title{
         display: flex;
         justify-content: space-between;
-        padding: 15px 0;
+        padding: 5px 0;
         .head-wrap{
             display: flex;
             align-items: center;

@@ -327,7 +327,7 @@ export default {
 }
 .btn_wrap_left{
     width: calc(100% - 40px);
-    margin: 20px;
+    margin: 5px 20px;
     display: flex;
     align-items: center;
     input{

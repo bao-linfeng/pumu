@@ -110,7 +110,7 @@
                     <img class="icon" @click="handleZoom(false)" title="缩小" src="../../assets/shoot/zoomIn.svg" alt="">
                     <img class="icon" @click="handleZoom()" title="放大" src="../../assets/shoot/zoomOut.svg" alt="">
                     <img class="icon" @click="handleReset" title="重置" src="../../assets/shoot/reset.svg" alt="">
-                    <img v-if="((orgAdmin == 'admin' && takeStatus == 12) || (role >= 1 && role <= 3 && (takeStatus == 5 || takeStatus == 13 || takeStatus == 14))) && !isRead" class="icon" @click="isPassModule = !isPassModule" title="标记原因" src="../../assets/shoot/mark.svg" alt="">
+                    <img v-if="((orgAdmin == 'admin' && takeStatus == 12) || (role >= 1 && role <= 3 && (takeStatus == 5 || takeStatus == 6 || takeStatus == 13 || takeStatus == 14))) && !isRead" class="icon" @click="isPassModule = !isPassModule" title="标记原因" src="../../assets/shoot/mark.svg" alt="">
                     <!-- 标记打回 -->
                     <PassModule v-if="isPassModule" :passReasonA="passReason" v-on:set-reason="patchPageReturn" />
                 </div>
@@ -154,7 +154,7 @@
         <!-- 影像预览 -->
         <ImageView v-if="isShow == 8" :gid="gid" :genealogyName="genealogyName" v-on:close="isShow = 0" />
         <!-- 补拍影像 -->
-        <ReshootImages v-if="isShow == 9" :gid="gid" :vid="vid" :device="device" v-on:close="closeReshoot" />
+        <ReshootImages v-if="isShow == 9" :gid="gid" :vid="vid" :device="device" :page="page" v-on:close="closeReshoot" />
     </div>
 </template>
 
@@ -299,7 +299,7 @@ export default {
         closeReshoot(f){
             this.isShow = 0;
             if(f){
-                this.getVolumeList(this.dataKey);
+                this.getImageList(this.dataKey);
             }
         },
         handleSave(){

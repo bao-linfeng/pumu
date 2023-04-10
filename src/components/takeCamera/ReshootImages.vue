@@ -45,6 +45,7 @@ export default {
         gid: String,
         vid: String,
         device: String,
+        page: Number,
     },
     data: () => {
         return {
@@ -62,6 +63,7 @@ export default {
             // baseURL = 'http://genealogydata.1jiapu.com';
             this.uploadFileURL = 'http://223.111.180.111:8085';
         }
+        this.index = this.page;
     },
     methods:{
         uploadImage(e){
@@ -92,9 +94,10 @@ export default {
             if(!this.url){
                 return ADS.message('请上传影像！');
             }
+            this.linkImageApi();
         },
         async linkImageApi(){
-            let result = await api.postAxios('/uploadFile', {
+            let result = await api.patchAxios('v3/review/image/retake', {
                 siteKey: this.stationKey,
                 userKey: this.userId,
                 orgKey: this.orgId,
@@ -105,7 +108,7 @@ export default {
                 fileName: this.fileName,
                 index: this.index - 1,
             });
-            if(result.statusCode == 200){
+            if(result.status == 200){
                 this.close(true);
             }else{
                 this.$XModal.message({message: result.msg, status: 'warning'})
@@ -125,7 +128,9 @@ export default {
         })
     },
     watch:{
-        
+        'page': function(nv, ov){
+            this.index = nv;
+        }
     }
 };
 </script>

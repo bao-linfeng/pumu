@@ -10,47 +10,49 @@
             </div>
             <div class="search-wrap">
                 <div class="search-box" v-for="(item, i) in searchArr" :key="i">
-                    <el-input class="width100" v-model="searchObject[item.value]" :placeholder="'请输入'+item.label" clearable></el-input>
+                    <el-input class="width100" :class="{'width200': ['genealogyName', 'place' ,'LocalityModern'].indexOf(item.value) > -1}" v-model="searchObject[item.value]" :placeholder="'请输入'+item.label" clearable></el-input>
                     <el-checkbox class="margin10" v-model="item.check"></el-checkbox>
                 </div>
                 
                 <el-button type="primary" size="medium" @click="getDataList">检索</el-button>
+                <el-button type="primary" size="medium" @click="fieldRcover">字段复原</el-button>
             </div>
             <div class="vex-table-box">
+                <!-- show-overflow -->
                 <vxe-table
                     border
                     resizable
                     stripe
                     keep-source
-                    show-overflow
                     highlight-hover-row
                     :loading="loading"
                     ref="xTable"
                     :height="h"
+                    :scroll-y="{enabled: false}"
                     :align="'center'"
                     :data="tableData"
                     :sort-config="{trigger: 'cell', orders: ['desc', 'asc', 'auto'], remote: true}"
                     @sort-change="sortChangeEvent"
                     >
-                    <vxe-table-column field="_key" title="谱ID"></vxe-table-column>
-                    <vxe-table-column field="genealogyName" title="谱名"></vxe-table-column>
-                    <vxe-table-column field="surname" title="姓氏"></vxe-table-column>
-                    <vxe-table-column field="place" title="谱籍地(现代)"></vxe-table-column>
-                    <vxe-table-column field="LocalityModern" title="谱籍地(原谱)"></vxe-table-column>
-                    <vxe-table-column field="publish" title="出版年"></vxe-table-column>
-                    <vxe-table-column field="volume" title="卷数"></vxe-table-column>
-                    <vxe-table-column field="lostVolume" title="缺卷"></vxe-table-column>
-                    <vxe-table-column field="hall" title="堂号"></vxe-table-column>
-                    <vxe-table-column field="authors" title="作者姓名"></vxe-table-column>
-                    <vxe-table-column field="authorJob" title="作者职务"></vxe-table-column>
-                    <vxe-table-column field="firstAncestor" title="一世祖"></vxe-table-column>
-                    <vxe-table-column field="migrationAncestor" title="始迁祖"></vxe-table-column>
-                    <vxe-table-column field="hasVolume" title="实拍册数"></vxe-table-column>
-                    <vxe-table-column field="memo" title="备注"></vxe-table-column>
-                    <vxe-table-column field="explain" title="说明"></vxe-table-column>
-                    <vxe-table-column field="condition" title="谱状态"></vxe-table-column>
-                    <vxe-table-column field="claimOrgNameO" title="供应商"></vxe-table-column>
-                    <vxe-table-column field="createTimeO" title="上传时间" sort-by="createTime" sortable></vxe-table-column>
+                    <vxe-table-column field="_key" title="谱ID" width="100"></vxe-table-column>
+                    <vxe-table-column field="genealogyName" title="谱名" width="150"></vxe-table-column>
+                    <vxe-table-column field="surname" title="姓氏" width="60"></vxe-table-column>
+                    <vxe-table-column field="place" title="谱籍地(现代)" width="150"></vxe-table-column>
+                    <vxe-table-column field="LocalityModern" title="谱籍地(原谱)" width="150"></vxe-table-column>
+                    <vxe-table-column field="publish" title="出版年" width="100"></vxe-table-column>
+                    <vxe-table-column field="volume" title="卷数" width="100"></vxe-table-column>
+                    <vxe-table-column field="lostVolume" title="缺卷" width="100"></vxe-table-column>
+                    <vxe-table-column field="hall" title="堂号" width="100"></vxe-table-column>
+                    <vxe-table-column field="authors" title="作者姓名" width="100"></vxe-table-column>
+                    <vxe-table-column field="authorJob" title="作者职务" width="100"></vxe-table-column>
+                    <vxe-table-column field="firstAncestor" title="一世祖" width="100"></vxe-table-column>
+                    <vxe-table-column field="migrationAncestor" title="始迁祖" width="100"></vxe-table-column>
+                    <vxe-table-column field="hasVolume" title="实拍册数" width="100"></vxe-table-column>
+                    <vxe-table-column field="memo" title="备注" width="100"></vxe-table-column>
+                    <vxe-table-column field="explain" title="说明" width="150"></vxe-table-column>
+                    <vxe-table-column field="condition" title="谱状态" width="70"></vxe-table-column>
+                    <vxe-table-column field="claimOrgNameO" title="供应商" width="100"></vxe-table-column>
+                    <vxe-table-column field="createTimeO" title="上传时间" width="100" sort-by="createTime" sortable></vxe-table-column>
                     <vxe-table-column title="操作" fixed="right" width="180" :cell-render="{name:'AdaiActionButton',attr:{data: attrData}, events: {'detail': getDetail, 'edit': getEdit, 'log': getLog}}"></vxe-table-column>
                 </vxe-table>
                 <div class="page-foot">
@@ -106,16 +108,16 @@ export default {
             place: '',
             surname: '',
             searchArr: [
-                {'label': '作者', 'value': 'authors', 'check': true},
-                {'label': '谱名', 'value': 'genealogyName', 'check': true},
-                {'label': '姓氏', 'value': 'surname', 'check': true},
-                {'label': '谱籍地(现)', 'value': 'place', 'check': true},
-                {'label': '谱籍地(原)', 'value': 'LocalityModern', 'check': true},
-                {'label': '堂号', 'value': 'hall', 'check': true},
-                {'label': '始迁祖', 'value': 'migrationAncestor', 'check': true},
-                {'label': '一世祖', 'value': 'firstAncestor', 'check': true},
-                {'label': '卷数', 'value': 'volume', 'check': true},
-                {'label': '出版年', 'value': 'publish', 'check': true},
+                {'label': '作者', 'value': 'authors', 'check': false},
+                {'label': '谱名', 'value': 'genealogyName', 'check': false},
+                {'label': '姓氏', 'value': 'surname', 'check': false},
+                {'label': '谱籍地(现)', 'value': 'place', 'check': false},
+                {'label': '谱籍地(原)', 'value': 'LocalityModern', 'check': false},
+                {'label': '堂号', 'value': 'hall', 'check': false},
+                {'label': '始迁祖', 'value': 'migrationAncestor', 'check': false},
+                {'label': '一世祖', 'value': 'firstAncestor', 'check': false},
+                {'label': '卷数', 'value': 'volume', 'check': false},
+                {'label': '出版年', 'value': 'publish', 'check': false},
             ],
             searchObject: {
 
@@ -133,6 +135,7 @@ export default {
             ],
             isRead: false,
             attr: [{'fieldMeans': '状态', 'fieldName': 'condition'}],
+            detail: {},
         };
     },
     created:function(){
@@ -143,6 +146,13 @@ export default {
         this.getGenealogyDetail();
     },
     methods:{
+        fieldRcover(){
+            let searchObject = {};
+            this.searchArr.forEach((ele, i) => {
+                searchObject[ele.value] = this.detail[ele.value] || '';
+            });
+            this.searchObject = searchObject;
+        },
         async getGenealogyDetail(){
             const result = await api.getAxios('catalog/detail?catalogKey='+this.id);
             if(result.status == 200){
@@ -151,8 +161,9 @@ export default {
                     searchObject[ele.value] = result.data[ele.value] || '';
                 });
                 this.searchObject = searchObject;
+                this.detail = result.data;
 
-                this.getDataList();
+                // this.getDataList();
             }else{
                 this.$XModal.message({ message: data.msg, status: 'warning' });
             }
@@ -279,8 +290,8 @@ export default {
         }
         .search-wrap{
             position: relative;
-            // width: calc(100% - 40px);
-            width: 900px;
+            width: calc(100% - 40px);
+            // width: 900px;
             height: 100px;
             padding: 0 20px;
             display: flex;
@@ -312,6 +323,9 @@ export default {
 }
 .width100{
     width: 120px;
+}
+.width200{
+    width: 200px;
 }
 .marginR10{
     margin-right: 10px;

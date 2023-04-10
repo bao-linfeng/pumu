@@ -73,7 +73,7 @@
                     <vxe-table-column field="libO" title="来源" sort-by="libCode" sortable></vxe-table-column>
                     <vxe-table-column field="checkUserName" title="审核人"></vxe-table-column>
                     <vxe-table-column field="createTime" title="导入时间" :formatter="['formatDate', '']" sort-by="createTime" sortable></vxe-table-column>
-                    <vxe-table-column title="操作" width="260" :cell-render="{name:'AdaiActionButton',attr:{data:actionData},events:{'look':navTo,'download': downloadExcel, 'downloadNaturalExcel': downloadNaturalExcel}}"></vxe-table-column>
+                    <vxe-table-column title="操作" width="260" :cell-render="{name:'AdaiActionButton2',attr:{data:actionData},events:{'look':navTo,'download': downloadExcel, 'downloadNaturalExcel': downloadNaturalExcel}}"></vxe-table-column>
                 </vxe-table>
                 <vxe-pager
                     :loading="loading"
@@ -116,8 +116,8 @@ export default {
             stageState:[{'label':'√','value':1},{'label':'','value':null},{'label':'','value':0}],
             actionData:[
                 {'label':'查看','value':'look'},
-                {'label':'修正Excel','value':'download'},
-                {'label':'原始Excel','value':'downloadNaturalExcel'}
+                {'label':'Excel(修正)','value':'download'},
+                {'label':'Excel(原始)','value':'downloadNaturalExcel'}
             ],
             page: 1,
             pages: 50,

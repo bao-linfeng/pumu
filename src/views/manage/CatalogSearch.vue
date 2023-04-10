@@ -54,7 +54,7 @@
                     </el-option>
                 </el-select>
                 <el-button type="primary" size="medium" @click="getDataList">检索</el-button>
-                <el-button class="marginL10" type="primary" size="mini" @click="toggleColumn(1)">{{visible ? '隐藏' : '显示'}} 操作列</el-button>
+                <!-- <el-button class="marginL10" type="primary" size="mini" @click="toggleColumn(1)">{{visible ? '隐藏' : '显示'}} 操作列</el-button> -->
                 <el-button class="marginL10" type="primary" size="mini" @click="toggleColumn(2)">{{visible2 ? '隐藏' : '显示'}} 折叠列</el-button>
             </div>
             <div class="vex-table-box">
@@ -84,26 +84,27 @@
                     <vxe-table-column field="LocalityModern" title="谱籍地(原谱)" width="120"></vxe-table-column>
                     <vxe-table-column field="place" title="谱籍地(现代)" width="120"></vxe-table-column>
                     <vxe-table-column field="surname" title="姓氏" width="50"></vxe-table-column>
-                    <vxe-table-column field="genealogyName" title="谱名" width="120"></vxe-table-column>
-                    <vxe-table-column field="publish" title="出版年" sort-by="publish" sortable></vxe-table-column>
-                    <vxe-table-column field="hasVolume" title="卷数(标称)"></vxe-table-column>
-                    <vxe-table-column field="volumeNumber" title="卷数(实拍)"></vxe-table-column>
-                    <vxe-table-column field="imgNumber" title="拍数(总计)"></vxe-table-column>
-                    <vxe-table-column field="lostVolume" title="缺卷"></vxe-table-column>
-                    <vxe-table-column field="hall" title="堂号"></vxe-table-column>
-                    <vxe-table-column field="authors" title="作者姓名"></vxe-table-column>
-                    <vxe-table-column field="authorJob" title="作者职务"></vxe-table-column>
-                    <vxe-table-column field="firstAncestor" title="一世祖"></vxe-table-column>
-                    <vxe-table-column field="migrationAncestor" title="始迁祖"></vxe-table-column>
-                    <vxe-table-column field="memo" title="备注"></vxe-table-column>
+                    <vxe-table-column field="genealogyName" title="谱名" min-width="120"></vxe-table-column>
+                    <vxe-table-column field="publish" width="100" title="出版年" sort-by="publish" sortable></vxe-table-column>
+                    <vxe-table-column field="hasVolume" width="100" title="卷数(标称)"></vxe-table-column>
+                    <vxe-table-column field="volumeNumber" width="100" title="卷数(实拍)"></vxe-table-column>
+                    <vxe-table-column field="lostVolume" width="100" title="缺卷"></vxe-table-column>
+                    <vxe-table-column field="hall" width="100" title="堂号"></vxe-table-column>
+                    <vxe-table-column field="authors" width="100" title="作者姓名"></vxe-table-column>
+                    <vxe-table-column field="authorJob" width="100" title="作者职务"></vxe-table-column>
+                    <vxe-table-column field="firstAncestor" width="100" title="一世祖"></vxe-table-column>
+                    <vxe-table-column field="migrationAncestor" width="100" title="始迁祖"></vxe-table-column>
+                    <vxe-table-column field="memo" width="100" title="备注"></vxe-table-column>
+                    <vxe-table-column field="imgNumber" width="100" title="拍数(总计)"></vxe-table-column>
 
-                    <vxe-table-column field="claimOrgNameO" title="所属机构" :visible="visible2"></vxe-table-column>
-                    <vxe-table-column field="explain" title="说明" :visible="visible2"></vxe-table-column>
-                    <vxe-table-column field="GCOverO" title="编目状态" :visible="visible2"></vxe-table-column>
-                    <vxe-table-column field="NoIndexO" title="索引状态" :visible="visible2"></vxe-table-column>
-                    <vxe-table-column field="updateUserName" title="更新人员" :visible="visible2"></vxe-table-column>
+                    <vxe-table-column field="claimOrgNameO" title="所属机构" width="100" :visible="visible2"></vxe-table-column>
+                    <vxe-table-column field="explain" title="说明" width="100" :visible="visible2"></vxe-table-column>
+                    <vxe-table-column field="GCOverO" title="编目状态" width="100" :visible="visible2"></vxe-table-column>
+                    <vxe-table-column field="NoIndexO" title="索引状态" width="100" :visible="visible2"></vxe-table-column>
+                    <vxe-table-column field="updateUserName" title="更新人员" width="100" :visible="visible2"></vxe-table-column>
                     <vxe-table-column field="updateTimeO" title="更新日期" width="100" sort-by="updateTime" sortable :visible="visible2"></vxe-table-column>
-                    <vxe-table-column title="操作" :visible="visible" fixed="right" width="180" :cell-render="{name:'AdaiActionButton',attr:{data: attrData}, events: {'detail': getDetail, 'edit': getEdit, 'log': getLog}}"></vxe-table-column>
+                    <vxe-table-column field="createTimeO" title="上传日期" width="100" sort-by="createTime" sortable :visible="visible2"></vxe-table-column>
+                    <vxe-table-column title="操作" :visible="visible2" fixed="right" width="180" :cell-render="{name:'AdaiActionButton',attr:{data: attrData}, events: {'detail': getDetail, 'edit': getEdit, 'log': getLog}}"></vxe-table-column>
                 </vxe-table>
                 <div class="page-foot">
                     <div class="count-wrap">
@@ -170,7 +171,7 @@ export default {
                 {'label': 'd|重复', 'value': 'd'},
                 {'label': 'r|无效', 'value': 'r'},
             ],
-            imgStatus: '',
+            imgStatus: '1',
             imgStatusList: [
                 {'label': '影像状态', 'value': ''},
                 {'label': '有影像', 'value': '1'},
@@ -263,7 +264,8 @@ export default {
         async getOrgList(){// 机构列表
             let data = await api.getAxios('org?siteKey='+this.stationKey+'&name=');
             if(data.status == 200){
-                let arr = [{'label': '全部机构', 'value': ''}];
+                // {'label': '全部机构', 'value': ''}
+                let arr = [];
                 data.data.map((ele, index)=>{
                     if(ele._key == '2213544386'){
 

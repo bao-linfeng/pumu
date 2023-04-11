@@ -43,7 +43,6 @@
             </div>
         </div>
         <SourceModal v-if="isEditImage" v-on:close-source="isEditImage=false" :gid="gid" :gvolume="volume" />
-        <!-- <EditGenealogyModal v-if="isEdit" :isShow="isShow" :gid="gid" :pumu="pumu" v-on:close-edit="closeEdit" /> -->
         <!-- 记录 -->
         <LogModule v-if="isLog == 1" :gid="gid" v-on:close="closeLog" />
         <!-- 谱目编辑 -->
@@ -56,7 +55,6 @@
 <script>
 import api from "../../api.js";
 import SourceModal from "./SourceModal.vue";
-import EditGenealogyModal from "./EditGenealogyModal.vue";
 import LogModule from '../../components/discussed/LogModule.vue';
 import EditCatalog from '../../components/takeCamera/EditCatalog.vue';
 import CatalogView from '../../components/takeCamera/CatalogView.vue';
@@ -75,7 +73,7 @@ export default {
         },
     },
     components: {
-        SourceModal,EditGenealogyModal, LogModule, EditCatalog, CatalogView, 
+        SourceModal, LogModule, EditCatalog, CatalogView, 
     },
     data: () => {
         return {

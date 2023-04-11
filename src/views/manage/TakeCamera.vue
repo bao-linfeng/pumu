@@ -98,7 +98,7 @@
                     <vxe-table-column v-if="stage == 5" field="beginTimeO" title="拍摄时间"></vxe-table-column>
                     <vxe-table-column field="genealogyName" title="谱名" sort-by="genealogyName" sortable></vxe-table-column>
                     <vxe-table-column v-if="stage == 1" field="place" title="谱籍地"></vxe-table-column>
-                    <vxe-table-column field="volume" title="应有卷数"></vxe-table-column>
+                    <vxe-table-column field="volume" title="卷(册)说明"></vxe-table-column>
                     <vxe-table-column v-if="stage >= 2" field="volumeKey" title="卷ID"></vxe-table-column>
                     <vxe-table-column v-if="stage >= 2" field="internalSerialNumber" title="序号"></vxe-table-column>
                     <vxe-table-column v-if="stage >= 2" field="volumeNumber" title="卷名"></vxe-table-column>

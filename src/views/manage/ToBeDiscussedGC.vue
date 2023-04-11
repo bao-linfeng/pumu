@@ -61,7 +61,7 @@
                     <vxe-table-column field="fileName" width="100" title="文件标题"></vxe-table-column>
                     <vxe-table-column field="Filenames" width="100" title="档名"></vxe-table-column>
                     <vxe-table-column field="_key" width="100" title="谱ID"></vxe-table-column>
-                    <vxe-table-column v-for="(item,index) in field_main" :key="'field_main'+index" width="100" :field="item.fieldName" :title="item.fieldMeans" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                    <vxe-table-column v-for="(item,index) in field_main" :key="'field_main'+index" width="100" :field="item.fieldName" :title="item.fieldMeans"></vxe-table-column>
                     <vxe-table-column field="actualVolumeNumber" width="100" title="已拍卷数"></vxe-table-column>
                     <vxe-table-column field="condition" width="100" title="状态"></vxe-table-column>
                     <vxe-table-column field="gcStatusO" width="100" title="谱目状态"></vxe-table-column>
@@ -161,7 +161,7 @@ export default {
             {'fieldMeans': '谱籍_现代地名', 'fieldName': 'place'},
             // {'fieldMeans': '谱籍_依谱书所载', 'fieldName': 'LocalityModern'},
             {'fieldMeans': '堂号', 'fieldName': 'hall'},
-            {'fieldMeans': '卷数', 'fieldName': 'volume'},
+            {'fieldMeans': '卷(册)说明', 'fieldName': 'volume'},
         ];
 
         this.field_branch = [
@@ -340,37 +340,7 @@ export default {
             return false;
         },
         editClosedEvent({row}){
-            // this.editCatalog(row);
-        },
-        async editCatalog(row){// 编辑谱目
-            let dataObj = {}, branch = [{'fieldName': 'lostVolume'},
-            {'fieldName': 'firstAncestor'},
-            {'fieldName': 'migrationAncestor'},
-            {'fieldName': 'memo'},
-            {'fieldName': 'authorJob'},
-            {'fieldName': 'genealogyName'},
-            {'fieldName': 'volume'},
-            {'fieldName': 'hasVolume'},
-            {'fieldName': 'startYear'},
-            {'fieldName': 'publish'},
-            {'fieldName': 'hall'},
-            {'fieldName': 'place'},
-            {'fieldName': 'version'},
-            {'fieldName': 'authors'},
-            {'fieldName': 'LocalityModern'}];
-
-            branch.forEach((ele) => {
-                dataObj[ele.fieldName] = row[ele.fieldName] || '';
-            });
-
-            this.changeLoading();
-            let data=await api.patchAxios('data/edit',{'dataKey':row._key,'dataObj': dataObj,'userKey': this.userId, siteKey: this.stationKey});
-            this.changeLoading(false);
-            if(data.status == 200){
-                this.getCheckLogCodeSubmit();
-            }else{
-                this.$XModal.message({ message: data.msg, status: 'warning' });
-            }
+            
         },
         cellClickEvent({row,column}){
             if(column.property == 'action'){

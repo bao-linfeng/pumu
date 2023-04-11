@@ -36,11 +36,11 @@
                         <vxe-table-column type="checkbox" field="checkbox" width="60"></vxe-table-column>
                         <vxe-table-column field="fileName" width="100" title="文件标题"></vxe-table-column>
                         <vxe-table-column field="action" title="谱目复审" width="240" :cell-render="{name:'AdaiActionButton',attr:{data: [{'label':'重复','value':'d'}, {'label':'可拍','value':'nf'}, {'label':'打回','value':'m'}, {'label':'无效','value':'r'}]},events:{'d': codeSubmit2d, 'nf': codeSubmit2nf, 'm': codeSubmit2m, 'r': codeSubmit2r}}"></vxe-table-column>
-                        <vxe-table-column v-for="(item,index) in field_main" :key="'field_main'+index" width="100" :field="item.fieldName" :title="item.fieldMeans" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                        <vxe-table-column v-for="(item,index) in field_main" :key="'field_main'+index" width="100" :field="item.fieldName" :title="item.fieldMeans"></vxe-table-column>
                         <vxe-table-column field="publicTaskO" width="100" title="谱目类型"></vxe-table-column>
                     </vxe-table-colgroup>
                     
-                    <vxe-table-column v-for="(item,index) in field_branch" :key="'field_branch'+index" width="100" :field="item.fieldName" :title="item.fieldMeans" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                    <vxe-table-column v-for="(item,index) in field_branch" :key="'field_branch'+index" width="100" :field="item.fieldName" :title="item.fieldMeans"></vxe-table-column>
                     <vxe-table-column field="annex" title="待提交原因" width="75" :cell-render="{name:'AdaiActionButton',attr:{data:[{'label':'附件','value':'annex'}]},events:{'annex':annex}}"></vxe-table-column>
                 </vxe-table>
             </div>
@@ -88,14 +88,14 @@ export default {
             {'fieldMeans': '家谱谱名', 'fieldName': 'genealogyName'},
             {'fieldMeans': '出版年', 'fieldName': 'publish'},
             {'fieldMeans': '谱籍_依谱书所载', 'fieldName': 'LocalityModern'},
-            {'fieldMeans': '卷数', 'fieldName': 'volume'},
+            {'fieldMeans': '卷(册)说明', 'fieldName': 'volume'},
             {'fieldMeans': '堂号', 'fieldName': 'hall'},
         ];
 
         this.field_branch = [
             {'fieldMeans': '作者姓名', 'fieldName': 'authors'},
-            {'fieldMeans': '实拍册数', 'fieldName': 'hasVolume'},
-            {'fieldMeans': '缺卷', 'fieldName': 'lostVolume'},
+            {'fieldMeans': '应拍卷(册)数', 'fieldName': 'hasVolume'},
+            {'fieldMeans': '缺卷(册)说明', 'fieldName': 'lostVolume'},
             {'fieldMeans': '版本类型', 'fieldName': 'version'},
             {'fieldMeans': '作者职务', 'fieldName': 'authorJob'},
 
@@ -211,37 +211,7 @@ export default {
             return true;
         },
         editClosedEvent({row}){
-            this.editCatalog(row);
-        },
-        async editCatalog(row){// 编辑谱目
-            let dataObj = {}, branch = [{'fieldName': 'lostVolume'},
-            {'fieldName': 'firstAncestor'},
-            {'fieldName': 'migrationAncestor'},
-            {'fieldName': 'memo'},
-            {'fieldName': 'authorJob'},
-            {'fieldName': 'genealogyName'},
-            {'fieldName': 'volume'},
-            {'fieldName': 'hasVolume'},
-            {'fieldName': 'startYear'},
-            {'fieldName': 'publish'},
-            {'fieldName': 'hall'},
-            {'fieldName': 'place'},
-            {'fieldName': 'version'},
-            {'fieldName': 'authors'},
-            {'fieldName': 'LocalityModern'}];
-
-            branch.forEach((ele) => {
-                dataObj[ele.fieldName] = row[ele.fieldName] || '';
-            });
-
-            this.changeLoading();
-            let data=await api.patchAxios('data/edit',{'dataKey':row._key,'dataObj': dataObj,'userKey': this.userId, siteKey: this.stationKey});
-            this.changeLoading(false);
-            if(data.status == 200){
-                this.getCheckLogCodeSubmit();
-            }else{
-                this.$XModal.message({ message: data.msg, status: 'warning' });
-            }
+            
         },
         cellClickEvent({row,column}){
             if(column.property == 'action'){

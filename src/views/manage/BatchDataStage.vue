@@ -146,15 +146,15 @@ export default {
             {'fieldMeans': '家谱谱名', 'fieldName': 'genealogyName'},
             {'fieldMeans': '出版年', 'fieldName': 'publish'},
             {'fieldMeans': '谱籍_依谱书所载', 'fieldName': 'LocalityModern'},
-            {'fieldMeans': '卷数', 'fieldName': 'volume'},
+            {'fieldMeans': '卷(册)说明', 'fieldName': 'volume'},
             {'fieldMeans': '堂号', 'fieldName': 'hall'},
             {'fieldMeans': '状态', 'fieldName': 'condition'},
         ];
 
         this.field_branch = [
             {'fieldMeans': '作者姓名', 'fieldName': 'authors'},
-            {'fieldMeans': '实拍册数', 'fieldName': 'hasVolume'},
-            {'fieldMeans': '缺卷', 'fieldName': 'lostVolume'},
+            {'fieldMeans': '应拍卷(册)数', 'fieldName': 'hasVolume'},
+            {'fieldMeans': '缺卷(册)说明', 'fieldName': 'lostVolume'},
             {'fieldMeans': '版本类型', 'fieldName': 'version'},
             {'fieldMeans': '作者职务', 'fieldName': 'authorJob'},
 

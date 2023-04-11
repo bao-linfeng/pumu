@@ -66,7 +66,7 @@
                     <vxe-table-column field="genealogyName" min-width="100" title="谱名"></vxe-table-column>
                     <vxe-table-column field="publish" width="100" title="出版年"></vxe-table-column>
                     <vxe-table-column field="place" width="100" title="谱籍_现代地名"></vxe-table-column>
-                    <vxe-table-column field="volume" width="100" title="应有卷数"></vxe-table-column>
+                    <vxe-table-column field="volume" width="100" title="卷(册)说明"></vxe-table-column>
                     <vxe-table-column field="actualVolumeNumber" width="100" title="已拍卷数"></vxe-table-column>
                     <vxe-table-column field="gcStatusO" width="100" title="开放状态"></vxe-table-column>
                     <vxe-table-column field="surplusDays" width="100" title="剩余天数"></vxe-table-column>

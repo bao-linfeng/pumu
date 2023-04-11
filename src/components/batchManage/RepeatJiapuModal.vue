@@ -24,8 +24,8 @@
                     <vxe-table-column field="publish" title="出版年" width="100"></vxe-table-column>
                     <vxe-table-column field="_key" title="谱目ID" width="100"></vxe-table-column>
                 </vxe-table-colgroup>
-                
-                <vxe-table-column v-for="(item,index) in repeatDetailField" :visible="collapsable" width="100" :key="'dubious'+index" :field="item.fieldName" :title="item.fieldMeans" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                <!-- :edit-render="{name: 'input', attrs: {type: 'text'}}" -->
+                <vxe-table-column v-for="(item,index) in repeatDetailField" :visible="collapsable" width="100" :key="'dubious'+index" :field="item.fieldName" :title="item.fieldMeans"></vxe-table-column>
                 <vxe-table-column title="阅读影像" :width="80" :cell-render="{name:'AdaiActionButton',attr:{data:[{'label':'阅读','value':'readBook'}]},events:{'readBook':readBook}}"></vxe-table-column>
                 <vxe-table-colgroup title="操作" fixed="right" width="80">
                     <vxe-table-column field="repeatMark" title="标记家谱" width="90" :cell-render="{name:'repeatMarkModal',attr:{label:'标记'},events:{'click':repeatMark}}"></vxe-table-column>
@@ -170,11 +170,11 @@ export default {
         // {'fieldName': 'place', 'fieldMeans': '谱籍地'},
         {'fieldName': 'surname', 'fieldMeans': '姓氏'},
         {'fieldName': 'authors', 'fieldMeans': '作者'},
-        {'fieldName': 'volume', 'fieldMeans': '卷数'},
+        {'fieldName': 'volume', 'fieldMeans': '卷(册)说明'},
         {'fieldName': 'hall', 'fieldMeans': '堂号'},
         {'fieldName': 'missVolumeSupplement', 'fieldMeans': '缺卷补充'},
-        {'fieldName': 'lostVolume', 'fieldMeans': '缺卷'},
-        {'fieldName': 'hasVolume', 'fieldMeans': '实拍册数'},
+        {'fieldName': 'lostVolume', 'fieldMeans': '缺卷(册)说明'},
+        {'fieldName': 'hasVolume', 'fieldMeans': '应拍卷(册)数'},
         {'fieldName': 'LocalityModern', 'fieldMeans': '谱籍现代地名'},
         {'fieldName': 'prov', 'fieldMeans': '省'},
         {'fieldName': 'city', 'fieldMeans': '市'},

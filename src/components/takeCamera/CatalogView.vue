@@ -164,10 +164,10 @@ export default {
 
                 {'fieldMeans': '堂号', 'fieldName': 'hall'},
                 {'fieldMeans': '档案名称', 'fieldName': 'Filenames'},
-                {'fieldMeans': '应有册数', 'fieldName': 'volume'},
+                {'fieldMeans': '卷(册)说明', 'fieldName': 'volume'},
                 
-                {'fieldMeans': '实拍册数', 'fieldName': 'hasVolume'},
-                {'fieldMeans': '缺卷', 'fieldName': 'lostVolume'},
+                {'fieldMeans': '应拍卷(册)数', 'fieldName': 'hasVolume'},
+                {'fieldMeans': '缺卷(册)说明', 'fieldName': 'lostVolume'},
                 
                 {'fieldMeans': '一世祖', 'fieldName': 'firstAncestor'},
                 {'fieldMeans': '始迁祖', 'fieldName': 'migrationAncestor'},

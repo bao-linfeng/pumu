@@ -86,9 +86,10 @@
                     <vxe-table-column field="surname" title="姓氏" width="50"></vxe-table-column>
                     <vxe-table-column field="genealogyName" title="谱名" min-width="120"></vxe-table-column>
                     <vxe-table-column field="publish" width="100" title="出版年" sort-by="publish" sortable></vxe-table-column>
-                    <vxe-table-column field="hasVolume" width="100" title="卷数(标称)"></vxe-table-column>
+                    <vxe-table-column field="hasVolume" width="100" title="应拍卷(册)数"></vxe-table-column>
                     <vxe-table-column field="volumeNumber" width="100" title="卷数(实拍)"></vxe-table-column>
-                    <vxe-table-column field="lostVolume" width="100" title="缺卷"></vxe-table-column>
+                    <vxe-table-column field="volume" width="100" title="卷(册)说明"></vxe-table-column>
+                    <vxe-table-column field="lostVolume" width="100" title="缺卷(册)说明"></vxe-table-column>
                     <vxe-table-column field="hall" width="100" title="堂号"></vxe-table-column>
                     <vxe-table-column field="authors" width="100" title="作者姓名"></vxe-table-column>
                     <vxe-table-column field="authorJob" width="100" title="作者职务"></vxe-table-column>

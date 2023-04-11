@@ -16,6 +16,7 @@
                 
                 <el-button type="primary" size="medium" @click="getDataList">检索</el-button>
                 <el-button type="primary" size="medium" @click="fieldRcover">字段复原</el-button>
+                <el-checkbox class="margin10" v-model="haswu">无或空字符堂号</el-checkbox>
             </div>
             <div class="vex-table-box">
                 <!-- show-overflow -->
@@ -136,6 +137,7 @@ export default {
             isRead: false,
             attr: [{'fieldMeans': '状态', 'fieldName': 'condition'}],
             detail: {},
+            haswu: false,
         };
     },
     created:function(){
@@ -177,7 +179,7 @@ export default {
         },
         async getDataList(){
             console.log(this.searchArr);
-            let searchObject = {};
+            let searchObject = {'haswu': this.haswu ? '1' : '0'};
             this.searchArr.forEach((ele, i) => {
                 if(ele.check){
                     searchObject[ele.value] = this.searchObject[ele.value];

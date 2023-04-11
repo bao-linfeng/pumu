@@ -135,7 +135,7 @@ export default {
             limit: 30,
             orgList: [],
             overTimeList: [
-                {'label': '待议谱状态', 'value': ''}, 
+                {'label': '全部状态', 'value': ''}, 
                 {'label': '待议复审', 'value': '2'}, 
                 {'label': '待议谱', 'value': '0'}, 
                 {'label': '逾期谱', 'value': '1'}

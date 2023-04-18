@@ -172,11 +172,11 @@ export default {
             if(this.stationKey == '1379194999'){
                 this.w = 330;
                 this.actionButton = [
-                    {'label':'详情', 'value':'lookBook'}, 
-                    {'label':'影像', 'value':'readBook'},
-                    {'label': '记录', 'value':'lookLog'},
-                    {'label':'删除', 'value':'removeBook'},
-                    {'label':'完结', 'value':'catalogPass'},
+                    {'label': '详情', 'value': 'lookBook'}, 
+                    {'label': '影像', 'value': 'readBook'},
+                    {'label': '记录', 'value': 'lookLog'},
+                    {'label': '删除', 'value': 'removeBook'},
+                    {'label': '完结', 'value': 'catalogPass'},
                 ];
             }
         }

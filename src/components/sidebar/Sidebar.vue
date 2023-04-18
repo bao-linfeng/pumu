@@ -63,7 +63,7 @@ export default {
                 {name: '待议谱', path: '/toBeDiscussedGC', show:true, isChild: false},
                 {name:'开放谱书', path: '/dupProjectID', show: this.orgAdmin == 'admin' ? true : false, isChild: false},
                 {name: '影像审核', path: '/takeCamera', show: this.orgAdmin == 'admin' ? true : false, isChild: false},
-                {name: '单谱查重', path: '/singleRecheck', show: true, isChild: false},
+                // {name: '单谱查重', path: '/singleRecheck', show: true, isChild: false},
                 {name: '拍机编号', path: '/cameraDevice', show: true, isChild: false},
                 {name:'组织机构',path:'/institution',show:true,isChild:false},
                 {name:'机构审核',path:'/auditOrg',show: this.orgAdmin == 'admin' ? true : false,isChild:false},

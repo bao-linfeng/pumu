@@ -34,7 +34,7 @@
             <div class="head-right">
                 <div v-if="takeStatus == 6 && orgAdmin == 'admin'" class="task-verify" @click="isShow = 9">
                     <img src="../../assets/shoot/leaveMsg.svg" alt="">
-                    <span class="span">补拍影像</span>
+                    <span class="span">补拍快捷处理</span>
                 </div>
                 <div class="task-verify" @click="isShow = 4">
                     <img src="../../assets/shoot/leaveMsg.svg" alt="">
@@ -154,7 +154,7 @@
         <!-- 影像预览 -->
         <ImageView v-if="isShow == 8" :gid="gid" :genealogyName="genealogyName" v-on:close="isShow = 0" />
         <!-- 补拍影像 -->
-        <ReshootImages v-if="isShow == 9" :gid="gid" :vid="vid" :device="device" :page="page" v-on:close="closeReshoot" />
+        <ReshootImages v-if="isShow == 9" :gid="gid" :vid="vid" :device="device" :imageKey="pageKey" :imageURL="imageURL" :page="page" v-on:close="closeReshoot" />
     </div>
 </template>
 

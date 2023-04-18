@@ -46,6 +46,8 @@
                     ref="xTable"
                     :height="h"
                     :align="'center'"
+                    :sort-config="{trigger: 'cell', orders: ['desc', 'asc', 'auto'], remote: true}"
+                    @sort-change="sortChangeEvent"
                     :data="tableData">
                     <vxe-table-column field="fileName" title="文件标题" width="200"></vxe-table-column>
                     <vxe-table-column field="hasSubmitO" title="提交审核" :edit-render="{name: '$select', options: stageState}"></vxe-table-column>
@@ -55,7 +57,7 @@
                     <vxe-table-column field="dataNum" title="已导入数"></vxe-table-column>
                     <vxe-table-column field="hasMarkISGNNum" title="已入库数"></vxe-table-column>
                     <vxe-table-column field="libO" title="机构"></vxe-table-column>
-                    <vxe-table-column field="createTime" title="导入时间" :formatter="['formatDate', '']"></vxe-table-column>
+                    <vxe-table-column field="createTime" title="导入时间" :formatter="['formatDate', '']" sort-by="createTime" sortable></vxe-table-column>
                     <vxe-table-column title="操作" width="300" :cell-render="{name:'AdaiActionButton',attr:{data:actionData},events:{'look':navTo,'download':downloadExcel, 'downloadNaturalExcel':downloadNaturalExcel, 'upload': uploadImage,'linkImage':linkImage}}"></vxe-table-column>
                 </vxe-table>
             </div>
@@ -140,6 +142,8 @@ export default {
             isShow: 0,
             batchData: {},
             fileName: '',
+            sortField: '', 
+            sortType: 'auto',
         };
     },
     created:function(){
@@ -165,6 +169,12 @@ export default {
         }
     },
     methods:{
+        sortChangeEvent({column, property, order, sortBy, sortList, $event}){
+            console.log(property, order, sortBy);
+            this.sortField = sortBy;
+            this.sortType = order || 'auto';
+            this.refresh();
+        },
         uploadImage({row}){
             this.batchData = row;
             this.isShow = 1;
@@ -339,7 +349,7 @@ export default {
             }
         },
         async getBatch(){// 批次列表
-            let data = await api.getAxios('batch?type='+this.type+'&fileName='+this.fileName+'&libListCheck='+this.libListCheck.join()+'&startTime='+this.startTime+'&endTime='+this.endTime+'&orgKey='+this.orgKey+'&batchKey='+this.batchId+'&siteKey='+this.stationKey+'&stage='+this.stage+'&userKey='+this.userId+'&creator=&userRole='+this.role+'&page='+this.page+'&limit='+this.limit);
+            let data = await api.getAxios('batch?type='+this.type+'&sortField='+this.sortField+'&sortType='+this.sortType+'&fileName='+this.fileName+'&libListCheck='+this.libListCheck.join()+'&startTime='+this.startTime+'&endTime='+this.endTime+'&orgKey='+this.orgKey+'&batchKey='+this.batchId+'&siteKey='+this.stationKey+'&stage='+this.stage+'&userKey='+this.userId+'&creator=&userRole='+this.role+'&page='+this.page+'&limit='+this.limit);
             if(data.status == 200){
                 this.tableData = data.data.map((ele) => {
                     ele.libO = ele.lib+'('+ele.libCode+')';

@@ -1,7 +1,7 @@
 <template>
     <div class="volume-edit-wrap" @keyup.stop="" :class="{read: read}">
         <div class="head-box">
-            <el-button type="primary" size="small" @click="handleOpenAutoCompleteSearch">地址搜索</el-button>
+            <el-button type="primary" size="small" @click="handleOpenAutoCompleteSearch">地名搜索</el-button>
             <h3 class="title">谱目编辑</h3>
             <img class="close" @click="close(false)" src="../../assets/close.svg" alt="">
         </div>
@@ -9,7 +9,8 @@
             <ul class="edit-content">
                 <li v-for="(item, index) in argumentsList" :key="index">
                     <span class="label">{{item.fieldMeans}}</span>
-                    <el-input class="w90" :class="{changeActive: changeFieldArr.indexOf(item.fieldName) > -1}" v-model="parameter[item.fieldName]" :title="parameter[item.fieldName]"  :disabled="item.disabled || read" clearable size="medium"></el-input>
+                    <el-input class="w90" :class="{changeActive: changeFieldArr.indexOf(item.fieldName) > -1, w80: ['place'].indexOf(item.fieldName) > -1}" v-model="parameter[item.fieldName]" :title="parameter[item.fieldName]"  :disabled="item.disabled || read" clearable size="medium"></el-input>
+                    <img class="edit" v-if="['place'].indexOf(item.fieldName) > -1" @click="isOpen = 2" title="更新" src="../../assets/shoot/leaveMsg.svg" alt="">
                 </li>
             </ul>
             <div class="textarea-wrap">
@@ -68,7 +69,8 @@
                 <el-button type="primary" size="medium" @click="saveData">保存</el-button>
             </div>
         </div>
-        <AutoCompleteSearch v-if="isOpen" v-on:close="isOpen = 0" />
+        <AutoCompleteSearch v-if="isOpen == 1" v-on:close="isOpen = 0" />
+        <PlaceModule v-if="isOpen == 2" v-on:close="isOpen = 0" v-on:save="savePlace" />
     </div>
 </template>
 
@@ -77,10 +79,11 @@ import api from "../../api.js";
 import ADS from "../../ADS.js";
 import { mapState, mapActions, mapGetters } from "vuex";
 import AutoCompleteSearch from './AutoCompleteSearch.vue';
+import PlaceModule from './PlaceModule.vue';
 export default {
     name: "catalogView",
     components: {
-        AutoCompleteSearch, 
+        AutoCompleteSearch, PlaceModule, 
     },
     props:{
         dataKey: String,
@@ -96,6 +99,9 @@ export default {
             argumentsList: [
                 // {'fieldMeans': '谱ID', 'fieldName': '_key', 'disabled': true},
                 {'fieldMeans': '家谱谱名', 'fieldName': 'genealogyName'},
+                {'fieldMeans': '省', 'fieldName': 'prov'},
+                {'fieldMeans': '市', 'fieldName': 'city'},
+                {'fieldMeans': '区', 'fieldName': 'district'},
                 {'fieldMeans': '谱籍_现代地名', 'fieldName': 'place'},
                 {'fieldMeans': '缺卷(册)说明', 'fieldName': 'lostVolume'},
                 {'fieldMeans': '谱籍_依谱书所载', 'fieldName': 'LocalityModern'},
@@ -166,6 +172,13 @@ export default {
         this.getGenealogyDetail();
     },
     methods:{
+        savePlace(data){
+            this.isOpen = 0;
+            this.parameter['prov'] = data.province;
+            this.parameter['city'] = data.city;
+            this.parameter['district'] = data.district;
+            this.parameter['place'] = data.province+data.city+data.district+data.place;
+        },
         handleOpenAutoCompleteSearch(){
             this.isOpen = 1;
         },
@@ -310,6 +323,11 @@ export default {
                     text-align: left;
                     display: block;
                 }
+                .edit{
+                    background: #000;
+                    margin-left: 10px;
+                    cursor: pointer;
+                }
             }
         }
         .foot-box{
@@ -383,6 +401,9 @@ i{
     position: relative;
     width: calc(100% - 100px);
     font-size: 16px;
+}
+.w80{
+    width: calc(100% - 140px);
 }
 .width80{
     width: 100px;

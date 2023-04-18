@@ -59,7 +59,7 @@ export default {
     mounted: function(){
         // let baseURL = 'https://pumudata.qingtime.cn';
         this.uploadFileURL = 'https://sync.qingtime.cn';
-        if(window.location.origin.indexOf('camera.1jiapu.com') > -1){
+        if(window.location.origin.indexOf('genealogy.1jiapu.com') > -1){
             // baseURL = 'http://genealogydata.1jiapu.com';
             this.uploadFileURL = 'http://223.111.180.111:8085';
         }

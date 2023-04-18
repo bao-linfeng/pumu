@@ -480,6 +480,7 @@ export default {
         async deleteImageList(){// 批量删除图片
             let result = await api.deleteAxios('v3/review/catalog/image', {'volumeKey': this.vid, 'orgKey': this.orgId, 'imageKeyArray': this.checkImageList, 'siteKey': this.stationKey, 'userKey': this.userId});
             if(result.status == 200){
+                this.checkImageList = [];
                 this.getImageList();
             }else{
                 this.$XModal.message({message: result.msg, status: 'warning'});

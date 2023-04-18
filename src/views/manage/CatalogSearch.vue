@@ -1,9 +1,10 @@
 <template>  
     <div class="wrap">
+        <!-- 左侧栏 -->
         <Sidebar />
         <div class="content">
+            <!-- head -->
             <div class="nav-wrap">
-                <!-- <span class="title">家谱列表</span> -->
                 <el-select class="width100" v-model="searchType" placeholder="家谱列表">
                     <el-option
                         v-for="item in searchTypeList"
@@ -13,54 +14,80 @@
                     </el-option>
                 </el-select>
                 <div class="head-right">
-                    <!-- <el-button type="primary" size="medium">导出数据</el-button> -->
+                    <el-button type="primary" size="medium" @click="downloadExcel">导出数据</el-button>
                 </div>
             </div>
+            <!-- 检索输入框 -->
             <div class="search-wrap">
-                <el-input class="width100" v-model="gcKey" placeholder="请输入谱ID" @change="getDataList" clearable></el-input>
-                <el-input class="width100" v-model="genealogyName" placeholder="请输入谱名" @change="getDataList" clearable></el-input>
-                <el-input class="width100" v-model="place" placeholder="请输入谱籍地" @change="getDataList" clearable></el-input>
-                <el-input class="width100" v-model="surname" placeholder="请输入姓氏" @change="getDataList" clearable></el-input>
-                <el-select class="width100" v-model="imgStatus" placeholder="影像状态">
-                    <el-option
-                        v-for="item in imgStatusList"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
-                    </el-option>
-                </el-select>
-                <el-select class="width100" v-model="GCOver" placeholder="编目状态">
-                    <el-option
-                        v-for="item in GCOverList"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
-                    </el-option>
-                </el-select>
-                <el-select class="width100" v-model="NoIndex" placeholder="索引状态">
-                    <el-option
-                        v-for="item in NoIndexList"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
-                    </el-option>
-                </el-select>
-                <el-select class="width100" v-model="claimOrgKey" multiple placeholder="机构">
-                    <el-option
-                        v-for="item in orgList"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
-                    </el-option>
-                </el-select>
-                <el-button type="primary" size="medium" @click="getDataList">检索</el-button>
-                <!-- <el-button class="marginL10" type="primary" size="mini" @click="toggleColumn(1)">{{visible ? '隐藏' : '显示'}} 操作列</el-button> -->
-                <el-button class="marginL10" type="primary" size="mini" @click="toggleColumn(2)">{{visible2 ? '隐藏' : '显示'}} 折叠列</el-button>
+                <div class="search-left">
+                    <el-input class="width100" size="mini" v-model="gcKey" placeholder="请输入谱ID" @change="getDataList" clearable></el-input>
+                    <el-input class="width100" size="mini" v-model="genealogyName" placeholder="请输入谱名" @change="getDataList" clearable></el-input>
+                    <el-input class="width100" size="mini" v-model="place" placeholder="请输入谱籍地" @change="getDataList" clearable></el-input>
+                    <el-input class="width100" size="mini" v-model="surname" placeholder="请输入姓氏" @change="getDataList" clearable></el-input>
+                    <el-select class="width100" size="mini" v-model="imgStatus" placeholder="影像状态">
+                        <el-option
+                            v-for="item in imgStatusList"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                        </el-option>
+                    </el-select>
+                    <el-button type="primary" size="mini" @click="getDataList">检索</el-button>
+                    <el-checkbox class="marginL10" size="mini" v-model="isShowSearch">展开</el-checkbox>
+                </div>
+                <div class="search-right">
+                    <el-button class="marginL10" type="primary" size="mini" @click="toggleColumn(2)">{{visible2 ? '隐藏' : '显示'}} 折叠列</el-button>
+                    <el-button class="marginL10" type="primary" size="mini" @click="toggleColumn(1)">{{visible ? '隐藏' : '显示'}} 操作列</el-button>
+                </div>
             </div>
-            <div class="vex-table-box">
-                <!-- show-overflow -->
-                <!-- auto-resize -->
-                <!-- :column-config="{resizable: true}" -->
+            <div class="search-wrap" v-show="isShowSearch">
+                <div class="search-left">
+                    <el-select class="width100" size="mini" v-model="GCOver" placeholder="编目状态">
+                        <el-option
+                            v-for="item in GCOverList"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                        </el-option>
+                    </el-select>
+                    <el-select class="width100" size="mini" v-model="NoIndex" placeholder="索引状态">
+                        <el-option
+                            v-for="item in NoIndexList"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                        </el-option>
+                    </el-select>
+                    <el-select class="width100" size="mini" v-model="claimOrgKey" multiple placeholder="机构">
+                        <el-option
+                            v-for="item in orgList"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                        </el-option>
+                    </el-select>
+                    <el-date-picker
+                        class="w250"
+                        size="mini"
+                        v-model="updateTime"
+                        type="daterange"
+                        unlink-panels
+                        start-placeholder="更新开始时间"
+                        end-placeholder="更新结束时间"
+                    />
+                    <el-date-picker
+                        class="w250"
+                        size="mini"
+                        v-model="createTime"
+                        type="daterange"
+                        unlink-panels
+                        start-placeholder="上传开始时间"
+                        end-placeholder="上传结束时间"
+                    />
+                </div>
+            </div>
+            <div class="vex-table-box" :class="{active: isShowSearch}">
+                <!-- table -->
                 <vxe-table
                     border
                     resizable
@@ -74,12 +101,12 @@
                     :align="'center'"
                     :data="tableData"
                     :row-class-name="rowClassName"
+                    :cell-class-name="cellClassName"
                     @checkbox-all="selectAllEvent"
                     @checkbox-change="selectChangeEvent"
                     :sort-config="{trigger: 'cell', orders: ['desc', 'asc', 'auto'], remote: true}"
                     @sort-change="sortChangeEvent"
                     >
-                    <!-- <vxe-table-column type="checkbox" width="60"></vxe-table-column> -->
                     <vxe-table-column field="_key" title="谱ID" width="100"></vxe-table-column>
                     <vxe-table-column field="LocalityModern" title="谱籍地(原谱)" width="120"></vxe-table-column>
                     <vxe-table-column field="place" title="谱籍地(现代)" width="120"></vxe-table-column>
@@ -105,8 +132,9 @@
                     <vxe-table-column field="updateUserName" title="更新人员" width="100" :visible="visible2"></vxe-table-column>
                     <vxe-table-column field="updateTimeO" title="更新日期" width="100" sort-by="updateTime" sortable :visible="visible2"></vxe-table-column>
                     <vxe-table-column field="createTimeO" title="上传日期" width="100" sort-by="createTime" sortable :visible="visible2"></vxe-table-column>
-                    <vxe-table-column title="操作" :visible="visible2" fixed="right" width="180" :cell-render="{name:'AdaiActionButton',attr:{data: attrData}, events: {'detail': getDetail, 'edit': getEdit, 'log': getLog}}"></vxe-table-column>
+                    <vxe-table-column title="操作" :visible="visible" fixed="right" width="180" :cell-render="{name:'AdaiActionButton',attr:{data: attrData}, events: {'detail': getDetail, 'edit': getEdit, 'log': getLog}}"></vxe-table-column>
                 </vxe-table>
+                <!-- 分页 -->
                 <div class="page-foot">
                     <div class="count-wrap">
                         <p>小计：共{{volumePages}}卷，{{imagePages}}拍</p>
@@ -123,13 +151,14 @@
                 </div>
             </div>
         </div>
-        <!-- <Loading v-show="loading" /> -->
         <!-- 记录 -->
         <LogModule v-if="isShow == 3" :gid="id" v-on:close="closeModule" />
         <!-- 编辑 -->
         <EditCatalog v-if="isShow == 2" :read="isRead" :attr="attr" :dataKey="id" :vid="''" v-on:close="closeModule" />
         <!-- 详情 -->
         <CatalogView v-if="isShow == 1" :read="isRead" :dataKey="id" :vid="''" v-on:close="closeModule" v-on:save="handleSave" />
+        <!-- 加载页 -->
+        <Loading v-show="Loading" />
     </div>
 </template>
 
@@ -190,9 +219,12 @@ export default {
                 {'label': '不可索引', 'value': '1'},
                 {'label': '可索引', 'value': '2'},
             ],
-            time: '',
-            startTime: '',
-            endTime: '',
+            updateTime: '',
+            updateStartTime: '',
+            updateEndTime: '',
+            createTime: '',
+            createStartTime: '',
+            createEndTime: '',
             h: 0,
             selectRecords: [],
             id: '',
@@ -216,16 +248,28 @@ export default {
             ],
             visible: false,
             visible2: false,
+            Loading: false,
+            isShowSearch: false,
         };
     },
     created:function(){
-        this.h = window.innerHeight - 50 - 50 - 48;
+        this.h = window.innerHeight - 50 - 40 - 48;
     },
     mounted:function(){
         this.getOrgList();
         this.getDataList();
     },
     methods:{
+        async downloadExcel(){// 下载检索结果
+            this.Loading = true;
+            let data = await api.getAxios('catalog/catalogListFSDownload?gcKey='+this.gcKey+'&updateStartTime='+this.updateStartTime+'&updateEndTime='+this.updateEndTime+'&createStartTime='+this.createStartTime+'&createEndTime='+this.createEndTime+'&imgStatus='+this.imgStatus+'&GCOver='+this.GCOver+'&NoIndex='+this.NoIndex+'&sortField='+this.sortField+'&sortType='+this.sortType+'&genealogyName='+this.genealogyName+'&place='+this.place+'&surname='+this.surname+'&condition='+this.condition+'&claimOrgKey='+this.claimOrgKey+'&orgKey='+this.orgKey+'&siteKey='+this.stationKey+'&limit=1000');
+            this.Loading = false;
+            if(data.status == 200){
+                ADS.downliadLink(data.result);
+            }else{
+                this.$XModal.message({ message: data.msg, status: 'warning' })
+            }
+        },
         toggleColumn(f){
             if(f == 1){
                 this.visible = !this.visible;
@@ -245,11 +289,16 @@ export default {
             this.getDataList();
         },
         rowClassName ({ row, rowIndex }) {
-            if(row.GCOver == '1') {
-                return 'row-blue'
-            }
             if(row.isLook){
                 return 'row-gray'
+            }
+        },
+        cellClassName({ row, rowIndex, $rowIndex, column, columnIndex, $columnIndex }){
+            if(row.changeFieldArr && row.changeFieldArr.indexOf(column.property) > -1){
+                return 'row-red'
+            }
+            if(row.GCOver == '1' && column.property == '_key') {
+                return 'row-blue'
             }
         },
         selectAllEvent ({ checked, records }) {
@@ -281,7 +330,7 @@ export default {
         },
         async getDataList(f = true){
             this.loading = true;
-            let data = await api.getAxios('catalog/catalogListFS?gcKey='+this.gcKey+'&imgStatus='+this.imgStatus+'&GCOver='+this.GCOver+'&NoIndex='+this.NoIndex+'&sortField='+this.sortField+'&sortType='+this.sortType+'&genealogyName='+this.genealogyName+'&place='+this.place+'&surname='+this.surname+'&condition='+this.condition+'&claimOrgKey='+this.claimOrgKey+'&orgKey='+this.orgKey+'&siteKey='+this.stationKey+'&page='+this.page+'&limit='+this.limit);
+            let data = await api.getAxios('catalog/catalogListFS?gcKey='+this.gcKey+'&updateStartTime='+this.updateStartTime+'&updateEndTime='+this.updateEndTime+'&createStartTime='+this.createStartTime+'&createEndTime='+this.createEndTime+'&imgStatus='+this.imgStatus+'&GCOver='+this.GCOver+'&NoIndex='+this.NoIndex+'&sortField='+this.sortField+'&sortType='+this.sortType+'&genealogyName='+this.genealogyName+'&place='+this.place+'&surname='+this.surname+'&condition='+this.condition+'&claimOrgKey='+this.claimOrgKey+'&orgKey='+this.orgKey+'&siteKey='+this.stationKey+'&page='+this.page+'&limit='+this.limit);
             this.loading = false;
             if(data.status == 200){
                 let volumePages = 0, imagePages = 0;
@@ -307,7 +356,7 @@ export default {
             }
         },
         async getCatalogListFSStatistics(){
-            let data = await api.getAxios('catalog/catalogListFSStatistics?gcKey='+this.gcKey+'&imgStatus='+this.imgStatus+'&GCOver='+this.GCOver+'&NoIndex='+this.NoIndex+'&sortField='+this.sortField+'&sortType='+this.sortType+'&genealogyName='+this.genealogyName+'&place='+this.place+'&surname='+this.surname+'&condition='+this.condition+'&claimOrgKey='+this.claimOrgKey+'&orgKey='+this.orgKey+'&siteKey='+this.stationKey+'&page='+this.page+'&limit='+this.limit);
+            let data = await api.getAxios('catalog/catalogListFSStatistics?gcKey='+this.gcKey+'&updateStartTime='+this.updateStartTime+'&updateEndTime='+this.updateEndTime+'&createStartTime='+this.createStartTime+'&createEndTime='+this.createEndTime+'&imgStatus='+this.imgStatus+'&GCOver='+this.GCOver+'&NoIndex='+this.NoIndex+'&sortField='+this.sortField+'&sortType='+this.sortType+'&genealogyName='+this.genealogyName+'&place='+this.place+'&surname='+this.surname+'&condition='+this.condition+'&claimOrgKey='+this.claimOrgKey+'&orgKey='+this.orgKey+'&siteKey='+this.stationKey+'&page='+this.page+'&limit='+this.limit);
             if(data.status == 200){
                 this.volumeTotal = data.result.totalVolume;
                 this.imageTotal = data.result.totalImg;
@@ -357,18 +406,35 @@ export default {
         })
     },
     watch:{
-        'time': function(nv, ov){
+        'updateTime': function(nv, ov){
             console.log(nv);
             if(nv){
-                this.startTime = new Date(nv[0]).getTime();
-                this.endTime = new Date(nv[1]).getTime();
+                this.updateStartTime = new Date(nv[0]).getTime();
+                this.updateEndTime = new Date(nv[1]).getTime();
             }else{
-                this.startTime = '';
-                this.endTime = '';
+                this.updateStartTime = '';
+                this.updateEndTime = '';
+            }
+        },
+        'createTime': function(nv, ov){
+            console.log(nv);
+            if(nv){
+                this.createStartTime = new Date(nv[0]).getTime();
+                this.createEndTime = new Date(nv[1]).getTime();
+            }else{
+                this.createStartTime = '';
+                this.createEndTime = '';
             }
         },
         'searchType': function(nv, ov){
             this.$router.push('/'+this.pathname+'/'+nv);
+        },
+        'isShowSearch': function(nv, ov){
+            if(nv){
+                this.h = this.h - 40;
+            }else{
+                this.h = this.h + 40;
+            }
         },
     },
 };
@@ -405,18 +471,26 @@ export default {
         .search-wrap{
             position: relative;
             width: calc(100% - 40px);
-            height: 50px;
+            height: 40px;
             padding: 0 20px;
             display: flex;
-            justify-content: flex-start;
+            justify-content: space-between;
             align-items: center;
+            .search-left{
+                display: flex;
+                align-items: center;
+            }
+            .search-right{
+                display: flex;
+                align-items: center;
+            }
         }
         .vex-table-box{
             width: calc(100% - 40px);
             padding: 0 20px;
             height: calc(100% - 100px);
             &.active{
-                height: calc(100% - 250px);
+                height: calc(100% - 140px);
             }
         }
     }
@@ -435,6 +509,9 @@ export default {
 }
 .width100{
     width: 120px;
+}
+.w250{
+    width: 250px !important;
 }
 .marginR10{
     margin-right: 10px;

@@ -49,6 +49,8 @@
         <EditCatalog v-if="(isLog == 2)" :read="isRead" :attr="attr" :dataKey="gid" :vid="''" v-on:close="closeLog" />
         <!-- 查看谱目 -->
         <CatalogView v-if="isLog == 3" :read="isRead" :dataKey="gid" :vid="''" v-on:close="closeLog" v-on:save="handleSave" />
+        <!-- 谱目完结 -->
+        <CatalogFinish v-if="isLog == 4" :dataKey="gid" v-on:close="isLog = 0" v-on:save="catalogFinishSave" />
     </div>
 </template>
 
@@ -58,6 +60,7 @@ import SourceModal from "./SourceModal.vue";
 import LogModule from '../../components/discussed/LogModule.vue';
 import EditCatalog from '../../components/takeCamera/EditCatalog.vue';
 import CatalogView from '../../components/takeCamera/CatalogView.vue';
+import CatalogFinish from './CatalogFinish.vue';
 import { mapState, mapActions, mapGetters } from "vuex";
 export default {
     name: "genealogyTableModal",
@@ -73,7 +76,7 @@ export default {
         },
     },
     components: {
-        SourceModal, LogModule, EditCatalog, CatalogView, 
+        SourceModal, LogModule, EditCatalog, CatalogView, CatalogFinish, 
     },
     data: () => {
         return {
@@ -99,6 +102,7 @@ export default {
             visible: true,
             attr: [{'fieldMeans': '状态', 'fieldName': 'condition'}],
             h: 500,
+            row: {},
         };
     },
     created:function(){
@@ -113,9 +117,9 @@ export default {
 
         this.field_branch = [
             {'fieldMeans': '谱籍_依谱书所载', 'fieldName': 'LocalityModern'},
-            {'fieldMeans': '省', 'fieldName': 'prov'},
-            {'fieldMeans': '市', 'fieldName': 'city'},
-            {'fieldMeans': '区', 'fieldName': 'district'},
+            // {'fieldMeans': '省', 'fieldName': 'prov'},
+            // {'fieldMeans': '市', 'fieldName': 'city'},
+            // {'fieldMeans': '区', 'fieldName': 'district'},
 
             {'fieldMeans': '作者姓名', 'fieldName': 'authors'},
             {'fieldMeans': '应拍卷(册)数', 'fieldName': 'hasVolume'},
@@ -210,9 +214,14 @@ export default {
         handleSave(){
 
         },
-        closeLog(){
+        catalogFinishSave(){
+            this.isLog = 0;
+            this.$emit('get-genealogy','')
+        },
+        closeLog(f){
             this.isLog = 0;
             this.isRead = false;
+            f ? this.$emit('get-genealogy','') : null;
         },
         lookLog({row}){
             this.isLog = 1;
@@ -270,39 +279,11 @@ export default {
             this.isEditImage = true;
         },
         catalogPass({row}){
-            if(row.condition != 'nf'){
-                return this.$message({message: '该谱目目前状态不允许提交完结！', type: 'warning'});;
-            }
-            this.$confirm('是否确认完结此家谱任务?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).then(() => {
-                this.catalogPassCheck(row._key);
-            }).catch(() => {});
-        },
-        async catalogPassCheck(catalogKey){//完结家谱判断
-            let data = await api.getAxios('v3/camera/catalog/catalogCanPass?catalogKey='+catalogKey);
-            if(data.status == 200){
-                this.catalogPassApi(catalogKey);
-            }else if(data.status == 301){
-                this.$confirm('该谱目应有卷册和实拍卷册不一致, 是否继续完结此家谱任务?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    this.catalogPassApi(catalogKey);
-                }).catch(() => {});
+            if(row.condition == 'nf' || row.condition == 'f'){
+                this.gid = row._key;
+                this.isLog = 4;
             }else{
-                this.$message({message: data.msg, type: 'warning'});
-            }
-        },
-        async catalogPassApi(catalogKey){//完结家谱
-            let data = await api.patchAxios('v3/camera/catalog/catalogPass2',{'catalogKey': catalogKey, 'status': 7, 'userKey':this.userId, 'siteKey':this.stationKey, 'orgKey': this.orgId});
-            if(data.status == 200){
-                this.$emit('get-genealogy','');
-            }else{
-                this.$message({message: data.msg, type: 'warning'});
+                this.$message({message: '该谱目目前状态不允许进行完结操作！', type: 'warning'});
             }
         },
         removeBook({row}){// 删除谱目或退出共享

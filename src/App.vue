@@ -510,6 +510,9 @@ table{
 .row-gray{
   color: #ddd;
 }
+.row-purple{
+  color: #800080;
+}
 .condition{
     position: absolute;
     top: 40px;

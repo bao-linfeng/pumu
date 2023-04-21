@@ -34,8 +34,8 @@
             </div>
             <div class="place-box">
                 <label class="label">详细地址(*)</label>
-                <i class="place w240" :title="province+city+district">{{province}}{{city}}{{district}}</i>
-                <el-input class="w240" v-model="place" clearable size="mini" placeholder="详细地址"></el-input>
+                <!-- <i class="place w240" :title="province+city+district">{{province}}{{city}}{{district}}</i> -->
+                <el-input class="w480" v-model="place" clearable size="mini" placeholder="详细地址"></el-input>
             </div>
         </div>
         <div class="foot-box">
@@ -52,7 +52,7 @@ import { mapState, mapActions, mapGetters } from "vuex";
 export default {
     name: "placeModule",
     props:{
-        
+        address: Object,
     },
     data: () => {
         return {
@@ -67,6 +67,14 @@ export default {
         };
     },
     mounted: function(){
+        this.province = this.address['prov'] || '';
+        setTimeout(() => {
+            this.city = this.address['city'] || '';
+        }, 50);
+        setTimeout(() => {
+            this.district = this.address['district'] || '';
+        }, 100);
+        
         this.initDistrictSearch();
     },
     methods:{
@@ -112,12 +120,6 @@ export default {
         saveData(){
             if(!this.province){
                 return ADS.message('请选择省份');
-            }
-            if(!this.city){
-                return ADS.message('请选择城市');
-            }
-            if(!this.district){
-                return ADS.message('请选择县区');
             }
             this.$emit('save', {'province': this.province, 'city': this.city, 'district': this.district, 'place': this.place});
         },
@@ -212,6 +214,9 @@ export default {
 }
 .w240{
     width: 240px;
+}
+.w480{
+    width: 480px;
 }
 </style>
 

@@ -7,7 +7,7 @@
         </div>
         <div class="content-box">
             <ul class="edit-content">
-                <li v-for="(item, index) in argumentsList" :key="index">
+                <li v-for="(item, index) in argumentsList" :key="index" v-show="!item.hide">
                     <span class="label">{{item.fieldMeans}}</span>
                     <el-input class="w90" :class="{changeActive: changeFieldArr.indexOf(item.fieldName) > -1, w80: ['place'].indexOf(item.fieldName) > -1}" v-model="parameter[item.fieldName]" :title="parameter[item.fieldName]"  :disabled="item.disabled || read" clearable size="medium"></el-input>
                     <img class="edit" v-if="['place'].indexOf(item.fieldName) > -1" @click="isOpen = 2" title="更新" src="../../assets/shoot/leaveMsg.svg" alt="">
@@ -64,13 +64,12 @@
                     </el-radio-group>
                 </div>
             </div>
-            <div class="foot-box" v-if="!read">
-                <el-button size="medium" @click="close">取消</el-button>
-                <el-button type="primary" size="medium" @click="saveData">保存</el-button>
-            </div>
         </div>
-        <AutoCompleteSearch v-if="isOpen == 1" v-on:close="isOpen = 0" />
-        <PlaceModule v-if="isOpen == 2" v-on:close="isOpen = 0" v-on:save="savePlace" />
+        <div class="foot-box" v-if="!read">
+            <el-button size="medium" @click="close">取消</el-button>
+            <el-button type="primary" size="medium" @click="saveData">保存</el-button>
+        </div>
+        <PlaceModule v-if="isOpen == 2" :address="parameter" v-on:close="isOpen = 0" v-on:save="savePlace" />
     </div>
 </template>
 
@@ -78,12 +77,11 @@
 import api from "../../api.js";
 import ADS from "../../ADS.js";
 import { mapState, mapActions, mapGetters } from "vuex";
-import AutoCompleteSearch from './AutoCompleteSearch.vue';
 import PlaceModule from './PlaceModule.vue';
 export default {
     name: "catalogView",
     components: {
-        AutoCompleteSearch, PlaceModule, 
+        PlaceModule, 
     },
     props:{
         dataKey: String,
@@ -99,9 +97,9 @@ export default {
             argumentsList: [
                 // {'fieldMeans': '谱ID', 'fieldName': '_key', 'disabled': true},
                 {'fieldMeans': '家谱谱名', 'fieldName': 'genealogyName'},
-                {'fieldMeans': '省', 'fieldName': 'prov'},
-                {'fieldMeans': '市', 'fieldName': 'city'},
-                {'fieldMeans': '区', 'fieldName': 'district'},
+                {'fieldMeans': '省', 'fieldName': 'prov', 'hide': true},
+                {'fieldMeans': '市', 'fieldName': 'city', 'hide': true},
+                {'fieldMeans': '区', 'fieldName': 'district', 'hide': true},
                 {'fieldMeans': '谱籍_现代地名', 'fieldName': 'place'},
                 {'fieldMeans': '缺卷(册)说明', 'fieldName': 'lostVolume'},
                 {'fieldMeans': '谱籍_依谱书所载', 'fieldName': 'LocalityModern'},
@@ -180,7 +178,7 @@ export default {
             this.parameter['place'] = data.province+data.city+data.district+data.place;
         },
         handleOpenAutoCompleteSearch(){
-            this.isOpen = 1;
+            window.open('/'+this.pathname+'/autoCompleteSearch?place='+this.parameter['place']);
         },
         close(f = false){
             this.$emit('close', f);
@@ -277,7 +275,7 @@ export default {
     background: #fff;
     font-size: 14px;
     color: #000;
-    padding: 0 20px 20px 20px;
+    padding: 10px 20px;
     box-shadow: 0 0 1px 1px #ddd;
     z-index: 1000;
     &.read{
@@ -302,7 +300,7 @@ export default {
     .content-box{
         position: relative;
         width: 400px;
-        height: calc(100% - 50px);
+        height: calc(100% - 80px);
         overflow: auto;
         .edit-content{
             position: relative;
@@ -330,13 +328,13 @@ export default {
                 }
             }
         }
-        .foot-box{
-            position: relative;
-            height: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+    }
+    .foot-box{
+        position: relative;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 }
 .width200{

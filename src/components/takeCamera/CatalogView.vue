@@ -167,6 +167,7 @@ export default {
                 {'fieldMeans': '卷(册)说明', 'fieldName': 'volume'},
                 
                 {'fieldMeans': '应拍卷(册)数', 'fieldName': 'hasVolume'},
+                {'fieldMeans': '实拍卷(册)数', 'fieldName': 'actualVolumes', 'disabled': true},
                 {'fieldMeans': '缺卷(册)说明', 'fieldName': 'lostVolume'},
                 
                 {'fieldMeans': '一世祖', 'fieldName': 'firstAncestor'},
@@ -369,6 +370,8 @@ export default {
                         parameter[ele.fieldName] = result.data[ele.fieldName] ? ADS.getLocalTime(result.data[ele.fieldName]) : '';
                     }else if(ele.fieldName == 'GCOver'){
                         parameter[ele.fieldName] = result.data[ele.fieldName] ? '是' : '否';
+                    }else if(ele.fieldName == 'gcStatus'){
+                        parameter[ele.fieldName] = this.catalogStatusO[result.data[ele.fieldName]];
                     }else{
                         parameter[ele.fieldName] = result.data[ele.fieldName];
                     }
@@ -442,6 +445,7 @@ export default {
             pathname: state => state.nav.pathname,
             orgAdmin: state => state.nav.orgAdmin,
             orgId: state => state.nav.orgId,
+            catalogStatusO: state => state.nav.catalogStatusO,
         })
     },
     watch:{

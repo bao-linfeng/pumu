@@ -27,7 +27,7 @@
                 </el-radio-group>
             </div>
             <div class="returnReason-wrap" v-if="[5, 6, 7, 12, 13, 14].indexOf(detail.takeStatus) > -1">
-                <h3 class="title">请输入说明:</h3>
+                <h3 class="title">请输入说明<i :class="{red: ((operate == 'toVoid' || operate == 'return') && !returnReason) || (orgAdmin == 'admin' && takeStatus == 6 && operate == 'recheck')}">*</i>:</h3>
                 <el-input
                     type="textarea"
                     :rows="3"
@@ -66,6 +66,7 @@ export default {
             ],
             operate: 'pass',
             operateO: {
+                'recheck': '提交复审',
                 'pass': '审核通过',
                 'return': '打回',
                 'toBeDiscussed': '待议处理',
@@ -95,9 +96,10 @@ export default {
                     // {'label': '作废', 'value': 'toVoid'}
                 ];
             }
-            if(this.takeStatus == 6){
+            if(this.takeStatus == 6){//微站 打回 => 作废、通过
                 this.operateStatusList = [
-                    {'label': '作废', 'value': 'toVoid'}
+                    {'label': '作废', 'value': 'toVoid'},
+                    {'label': '通过', 'value': 'pass'}
                 ];
             }
             if(this.takeStatus == 7){
@@ -122,9 +124,9 @@ export default {
                 ];
             }
         }else if(this.orgAdmin == 'admin'){
-            if(this.takeStatus == 6){
+            if(this.takeStatus == 6){// 机构 打回 => 提交复审、作废
                 this.operateStatusList = [
-                    {'label': '审核通过', 'value': 'pass'}, 
+                    {'label': '提交复审', 'value': 'recheck'}, 
                     {'label': '作废', 'value': 'toVoid'}
                 ];
             }else{
@@ -140,6 +142,12 @@ export default {
             this.$emit('close', f);
         },
         saveData(){
+            if((this.operate == 'toVoid' || this.operate == 'return') && !this.returnReason){
+                return ADS.message('请输入说明！');
+            }
+            if(this.orgAdmin == 'admin' && this.takeStatus == 6 && this.operate == 'recheck' && !this.returnReason){
+                return ADS.message('请输入说明！');
+            }
             this.$confirm('确认'+this.operateO[this.operate]+' '+this.detail.genealogyName+' '+this.detail.volumeNumber+' 的影像吗?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
@@ -284,6 +292,11 @@ export default {
     text-indent: 10px;
     text-align: left;
     outline: none;
+}
+.red{
+    color: #f00;
+    font-style: normal;
+    font-weight: normal;
 }
 </style>
 

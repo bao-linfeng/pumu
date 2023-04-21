@@ -78,6 +78,7 @@ import SingleRecheck from './views/manage/SingleRecheck.vue';
 import CatalogSearch from './views/manage/CatalogSearch.vue';
 import VolumeSearch from './views/manage/VolumeSearch.vue';
 import SingleQuickSearch from './views/manage/SingleQuickSearch.vue';
+import AutoCompleteSearch from './components/takeCamera/AutoCompleteSearch.vue';
 
 Vue.use(Router);
 
@@ -86,6 +87,14 @@ const routes = [
     path: "/404",
     name: "notfound",
     component: NotFound
+  },
+  {
+    path: "/:id/autoCompleteSearch",
+    name: "AutoCompleteSearch",
+    meta: {
+      requireAuth: true,
+    },
+    component: AutoCompleteSearch
   },
   {
     path: "/:id/singleQuickSearch",

@@ -2,7 +2,7 @@
     <div class="AutoCompleteSearch-wrap" @keyup.stop="">
         <div class="head-box">
             <h3 class="title">地址搜索服务</h3>
-            <img class="close" @click="close" src="../../assets/close.svg" alt="">
+            <!-- <img class="close" @click="close" src="../../assets/close.svg" alt=""> -->
         </div>
         <div class="content-box">
             <div class="map" id="map"></div>
@@ -39,6 +39,7 @@ export default {
         };
     },
     mounted: function(){
+        this.keywords = ADS.getQueryVariable('place') ? decodeURIComponent(ADS.getQueryVariable('place')) : ''; 
         this.initMap();
         this.initAutoComplete();
     },
@@ -55,7 +56,9 @@ export default {
                     city: '全国',
                 }
                 this.autoComplete = new AMap.Autocomplete(autoOptions);
-            })
+            });
+
+            this.autoCompleteSearch();
         },
         autoCompleteSearch(){
             if(!this.keywords){

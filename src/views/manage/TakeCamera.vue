@@ -119,6 +119,7 @@
                     <!-- <vxe-table-column v-if="stage >= 3" field="clientUser" title="提交人"></vxe-table-column> -->
                     <vxe-table-column v-if="stage == 3 || stage == 5 || stage == 14 || stage == 15" field="passUserName" title="审核人"></vxe-table-column>
                     <vxe-table-column v-if="stage == 4" field="returnReason" title="打回原因"></vxe-table-column>
+                    <vxe-table-column v-if="stage == 14" field="returnReasonMemo" title="原因说明"></vxe-table-column>
                     <vxe-table-column v-if="stage == 4" field="passUserName" title="打回人"></vxe-table-column>
                     <vxe-table-column v-if="stage == 17" field="toVoidUserName" title="作废人"></vxe-table-column>
 
@@ -128,7 +129,7 @@
                     <vxe-table-column v-if="stage == 4" field="returnTimeO" title="审核时间" sort-by="passTime" sortable></vxe-table-column>
                     <vxe-table-column v-if="stage == 17" field="toVoidTimeO" title="审核时间" sort-by="passTime" sortable></vxe-table-column>
                     <vxe-table-column v-if="stage >= 3" field="createTimeO" title="创建时间" sort-by="createTime" sortable></vxe-table-column>
-                    <vxe-table-column v-if="stage >= 3" title="操作" width="200" :cell-render="{name:'AdaiActionButton',attr:{data:[{'label': stage == 4 || stage == 5 || stage == 17 ? '查看影像' : '影像审核', 'value': 'look'}, {'label': '家谱信息', 'value': 'jiapu'}]},events:{'look': lookEvent, 'jiapu': getCatalogStatisticsData}}"></vxe-table-column>
+                    <vxe-table-column v-if="stage >= 3" title="操作" width="200" :cell-render="{name:'AdaiActionButton',attr:{data:[{'label': stage == 4 || stage == 5 || stage == 17 ? '影像' : '影像', 'value': 'look'}, {'label': '家谱', 'value': 'jiapu'}, {'label': '记录', 'value': 'log'}]},events:{'look': lookEvent, 'jiapu': getCatalogStatisticsData, 'log': handleLog}}"></vxe-table-column>
                 </vxe-table>
                 <div class="page-foot">
                     <div class="page-foot-left" v-show="stage >= 3">
@@ -153,6 +154,8 @@
         <!-- 批量修改卷册属性 -->
         <UpdateVolumeProperty v-if="(isShow ==  2)" :list="selectRecords" v-on:close="(isShow = 0)" v-on:save="saveData" />
         <Loading v-show="loading" />
+        <!-- 记录 -->
+        <LogModule v-if="isShow == 3" :id="vid" v-on:close="isShow = 0" />
     </div>
 </template>
 
@@ -165,11 +168,12 @@ import BillModule from '../../components/takeCamera/BillModule.vue';
 import CatalogCount from '../../components/takeCamera/CatalogCount.vue';
 import CatalogView from '../../components/takeCamera/CatalogView.vue';
 import UpdateVolumeProperty from '../../components/takeCamera/UpdateVolumeProperty.vue';
+import LogModule from '../../components/takeCamera/logModule.vue';
 import { mapState, mapActions, mapGetters } from "vuex";
 export default {
     name: "takeCamera",
     components: {
-        Sidebar,NavModal, BillModule, CatalogCount, CatalogView, UpdateVolumeProperty, 
+        Sidebar,NavModal, BillModule, CatalogCount, CatalogView, UpdateVolumeProperty, LogModule,
     },
     data: () => {
         return {
@@ -296,18 +300,25 @@ export default {
         this.getStatisticsData();
     },
     methods:{
+        handleLog({ row }){
+            this.isShow = 3;
+            this.vid = row.volumeKey;
+        },
         sortChangeEvent({column, property, order, sortBy, sortList, $event}){
             console.log(property, order, sortBy);
             this.sortField = sortBy;
             this.sortType = order;
             this.getTaskList();
         },
-        rowClassName ({ row, rowIndex }) {
-            if(row.GCOver == '1') {
-                return 'row-blue'
+        rowClassName({ row, rowIndex }){
+            if(row.GCOver == '1'){
+                return 'row-blue';
             }
             if(row.isLook){
-                return 'row-gray'
+                return 'row-gray';
+            }
+            if(row.sourceStatus == 6){
+                return 'row-purple';
             }
         },
         getTaskListAll(){

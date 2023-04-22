@@ -119,7 +119,7 @@
                     <!-- <vxe-table-column v-if="stage >= 3" field="clientUser" title="提交人"></vxe-table-column> -->
                     <vxe-table-column v-if="stage == 3 || stage == 5 || stage == 14 || stage == 15" field="passUserName" title="审核人"></vxe-table-column>
                     <vxe-table-column v-if="stage == 4" field="returnReason" title="打回原因"></vxe-table-column>
-                    <vxe-table-column v-if="stage == 14" field="returnReasonMemo" title="原因说明"></vxe-table-column>
+                    <vxe-table-column v-if="stage == 14" field="returnReason" title="原因说明"></vxe-table-column>
                     <vxe-table-column v-if="stage == 4" field="passUserName" title="打回人"></vxe-table-column>
                     <vxe-table-column v-if="stage == 17" field="toVoidUserName" title="作废人"></vxe-table-column>
 

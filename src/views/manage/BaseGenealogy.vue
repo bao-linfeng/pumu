@@ -167,7 +167,7 @@ export default {
                     item.Filetimes = ADS.getLocalTime(item.createTime, '/', 1) || item.Filetimes;
                     item.Filenames = item.Filenames;
                     item.address = (item.prov || '') + ' ' + (item.city || '') + ' ' + (item.district || '');
-                    item.hasImage = item.hasImage == 1 ? '有' : '无';
+                    item.hasImageO = item.hasImage == 1 ? '有' : '无';
                     item.libsStr = item.libs.join(',');
                 });
                 this.total = data.result.total;

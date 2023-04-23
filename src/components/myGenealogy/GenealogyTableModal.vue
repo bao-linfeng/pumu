@@ -320,6 +320,8 @@ export default {
         readBook({row}){// 阅读影像
             if(row.imageLink){
                 window.open(row.imageLink);
+            }else if(row.hasImage){
+                window.open('/'+this.pathname+'/view?gid='+row._key+'&volume=1&page=1');
             }else{
                 this.$XModal.message({ message: '暂时无法查看影像', status: 'warning' });
             }
@@ -331,7 +333,8 @@ export default {
             userId: state => state.nav.userId,
             role: state => state.nav.role,
             stationKey: state => state.nav.stationKey,
-            orgId: state => state.nav.orgId
+            orgId: state => state.nav.orgId,
+            pathname: state => state.nav.pathname,
         })
     },
     watch: {

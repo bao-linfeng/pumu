@@ -145,7 +145,7 @@ VXETable.renderer.add('AdaiActionButton', {
         arr.push(<button class="AdaiActionButton disabled" onClick={() => events[item.value](params)}>{item.label}</button>)
       }else if(row.reviewStatus != 1 && item.value == 'volumeLook'){
         arr.push(<button class="AdaiActionButton disabled" onClick={() => events[item.value](params)}>{item.label}</button>)
-      }else if(!row.imageLink && item.value == 'readBook'){
+      }else if(!row.imageLink && !row.hasImage && item.value == 'readBook'){
         arr.push(<button class="AdaiActionButton disabled" onClick={() => events[item.value](params)}>{item.label}</button>)
       }else if(['nf', 'f'].indexOf(row.condition) === -1 && item.value == 'catalogPass'){
         arr.push(<button class="AdaiActionButton disabled" onClick={() => events[item.value](params)}>{item.label}</button>)

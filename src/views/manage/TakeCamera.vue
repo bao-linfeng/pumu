@@ -276,13 +276,7 @@ export default {
         }
 
         if(this.stage){
-            if(this.role >= 1 && this.role <= 3){
-
-            }else{
-                if(this.orgAdmin == 'admin'){
-                    
-                }
-            }
+            
         }else{
             if(this.role >= 1 && this.role <= 3){
                 if(this.role == 3){

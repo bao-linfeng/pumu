@@ -173,10 +173,11 @@ export default {
                 {'label': '完结', 'value': 'catalogPass'},
             ];
         }else{
-            if(this.stationKey == '1379194999'){
+            if(this.stationKey == '1379194999'){// 时光站
                 this.w = 330;
                 this.actionButton = [
                     {'label': '详情', 'value': 'lookBook'}, 
+                    {'label': '编辑', 'value': 'editBook'},
                     {'label': '影像', 'value': 'readBook'},
                     {'label': '记录', 'value': 'lookLog'},
                     {'label': '删除', 'value': 'removeBook'},

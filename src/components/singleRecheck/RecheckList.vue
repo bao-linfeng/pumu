@@ -6,12 +6,12 @@
                 <img class="close" @click="close(false)" src="../../assets/close.svg" alt="">
             </div>
             <div class="content-box">
+                <!-- show-overflow -->
                 <vxe-table
                     border
                     resizable
                     stripe
                     keep-source
-                    show-overflow
                     highlight-hover-row
                     row-key
                     ref="xTable"
@@ -28,6 +28,7 @@
                     <vxe-table-column field="authors" title="作者"></vxe-table-column>
                     <vxe-table-column field="condition" title="状态"></vxe-table-column>
                     <vxe-table-column field="orgName" title="上传机构"></vxe-table-column>
+                    <vxe-table-column title="操作" width="100" :cell-render="{name:'AdaiActionButton', attr:{data: actionData}, events:{'lookBook': lookBook}}"></vxe-table-column>
                 </vxe-table>
                 <vxe-pager
                     align="right"
@@ -39,6 +40,8 @@
                 </vxe-pager>
             </div>
         </div>
+        <!-- 查看谱目 -->
+        <CatalogView v-if="isShow == 2" :read="isRead" :dataKey="dataKey" :vid="''" v-on:close="isShow = 0" />
     </DragModule>
 </template>
 
@@ -47,6 +50,7 @@ import api from "../../api.js";
 import ADS from "../../ADS.js";
 import { mapState, mapActions, mapGetters } from "vuex";
 import DragModule from '../../components/dragModule/DragModule.vue';
+import CatalogView from '../../components/takeCamera/CatalogView.vue';
 export default {
     name: "recheckList",
     props:{
@@ -55,7 +59,7 @@ export default {
         },
     },
     components: {
-        DragModule, 
+        DragModule, CatalogView,
     },
     data: () => {
         return {
@@ -65,6 +69,12 @@ export default {
             pages: 0,
             limit: 20,
             total: 0,
+            actionData: [
+                {'label': '详情', 'value': 'lookBook'}
+            ],
+            isShow: 1,
+            isRead: true,
+            dataKey: '',
         };
     },
     mounted:function(){
@@ -72,6 +82,11 @@ export default {
         this.getDataList();
     },
     methods:{
+        lookBook({ row }){
+            console.log(row);
+            this.dataKey = row.gcKey;
+            this.isShow = 2;
+        },
         close(flag){
             this.$emit('close', flag);
         },
@@ -108,11 +123,9 @@ export default {
 .log-box{
     position: absolute;
     top: 0;
-    // right: 0;
-    // bottom: 0;
+    right: 0;
+    bottom: 0;
     left: 0;
-    width: 1000px;
-    height: 100%;
     padding: 0 20px;
     background: #fff;
     z-index: 100;

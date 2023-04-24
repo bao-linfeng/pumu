@@ -29,20 +29,20 @@
                     :data="list">
                     <vxe-table-colgroup title="家谱信息" fixed="left">
                         <vxe-table-column type="checkbox" width="60"></vxe-table-column>
-                        <vxe-table-column v-for="(item,index) in field_main" :key="'main'+index" :width=" item.fieldName == 'surname' ? 60 : 100" :field="item.fieldName" :title="item.fieldMeans" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                        <vxe-table-column v-for="(item,index) in field_main" :key="'main'+index" :width=" item.fieldName == 'surname' ? 60 : 100" :field="item.fieldName" :title="item.fieldMeans"></vxe-table-column>
                     </vxe-table-colgroup>
-                    <vxe-table-column v-for="(item,index) in field_branch" :key="'branch'+index" width="100" :field="item.fieldName" :title="item.fieldMeans" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                    <vxe-table-column v-for="(item,index) in field_branch" :key="'branch'+index" width="100" :field="item.fieldName" :title="item.fieldMeans"></vxe-table-column>
+                    <vxe-table-column field="explain" title="说明" width="100" show-overflow="title"></vxe-table-column>
                     <vxe-table-column field="Filenames" title="档名" width="100" sort-by="Filenames" sortable></vxe-table-column>
                     <vxe-table-column field="fileName" title="文件标题" width="100"></vxe-table-column>
                     <vxe-table-column field="batch" title="批次号" width="100"></vxe-table-column>
                     <vxe-table-column field="createTimeO" title="导入时间" width="100" sort-by="createTime" sortable></vxe-table-column>
                     <vxe-table-column field="claimUserName" title="认领人" width="100"></vxe-table-column>
                     <vxe-table-column field="claimTimeO" title="认领时间" width="100" sort-by="claimTime" sortable></vxe-table-column>
-                    <vxe-table-column title="操作" :visible="visible" fixed="right" :width="w" :cell-render="{name:'AdaiActionButton',attr:{data:actionButton},events:{'editBook':editBook,'editImage':editImage,'removeBook':removeBook,'readBook':readBook, 'lookBook': lookBook, 'catalogPass': catalogPass, 'lookLog': lookLog}}"></vxe-table-column>
+                    <vxe-table-column title="操作" :visible="visible" fixed="right" :width="w" :cell-render="{name:'AdaiActionButton',attr:{data:actionButton},events:{'editBook':editBook, 'removeBook':removeBook,'readBook':readBook, 'lookBook': lookBook, 'catalogPass': catalogPass, 'lookLog': lookLog}}"></vxe-table-column>
                 </vxe-table>
             </div>
         </div>
-        <SourceModal v-if="isEditImage" v-on:close-source="isEditImage=false" :gid="gid" :gvolume="volume" />
         <!-- 记录 -->
         <LogModule v-if="isLog == 1" :gid="gid" v-on:close="closeLog" />
         <!-- 谱目编辑 -->
@@ -56,7 +56,6 @@
 
 <script>
 import api from "../../api.js";
-import SourceModal from "./SourceModal.vue";
 import LogModule from '../../components/discussed/LogModule.vue';
 import EditCatalog from '../../components/takeCamera/EditCatalog.vue';
 import CatalogView from '../../components/takeCamera/CatalogView.vue';
@@ -76,13 +75,12 @@ export default {
         },
     },
     components: {
-        SourceModal, LogModule, EditCatalog, CatalogView, CatalogFinish, 
+        LogModule, EditCatalog, CatalogView, CatalogFinish, 
     },
     data: () => {
         return {
             gid: '',
             volume: 10,
-            isEditImage: false,
             w: 300,
             actionButton: [
                 {'label': '详情', 'value': 'lookBook'}, 
@@ -142,7 +140,7 @@ export default {
             {'fieldMeans': '代号', 'fieldName': 'code'},
             {'fieldMeans': '认领机构', 'fieldName': 'claimOrgCode'},
             {'fieldMeans': '状态', 'fieldName': 'condition'},
-            {'fieldMeans': '说明', 'fieldName': 'explain'},
+            // {'fieldMeans': '说明', 'fieldName': 'explain'},
             {'fieldMeans': '是否录入', 'fieldName': 'NoIndexO'},
 
             // {'fieldMeans': '项目ID', 'fieldName': 'Projectid'},
@@ -206,11 +204,6 @@ export default {
             this.$nextTick(() => {
                 this.$refs.xTable.refreshColumn();
             });
-            // let timer = setTimeout(() => {
-            //     this.$refs.xTable.refreshColumn();
-            //     clearTimeout(timer);
-            //     timer = null;
-            // }, 200);
         },
         handleSave(){
 
@@ -251,11 +244,6 @@ export default {
             this.$emit('checkbox-change',records);
         },
         editBook({row}){// 编辑谱目
-            // if(row.resource < 3){
-            //     this.gid = row._key;
-            //     this.pumu = row;
-            //     this.isEdit = true;
-            // }
             this.gid = row._key;
             this.pumu = row;
             this.isEdit = true;
@@ -270,14 +258,6 @@ export default {
             this.isShow = true;
             this.isLog = 3;
             this.isRead = true;
-        },
-        editImage({row}){// 编辑影像资料
-            // if(row.resource == 1){
-            //     this.gid = row._key;
-            //     this.isEditImage = true;
-            // }
-            this.gid = row._key;
-            this.isEditImage = true;
         },
         catalogPass({row}){
             if(row.condition == 'nf' || row.condition == 'f'){

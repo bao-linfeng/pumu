@@ -200,7 +200,7 @@ export default {
                 }
             }
         },
-        linkImage:async function(filePath,fileName){//影像关联家谱
+        linkImage:async function(filePath,fileName){//影像关联家谱 单谱 七牛
             let imageArr = [];
             if(this.imagesList && this.imagesList.length){
                 this.imagesList.map((item)=>{

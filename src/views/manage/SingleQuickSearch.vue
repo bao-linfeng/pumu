@@ -10,6 +10,7 @@
             </div>
             <div class="search-wrap">
                 <div class="search-box" v-for="(item, i) in searchArr" :key="i">
+                    <label class="label" for="">{{item.label}}</label>
                     <el-input class="width100" :class="{'width200': ['genealogyName', 'place' ,'LocalityModern'].indexOf(item.value) > -1}" v-model="searchObject[item.value]" :placeholder="'请输入'+item.label" clearable></el-input>
                     <el-checkbox class="margin10" v-model="item.check"></el-checkbox>
                 </div>
@@ -164,6 +165,7 @@ export default {
                 });
                 this.searchObject = searchObject;
                 this.detail = result.data;
+                document.title = this.detail.genealogyName;
 
                 // this.getDataList();
             }else{
@@ -300,6 +302,11 @@ export default {
             justify-content: flex-start;
             align-items: center;
             flex-wrap: wrap;
+            .search-box{
+                .label{
+                    margin-right: 5px;
+                }
+            }
         }
         .vex-table-box{
             width: calc(100% - 40px);

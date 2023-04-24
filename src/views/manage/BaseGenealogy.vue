@@ -13,7 +13,7 @@
                 <input v-if="stationKey == '1379194999'" class="swap" type="button" value="全部分发" @click="openSiteModal(true)" />
                 <input v-else v-show="stationKey != '1528234980'" class="swap" type="button" value="交换家谱" @click="openSwapModal" />
                 <el-button size="small" type="primary" v-if="this.role >=1 && this.role <= 2" @click="downloadExcel">下载检索结果</el-button>
-                <LinkView class="marginLeft20" />
+                <LinkView v-if="stationKey != '1379194999'" class="marginLeft20" />
                 <!-- v-show="stationKey != '1528234980'" -->
                 <el-button v-if="this.role >=1 && this.role <= 2"  class="marginLeft20" size="small" type="primary" @click="isEdit = true">编辑的家谱</el-button>
             </div>

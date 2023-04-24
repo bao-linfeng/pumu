@@ -61,7 +61,7 @@
                     <vxe-table-column field="applyUserName" title="操作人"></vxe-table-column>
                     <vxe-table-column field="hitTargetNumber" title="命中条数"></vxe-table-column>
                     <vxe-table-column field="applyTimeO" title="操作时间"></vxe-table-column>
-                    <vxe-table-column title="操作" width="200" :cell-render="{name:'AdaiActionButton',attr:{data:[{'label': '查重结果', 'value': 'look'}]},events:{'look': lookEvent}}"></vxe-table-column>
+                    <vxe-table-column title="操作" width="200" :cell-render="{name:'AdaiActionButton',attr:{data: actionData},events:{'look': lookEvent, 'lookBook': lookBook}}"></vxe-table-column>
                 </vxe-table>
                 <div class="page-foot">
                     <vxe-pager
@@ -77,6 +77,8 @@
         </div>
         <Loading v-show="loading" />
         <RecheckList v-if="isShow == 1" :id="checkTaskKey" v-on:close="isShow = 0" />
+        <!-- 查看谱目 -->
+        <CatalogView v-if="isShow == 2" :read="isRead" :dataKey="dataKey" :vid="''" v-on:close="isShow = 0" />
     </div>
 </template>
 
@@ -85,16 +87,21 @@ import api from "../../api.js";
 import ADS from "../../ADS.js";
 import Sidebar from "../../components/sidebar/Sidebar.vue";
 import RecheckList from '../../components/singleRecheck/RecheckList.vue';
+import CatalogView from '../../components/takeCamera/CatalogView.vue';
 import { mapState, mapActions, mapGetters } from "vuex";
 export default {
     name: "singleRecheck",
     components: {
-        Sidebar, RecheckList, 
+        Sidebar, RecheckList, CatalogView, 
     },
     data: () => {
         return {
             loading: false,
             tableData: [],
+            actionData: [
+                {'label': '查重结果', 'value': 'look'}, 
+                {'label': '详情', 'value': 'lookBook'}
+            ],
             page: 1,
             pages: 0,
             limit: 20,
@@ -119,6 +126,8 @@ export default {
             selectRecords: [],
             checkTaskKey: '',
             isShow: 0,
+            isRead: true,
+            dataKey: '',
         };
     },
     created:function(){
@@ -129,6 +138,10 @@ export default {
         this.getDataList();
     },
     methods:{
+        lookBook({ row }){
+            this.dataKey = row.gcKey;
+            this.isShow = 2;
+        },
         sortChangeEvent({column, property, order, sortBy, sortList, $event}){
             console.log(property, order, sortBy);
             this.sortField = sortBy;

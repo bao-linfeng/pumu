@@ -81,7 +81,7 @@ export default {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 1000px;
+    width: 1400px;
     height: calc(100% - 100px);
     padding: 0 20px;
     background: #fff;

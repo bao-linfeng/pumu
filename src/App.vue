@@ -369,6 +369,9 @@ table{
 .disabled{
   background-color: #ddd;
 }
+.hide{
+  display: none;
+}
 .el-steps--simple{
   padding: 10px!important;
 }

@@ -84,7 +84,7 @@ export default {
     methods:{
         lookBook({ row }){
             console.log(row);
-            this.dataKey = row.gcKey;
+            this.dataKey = row.repeatOSBN;
             this.isShow = 2;
         },
         close(flag){

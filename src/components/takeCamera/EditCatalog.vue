@@ -16,7 +16,7 @@
             <div class="textarea-wrap">
                 <div class="textarea-box">
                     <label class="label" for="">谱目状态</label>
-                    <el-select class="width100" v-model="condition" placeholder="谱目状态">
+                    <el-select class="width100" v-model="condition" :disabled="true" placeholder="谱目状态">
                         <el-option
                             v-for="item in conditionList"
                             :key="item.value"
@@ -24,6 +24,7 @@
                             :value="item.value">
                         </el-option>
                     </el-select>
+                    <img class="edit" v-if="role >= 1 && role <= 3" @click="isOpen = 3" title="更新状态" src="../../assets/shoot/leaveMsg.svg" alt="">
                 </div>
                 <div class="textarea-box">
                     <label class="label" for="">备注[memo]</label>
@@ -69,7 +70,10 @@
             <el-button size="medium" @click="close">取消</el-button>
             <el-button type="primary" size="medium" @click="saveData">保存</el-button>
         </div>
+        <!-- 谱籍地(现代)修改 -->
         <PlaceModule v-if="isOpen == 2" :address="parameter" v-on:close="isOpen = 0" v-on:save="savePlace" />
+        <!-- 状态修改 -->
+        <ConditionEdit v-if="isOpen == 3" :catalog="detail" v-on:close="isOpen = 0" v-on:save="saveCondition" />
     </div>
 </template>
 
@@ -78,10 +82,11 @@ import api from "../../api.js";
 import ADS from "../../ADS.js";
 import { mapState, mapActions, mapGetters } from "vuex";
 import PlaceModule from './PlaceModule.vue';
+import ConditionEdit from './ConditionEdit.vue';
 export default {
     name: "catalogView",
     components: {
-        PlaceModule, 
+        PlaceModule, ConditionEdit, 
     },
     props:{
         dataKey: String,
@@ -170,6 +175,10 @@ export default {
         this.getGenealogyDetail();
     },
     methods:{
+        saveCondition(data){
+            this.condition = data;
+            this.isOpen = 0;
+        },
         savePlace(data){
             this.isOpen = 0;
             this.parameter['prov'] = data.province;
@@ -212,6 +221,7 @@ export default {
                 // this.parameter['condition'] = result.data['condition'] || '';
                 this.GCOver = result.data.GCOver ? '1' : '';
                 this.NoIndex = result.data.NoIndex ? 1 : 0;
+                this.detail = result.data;
             }else{
                 this.$XModal.message({ message: data.msg, status: 'warning' });
             }
@@ -376,6 +386,11 @@ i{
         .textarea{
             width: calc(100% - 100px);
             font-size: 16px;
+        }
+        .edit{
+            background: #000;
+            margin-left: 10px;
+            cursor: pointer;
         }
     }
 }

@@ -55,7 +55,6 @@
             </div>
             <div class="more-icon">
                 <img class="more" :src="require('../../assets/shoot/open_'+(isMore ? 't' : 'b')+'.svg')" :title="isMore ? '收起' : '展开'" @click="isMore = !isMore" alt="">
-                <!-- <i class="more" @click="isMore = !isMore">{{isMore ? '收起' : '展开'}}</i> -->
             </div>
             <ul class="edit-content" v-show="isMore">
                 <li v-for="(item, index) in argumentsMoreList" :key="index">
@@ -63,10 +62,6 @@
                     <el-input class="width200" v-model="parameter[item.fieldName]" :title="parameter[item.fieldName]"  :disabled="item.disabled || read" clearable size="medium"></el-input>
                 </li>
             </ul>
-            <div class="foot-box" v-if="!read">
-                <el-button size="medium" @click="close">取消</el-button>
-                <el-button type="primary" size="medium" @click="saveData">保存</el-button>
-            </div>
             <div class="volume-head">
                 <div class="head-left">
                     <h3>已有卷册信息</h3>
@@ -401,35 +396,6 @@ export default {
                 this.parameter['memo'] = result.data['memo'];
                 this.parameter['place'] = result.data['place'];
                 this.parameter['genealogyName'] = result.data['genealogyName'];
-            }else{
-                this.$XModal.message({ message: data.msg, status: 'warning' });
-            }
-        },
-        saveData(){
-            this.editCatalog();
-        },
-        async editCatalog(){// 编辑谱目
-            let dataObj = {};
-            this.argumentsList.forEach((ele) => {
-                if(!ele.disabled){
-                    dataObj[ele.fieldName] = this.parameter[ele.fieldName] || '';
-                }
-            });
-
-            dataObj['place'] = this.parameter['place'];
-            dataObj['genealogyName'] = this.parameter['genealogyName'];
-            dataObj['LocalityModern'] = this.parameter['LocalityModern'];
-            dataObj['explain'] = this.parameter['explain'];
-            dataObj['memo'] = this.parameter['memo'];
-
-            let data = await api.patchAxios('data/edit', {
-                'dataKey': this.dataKey,
-                'dataObj': dataObj,
-                'userKey': this.userId, 
-                'siteKey': this.stationKey
-            });
-            if(data.status == 200){
-                this.close();
             }else{
                 this.$XModal.message({ message: data.msg, status: 'warning' });
             }

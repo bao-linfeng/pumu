@@ -475,7 +475,7 @@ export default {
     height: 16px;
     line-height: 16px;
     border-left: 4px solid #666;
-    color: #666;
+    color: #fff;
     font-size: 18px;
     display: flex;
     justify-content: space-between;

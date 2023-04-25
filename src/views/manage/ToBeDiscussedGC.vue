@@ -44,7 +44,6 @@
                     class="adai-table"
                     resizable
                     keep-source
-                    show-overflow
                     highlight-current-row
                     ref="xTable"
                     :height="h"

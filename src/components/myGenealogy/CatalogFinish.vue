@@ -8,8 +8,9 @@
             <h4>当前已选择谱信息：</h4>
             <p>谱名：{{catalog.genealogyName}}；谱ID：{{catalog._key}}；谱审核状态：{{catalog.condition}}；谱状态：{{catalogStatusO[catalog.gcStatus]}}；应拍卷(册)数：{{catalog.hasVolume}}；卷(册)说明：{{catalog.volume}}；实拍卷册：{{catalog.actualVolumes}}；缺卷(册)说明：{{catalog.lostVolume}}；</p>
             <span>注意：{{catalog.takeStatus == 7 ? '你正在执行 谱目 反完结 操作，点击确认后，该谱将开放上传影像功能！' : '你正在执行 谱目 完结 操作，点击确认后，将无法新建卷册及上传新影像页，请确认！'}}</span>
+            <i class="red" v-if="catalog.takeStatus != 7">建议：{{catalog.canPass === 0 ? '该谱目暂时不支持完结功能！' : catalog.canPass === 1 ? '该谱目实拍卷册数和应拍卷册数不一致，请慎重该完结操作' : '该谱目可进行完结！'}}</i>
         </div>
-        <div class="foot-box">
+        <div class="foot-box" v-if="catalog.takeStatus == 7 || (catalog.takeStatus != 7 && catalog.canPass != 0)">
             <el-button type="primary" size="mini" @click="saveData">确认</el-button>
             <el-button size="mini" @click="close">取消</el-button>
         </div>
@@ -46,13 +47,14 @@ export default {
             this.$emit('close', false);
         },
         saveData(){
-            this.$confirm('请确认是否'+(this.catalog.takeStatus == 7 ? '取消' : '')+'完结此谱目?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).then(() => {
-                this.catalog.takeStatus == 7 ? this.catalogPassApi(this.catalog._key) : this.catalogPassCheck(this.catalog._key);
-            }).catch(() => {});
+            this.catalogPassApi(this.catalog._key);
+            // this.$confirm('请确认是否'+(this.catalog.takeStatus == 7 ? '取消' : '')+'完结此谱目?', '提示', {
+            //     confirmButtonText: '确定',
+            //     cancelButtonText: '取消',
+            //     type: 'warning'
+            // }).then(() => {
+            //     this.catalog.takeStatus == 7 ? this.catalogPassApi(this.catalog._key) : this.catalogPassCheck(this.catalog._key);
+            // }).catch(() => {});
         },
         async catalogPassCheck(catalogKey){//完结家谱判断
             let data = await api.getAxios('v3/camera/catalog/catalogCanPass?catalogKey='+catalogKey);
@@ -133,6 +135,11 @@ export default {
         }
         span{
             color: #999;
+        }
+        .red{
+            color: #f00;
+            display: block;
+            font-style: normal;
         }
     }
     .foot-box{

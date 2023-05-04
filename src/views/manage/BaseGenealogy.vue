@@ -107,7 +107,7 @@ export default {
         reconnect(){
             this.$socket.emit("login",{'userKey':this.userId,'siteKey':this.stationKey, 'role': this.role});
         },
-        getOrgInfo:async function(){
+        async getOrgInfo(){
             let data = await api.getAxios('org/member/info?siteKey='+this.stationKey+'&userKey='+this.userId);
             if(data.status == 200){
                 this.$store.dispatch('setPropertyValue',{'property':'orgAdmin','value': data.data.role || ''});
@@ -118,18 +118,21 @@ export default {
                 this.$XModal.message({ message: data.msg, status: 'warning' })
             }
         },
-        downloadExcel:async function(){// 下载检索结果
+        async downloadExcel(){// 下载检索结果
             this.loading = true;
-            let data=await api.postAxios('data/download',{'siteKey': this.stationKey,
-            'noPublishAD': this.noPublishAD,
-            'begYear': this.begYear,
-            'endYear': this.endYear,
-            'libKey': this.libKey,
-            'orgKey': (this.orgKey).join(','),
-            'equal': this.equal,
-            'prop': this.prop,
-            'order': this.order,
-            'keyWordObj': this.keyWordObj});
+            let data = await api.postAxios('data/download',{
+                'siteKey': this.stationKey,
+                'noPublishAD': this.noPublishAD,
+                'begYear': this.begYear,
+                'endYear': this.endYear,
+                'libKey': this.libKey,
+                'orgKey': (this.orgKey).join(','),
+                'equal': this.equal,
+                'prop': this.prop,
+                'order': this.order,
+                'keyWordObj': this.keyWordObj,
+                'limit': 5000,
+            });
             this.loading = false;
             if(data.status == 200){
                 ADS.downliadLink(data.result);

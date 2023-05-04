@@ -10,7 +10,7 @@
                 <li v-for="(item, index) in argumentsList" :key="index" v-show="!item.hide">
                     <span class="label">{{item.fieldMeans}}</span>
                     <el-input class="w90" :class="{changeActive: changeFieldArr.indexOf(item.fieldName) > -1, w80: ['place'].indexOf(item.fieldName) > -1}" v-model="parameter[item.fieldName]" :title="parameter[item.fieldName]"  :disabled="item.disabled || read" clearable size="medium"></el-input>
-                    <img class="edit" v-if="['place'].indexOf(item.fieldName) > -1" @click="isOpen = 2" title="更新" src="../../assets/shoot/leaveMsg.svg" alt="">
+                    <img class="edit" v-if="['place'].indexOf(item.fieldName) > -1 && isEdit" @click="isOpen = 2" title="更新" src="../../assets/shoot/leaveMsg.svg" alt="">
                 </li>
             </ul>
             <div class="textarea-wrap">
@@ -24,7 +24,7 @@
                             :value="item.value">
                         </el-option>
                     </el-select>
-                    <img class="edit" v-if="role >= 1 && role <= 3" @click="isOpen = 3" title="更新状态" src="../../assets/shoot/leaveMsg.svg" alt="">
+                    <img class="edit" v-if="role >= 1 && role <= 3 && isEdit" @click="isOpen = 3" title="更新状态" src="../../assets/shoot/leaveMsg.svg" alt="">
                 </div>
                 <div class="textarea-box">
                     <label class="label" for="">备注[memo]</label>
@@ -66,7 +66,7 @@
                 </div>
             </div>
         </div>
-        <div class="foot-box" v-if="!read">
+        <div class="foot-box" v-if="!read && isEdit">
             <el-button size="medium" @click="close">取消</el-button>
             <el-button type="primary" size="medium" @click="saveData">保存</el-button>
         </div>
@@ -74,6 +74,8 @@
         <PlaceModule v-if="isOpen == 2" :address="parameter" v-on:close="isOpen = 0" v-on:save="savePlace" />
         <!-- 状态修改 -->
         <ConditionEdit v-if="isOpen == 3" :catalog="detail" v-on:close="isOpen = 0" v-on:save="saveCondition" />
+        <!-- 加载 -->
+        <Loading v-show="loading" />
     </div>
 </template>
 
@@ -151,6 +153,8 @@ export default {
             parameterV2: ['_key', 'volumeNumber', 'internalSerialNumber', 'takePages', 'syncPages', 'takeStatusO', 'passUserName', 'passTimeO', 'creatorName', 'createTimeO'],
             theadV2: ['卷(册)编号', '卷(册)名', '卷序号', '已拍页数', '已同步页数', '状态', '审核人', '审核时间', '创建人', '创建时间'],
             isOpen: 0,
+            loading: false,
+            isEdit: false,
         };
     },
     mounted: function(){
@@ -222,6 +226,8 @@ export default {
                 this.GCOver = result.data.GCOver ? '1' : '';
                 this.NoIndex = result.data.NoIndex ? 1 : 0;
                 this.detail = result.data;
+
+                this.isEdit = true;
             }else{
                 this.$XModal.message({ message: data.msg, status: 'warning' });
             }

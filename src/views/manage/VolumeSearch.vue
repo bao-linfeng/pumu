@@ -108,12 +108,11 @@ import ADS from "../../ADS.js";
 import Sidebar from "../../components/sidebar/Sidebar.vue";
 import { mapState, mapActions, mapGetters } from "vuex";
 import logModule from '../../components/takeCamera/logModule.vue';
-import EditCatalog from '../../components/takeCamera/EditCatalog.vue';
 import CatalogView from '../../components/takeCamera/CatalogView.vue';
 export default {
     name: "catalogSearch",
     components: {
-        Sidebar, logModule, EditCatalog, CatalogView, 
+        Sidebar, logModule, CatalogView, 
     },
     data: () => {
         return {

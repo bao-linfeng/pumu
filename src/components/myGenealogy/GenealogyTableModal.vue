@@ -46,7 +46,7 @@
         <!-- 记录 -->
         <LogModule v-if="isLog == 1" :gid="gid" v-on:close="closeLog" />
         <!-- 谱目编辑 -->
-        <EditCatalog v-if="(isLog == 2)" :read="isRead" :attr="attr" :dataKey="gid" :vid="''" v-on:close="closeLog" />
+        <EditCatalog v-if="(isLog == 2)" :read="isRead" :dataKey="gid" :vid="''" v-on:close="closeLog" />
         <!-- 查看谱目 -->
         <CatalogView v-if="isLog == 3" :read="isRead" :dataKey="gid" :vid="''" v-on:close="closeLog" v-on:save="handleSave" />
         <!-- 谱目完结 -->
@@ -98,7 +98,6 @@ export default {
             isLog: 0,
             isRead: false,
             visible: true,
-            attr: [{'fieldMeans': '状态', 'fieldName': 'condition'}],
             h: 500,
             row: {},
         };

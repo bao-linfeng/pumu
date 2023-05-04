@@ -16,7 +16,7 @@
             <div class="textarea-wrap">
                 <div class="textarea-box">
                     <label class="label" for="">谱目状态</label>
-                    <el-select class="width100" v-model="condition" :disabled="true" placeholder="谱目状态">
+                    <el-select class="width100" v-model="parameter['condition']" :disabled="true" placeholder="谱目状态">
                         <el-option
                             v-for="item in conditionList"
                             :key="item.value"
@@ -74,8 +74,6 @@
         <PlaceModule v-if="isOpen == 2" :address="parameter" v-on:close="isOpen = 0" v-on:save="savePlace" />
         <!-- 状态修改 -->
         <ConditionEdit v-if="isOpen == 3" :catalog="detail" v-on:close="isOpen = 0" v-on:save="saveCondition" />
-        <!-- 加载 -->
-        <Loading v-show="loading" />
     </div>
 </template>
 
@@ -94,10 +92,6 @@ export default {
         dataKey: String,
         vid: String,
         read: Boolean,
-        attr: {
-            type: Array,
-            default: [],
-        }
     },
     data: () => {
         return {
@@ -135,13 +129,7 @@ export default {
             NoIndex: 0,
             parameter: {},
             detail: {},
-            passVolumeListO: '',
-            volumeList: [],
             changeFieldArr: [],
-            GCOverList: [
-                {'label': '未完结', 'value': ''},
-                {'label': '已完结', 'value': '1'}
-            ],
             conditionList: [
                 {'label': 'f', 'value': 'f'},
                 {'label': 'nf', 'value': 'nf'},
@@ -149,27 +137,13 @@ export default {
                 {'label': 'r', 'value': 'r'},
                 {'label': 'd', 'value': 'd'},
             ],
-            condition: '',
-            parameterV2: ['_key', 'volumeNumber', 'internalSerialNumber', 'takePages', 'syncPages', 'takeStatusO', 'passUserName', 'passTimeO', 'creatorName', 'createTimeO'],
-            theadV2: ['卷(册)编号', '卷(册)名', '卷序号', '已拍页数', '已同步页数', '状态', '审核人', '审核时间', '创建人', '创建时间'],
             isOpen: 0,
-            loading: false,
             isEdit: false,
         };
     },
     mounted: function(){
         console.log(this.vid);
         let parameter = {};
-
-        if(this.attr && this.attr.length){
-            this.attr.forEach((ele, i) => {
-                if(['condition'].indexOf(ele.fieldName) > -1){
-                    // parameter[ele.fieldName] = '';
-                }else{
-                    this.argumentsList.push(ele);
-                }
-            });
-        }
         
         this.argumentsList.forEach((ele) => {
             parameter[ele.fieldName] = '';
@@ -180,7 +154,7 @@ export default {
     },
     methods:{
         saveCondition(data){
-            this.condition = data;
+            this.parameter['condition'] = data;
             this.isOpen = 0;
         },
         savePlace(data){
@@ -202,29 +176,17 @@ export default {
                 let parameter = {};
                 this.changeFieldArr = result.data.changeFieldArr || [];
                 this.argumentsList.forEach((ele) => {
-                    if(ele.fieldName == 'address'){
-                        parameter[ele.fieldName] = result.data.prov+result.data.city+result.data.district;
-                    }else{
-                        if(ele.fieldName == 'claimTime'){
-                            parameter[ele.fieldName] = result.data[ele.fieldName] ? ADS.getLocalTime(result.data[ele.fieldName]) : '';
-                        }else if(ele.fieldName == 'createTime'){
-                            parameter[ele.fieldName] = result.data[ele.fieldName] ? ADS.getLocalTime(result.data[ele.fieldName]) : '';
-                        }else if(ele.fieldName == 'passTime'){
-                            parameter[ele.fieldName] = result.data[ele.fieldName] ? ADS.getLocalTime(result.data[ele.fieldName]) : '';
-                        }else{
-                            parameter[ele.fieldName] = result.data[ele.fieldName] || '';
-                        }
-                    }
+                    parameter[ele.fieldName] = result.data[ele.fieldName] || '';
                 });
 
                 this.parameter = parameter;
 
                 this.parameter['explain'] = result.data['explain'] || '';
                 this.parameter['memo'] = result.data['memo'] || '';
-                this.condition = result.data['condition'] || '';
-                // this.parameter['condition'] = result.data['condition'] || '';
+                this.parameter['condition'] = result.data['condition'] || '';
                 this.GCOver = result.data.GCOver ? '1' : '';
                 this.NoIndex = result.data.NoIndex ? 1 : 0;
+
                 this.detail = result.data;
 
                 this.isEdit = true;
@@ -232,7 +194,7 @@ export default {
                 this.$XModal.message({ message: data.msg, status: 'warning' });
             }
         },
-        async addPuMu(){// 编辑谱目
+        async editCatalog(){// 编辑谱目
             let dataObj = {};
             this.argumentsList.forEach((ele) => {
                 if(!ele.disabled){
@@ -241,11 +203,16 @@ export default {
             });
             dataObj['explain'] = this.parameter['explain'];
             dataObj['memo'] = this.parameter['memo'];
-            // dataObj['condition'] = this.parameter['condition'];
-            dataObj['condition'] = this.condition;
             dataObj['GCOver'] = this.GCOver;
             dataObj['NoIndex'] = this.NoIndex ? 1 : 0;
-            let data = await api.patchAxios('data/edit',{'dataKey': this.dataKey,'dataObj': dataObj,'userKey': this.userId, siteKey: this.stationKey});
+
+            let data = await api.patchAxios('data/edit', {
+                'dataKey': this.dataKey,
+                'dataObj': dataObj,
+                'userKey': this.userId, 
+                'siteKey': this.stationKey,
+            });
+
             if(data.status == 200){
                 this.close(true);
             }else{
@@ -253,14 +220,7 @@ export default {
             }
         },
         saveData(){
-            this.addPuMu();
-            // this.$confirm('请确认所填信息是否正确?', '提示', {
-            //     confirmButtonText: '确定',
-            //     cancelButtonText: '取消',
-            //     type: 'warning'
-            // }).then(() => {
-            //     this.addPuMu();
-            // }).catch(() => {});
+            this.editCatalog();
         },
     },
     computed: {
@@ -275,9 +235,7 @@ export default {
         })
     },
     watch:{
-        'condition': function(nv, ov){
-            console.log(nv);
-        },
+        
     }
 };
 </script>

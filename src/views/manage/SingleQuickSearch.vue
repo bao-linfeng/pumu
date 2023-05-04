@@ -76,7 +76,7 @@
         <!-- 记录 -->
         <LogModule v-if="isShow == 3" :gid="id" v-on:close="closeModule" />
         <!-- 编辑 -->
-        <EditCatalog v-if="isShow == 2" :read="isRead" :attr="attr" :dataKey="id" :vid="''" v-on:close="closeModule" />
+        <EditCatalog v-if="isShow == 2" :read="isRead" :dataKey="id" :vid="''" v-on:close="closeModule" />
         <!-- 详情 -->
         <CatalogView v-if="isShow == 1" :read="isRead" :dataKey="id" :vid="''" v-on:close="closeModule" v-on:save="handleSave" />
     </div>
@@ -136,7 +136,6 @@ export default {
                 {'label': '记录', 'value': 'log'},
             ],
             isRead: false,
-            attr: [{'fieldMeans': '状态', 'fieldName': 'condition'}],
             detail: {},
             haswu: false,
         };

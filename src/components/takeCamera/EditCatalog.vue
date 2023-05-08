@@ -15,18 +15,6 @@
             </ul>
             <div class="textarea-wrap">
                 <div class="textarea-box">
-                    <label class="label" for="">谱目状态</label>
-                    <el-select class="width100" v-model="parameter['condition']" :disabled="true" placeholder="谱目状态">
-                        <el-option
-                            v-for="item in conditionList"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
-                        </el-option>
-                    </el-select>
-                    <img class="edit" v-if="role >= 1 && role <= 3 && isEdit" @click="isOpen = 3" title="更新状态" src="../../assets/shoot/leaveMsg.svg" alt="">
-                </div>
-                <div class="textarea-box">
                     <label class="label" for="">备注[memo]</label>
                     <el-input
                         class="textarea"
@@ -49,6 +37,18 @@
                         :disabled="read"
                         v-model="parameter['explain']">
                     </el-input>
+                </div>
+                <div class="textarea-box">
+                    <label class="label" for="">谱目状态</label>
+                    <el-select class="width100" v-model="parameter['condition']" :disabled="true" placeholder="谱目状态">
+                        <el-option
+                            v-for="item in conditionList"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                        </el-option>
+                    </el-select>
+                    <img class="edit" v-if="role >= 1 && role <= 3 && isEdit" @click="isOpen = 3" title="更新状态" src="../../assets/shoot/leaveMsg.svg" alt="">
                 </div>
                 <div class="textarea-box">
                     <label class="label" for="">谱目编辑</label>
@@ -97,26 +97,27 @@ export default {
         return {
             argumentsList: [
                 // {'fieldMeans': '谱ID', 'fieldName': '_key', 'disabled': true},
-                {'fieldMeans': '家谱谱名', 'fieldName': 'genealogyName'},
-                {'fieldMeans': '省', 'fieldName': 'prov', 'hide': true},
-                {'fieldMeans': '市', 'fieldName': 'city', 'hide': true},
-                {'fieldMeans': '区', 'fieldName': 'district', 'hide': true},
-                {'fieldMeans': '谱籍_现代地名', 'fieldName': 'place'},
-                {'fieldMeans': '缺卷(册)说明', 'fieldName': 'lostVolume'},
-                {'fieldMeans': '谱籍_依谱书所载', 'fieldName': 'LocalityModern'},
+                {'fieldMeans': '谱名', 'fieldName': 'genealogyName'},
                 {'fieldMeans': '家谱姓氏', 'fieldName': 'surname'},
                 {'fieldMeans': '家谱姓氏2', 'fieldName': 'surname2'},
                 {'fieldMeans': '家谱姓氏3', 'fieldName': 'surname3'},
                 {'fieldMeans': '出版年', 'fieldName': 'publish'},
-                {'fieldMeans': '卷(册)说明', 'fieldName': 'volume'},
                 {'fieldMeans': '堂号', 'fieldName': 'hall'},
-                {'fieldMeans': '作者姓名', 'fieldName': 'authors'},
-                {'fieldMeans': '应拍卷(册)数', 'fieldName': 'hasVolume'},
-                {'fieldMeans': '作者职务', 'fieldName': 'authorJob'},
-                // {'fieldMeans': '起年', 'fieldName': 'startYear'},
                 {'fieldMeans': '一世祖', 'fieldName': 'firstAncestor'},
                 {'fieldMeans': '始迁祖', 'fieldName': 'migrationAncestor'},
+                {'fieldMeans': '谱籍地(原谱)', 'fieldName': 'LocalityModern'},
+                {'fieldMeans': '谱籍地(现代)', 'fieldName': 'place'},
+                {'fieldMeans': '卷(册)说明', 'fieldName': 'volume'},
+                {'fieldMeans': '缺卷(册)说明', 'fieldName': 'lostVolume'},
+                {'fieldMeans': '可拍册数', 'fieldName': 'hasVolume'},
+                {'fieldMeans': '作者', 'fieldName': 'authors'},
+                {'fieldMeans': '作者职务', 'fieldName': 'authorJob'},
                 {'fieldMeans': '重复ID', 'fieldName': 'Dupbookid'},
+
+                {'fieldMeans': '省', 'fieldName': 'prov', 'hide': true},
+                {'fieldMeans': '市', 'fieldName': 'city', 'hide': true},
+                {'fieldMeans': '区', 'fieldName': 'district', 'hide': true},
+                // {'fieldMeans': '起年', 'fieldName': 'startYear'},
                 // {'fieldMeans': '说明', 'fieldName': 'explain'},
                 // {'fieldMeans': '备注', 'fieldName': 'memo'},
                 // {'fieldMeans': '状态', 'fieldName': 'condition', 'disabled': true},
@@ -206,17 +207,17 @@ export default {
             dataObj['GCOver'] = this.GCOver;
             dataObj['NoIndex'] = this.NoIndex ? 1 : 0;
 
-            let data = await api.patchAxios('data/edit', {
+            let result = await api.patchAxios('data/edit', {
                 'dataKey': this.dataKey,
                 'dataObj': dataObj,
                 'userKey': this.userId, 
                 'siteKey': this.stationKey,
             });
 
-            if(data.status == 200){
+            if(result.status == 200){
                 this.close(true);
             }else{
-                this.$XModal.message({ message: data.msg, status: 'warning' });
+                this.$XModal.message({ message: result.msg, status: 'warning' });
             }
         },
         saveData(){

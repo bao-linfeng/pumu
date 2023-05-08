@@ -336,7 +336,7 @@ export default {
         async getVolumeList(){
             const result = await api.getAxios('catalog/volumeList?catalogKey='+this.dataKey);
             if(result.status == 200){
-                let takeStatusOO = {'1': '待拍摄', '2': '拍摄中', '3': '自检中', '4': '同步中', '5': '微站初审中', '6': '打回中', '7': '完成', '8': '开发票中', '12': '机构审核中', '13': '微站复审', '14': '微站待议'};
+                let takeStatusOO = {'1': '待拍摄', '2': '拍摄中', '3': '自检中', '4': '同步中', '5': '微站初审中', '6': '打回中', '7': '完成', '8': '开发票中', '12': '机构审核中', '13': '微站复审', '14': '微站待议', '16': '作废'};
                 this.volumeList = result.data.map((ele) => {
                     ele.isLeadImagesO = ele.isLeadImages == 1 ? '是' : '否';
                     ele.singleOrTwoO = ele.singleOrTwo == 1 ? '单拍' : ele.singleOrTwo == 2 ? '双拍' : '';

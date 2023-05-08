@@ -412,15 +412,20 @@ export default {
                 this.collapsableEvent();
                 return false;
             }
-            if(this.active == 2 || (this.active == 3 && !this.needReview)){
-                if(column.property == 'willIn' || column.property == 'annex' || column.property == 'delete' || !column.property){
-                    this.row = {};
-                }else{
-                    this.row = row;
-                }
-            }else{
+            if(column.property == 'willIn' || column.property == 'annex' || column.property == 'delete' || column.property == 'needFill' || column.property == 'needImage'){
                 this.row = {};
+            }else{
+                this.row = row;
             }
+            // if(this.active == 2 || (this.active == 3 && !this.needReview)){
+            //     if(column.property == 'willIn' || column.property == 'annex' || column.property == 'delete' || !column.property){
+            //         this.row = {};
+            //     }else{
+            //         this.row = row;
+            //     }
+            // }else{
+            //     this.row = {};
+            // }
         },
         rowClassName ({ row, rowIndex }) {
             if(this.active == 5){

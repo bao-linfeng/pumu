@@ -122,6 +122,7 @@ export default {
             this.loading = true;
             let data = await api.postAxios('data/download',{
                 'siteKey': this.stationKey,
+                'userKey': this.userId,
                 'noPublishAD': this.noPublishAD,
                 'begYear': this.begYear,
                 'endYear': this.endYear,
@@ -164,7 +165,7 @@ export default {
             if(data.status == 200){
                 this.list = data.result.list;
                 this.list.map((item)=>{
-                    item.NoIndexO = item.NoIndex == 1 ? '否' : '是';
+                    item.NoIndexO = item.NoIndex == 1 ? '不可索引' : '可索引';
                     item.claimTimeO = item.claimTime ? ADS.getLocalTime(item.claimTime, '/', 1) : '';
                     item.createTimeO = item.createTime ? ADS.getLocalTime(item.createTime, '/', 1) : '';
                     item.Filetimes = ADS.getLocalTime(item.createTime, '/', 1) || item.Filetimes;

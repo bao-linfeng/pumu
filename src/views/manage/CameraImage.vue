@@ -40,10 +40,10 @@
                     <img src="../../assets/shoot/leaveMsg.svg" alt="">
                     <span class="span">查看谱目</span>
                 </div>
-                <div v-if="(((takeStatus == 5 || takeStatus == 6 || takeStatus == 7 || takeStatus == 8 || takeStatus == 9 || takeStatus == 12 || takeStatus == 13 || takeStatus == 14) && role >= 1 && role <= 3) || (takeStatus == 12 && orgAdmin == 'admin')) && !isRead" class="task-verify" @click="(isShow = 6)">
+                <!-- <div v-if="(((takeStatus == 5 || takeStatus == 6 || takeStatus == 7 || takeStatus == 8 || takeStatus == 9 || takeStatus == 12 || takeStatus == 13 || takeStatus == 14) && role >= 1 && role <= 3) || (takeStatus == 12 && orgAdmin == 'admin')) && !isRead" class="task-verify" @click="(isShow = 6)">
                     <img src="../../assets/shoot/leaveMsg.svg" alt="">
                     <span class="span">编辑谱目</span>
-                </div>
+                </div> -->
                 <div v-if="(((takeStatus == 5 || takeStatus == 6 ||  takeStatus == 7 || takeStatus == 8 || takeStatus == 9 || takeStatus == 12 || takeStatus == 13 || takeStatus == 14) && role >= 1 && role <= 3) || (takeStatus == 12 && orgAdmin == 'admin')) && !isRead" class="task-verify" @click="isShow = 3">
                     <img src="../../assets/shoot/leaveMsg.svg" alt="">
                     <span class="span">编辑卷册</span>
@@ -371,15 +371,6 @@ export default {
                         if(ele.takeStatus == 5 || ele.takeStatus == 6 || ele.takeStatus == 7 || ele.takeStatus == 13 || ele.takeStatus == 14){
                             volumeList.push(ele);
                         }
-                        // if(this.takeStatus == 5 || this.takeStatus == 13 || this.takeStatus == 14){
-                        //     if(ele.takeStatus == 5 || ele.takeStatus == 13 || ele.takeStatus == 14){
-                        //         volumeList.push(ele);
-                        //     }
-                        // }else{
-                        //     if(ele._key == this.vid){
-                        //         volumeList.push(ele);
-                        //     }
-                        // }
                     }
                     if(this.orgAdmin == 'admin'){
                         if(this.takeStatus == 12){

@@ -31,14 +31,22 @@
                         <vxe-table-column type="checkbox" width="60"></vxe-table-column>
                         <vxe-table-column v-for="(item,index) in field_main" :key="'main'+index" :width=" item.fieldName == 'surname' ? 60 : 100" :field="item.fieldName" :title="item.fieldMeans"></vxe-table-column>
                     </vxe-table-colgroup>
-                    <vxe-table-column v-for="(item,index) in field_branch" :key="'branch'+index" width="100" :field="item.fieldName" :title="item.fieldMeans"></vxe-table-column>
+                    <vxe-table-column v-for="(item,index) in field_branch" :key="'branch'+index" :width="100" :field="item.fieldName" :title="item.fieldMeans"></vxe-table-column>
+                    <vxe-table-column field="Dupbookid" title="重复谱ID" width="100"></vxe-table-column>
+                    <vxe-table-column field="memo" title="备注" width="100"></vxe-table-column>
                     <vxe-table-column field="explain" title="说明" width="100" show-overflow="title"></vxe-table-column>
-                    <vxe-table-column field="Filenames" title="档名" width="100" sort-by="Filenames" sortable></vxe-table-column>
+                    <vxe-table-column field="orgName" title="供应商" width="100"></vxe-table-column>
+                    <vxe-table-column field="" title="拍数" width="100"></vxe-table-column>
+                    <vxe-table-column field="1" title="更新人员" width="100"></vxe-table-column>
+                    <vxe-table-column field="condition" title="编目状态" width="100"></vxe-table-column>
+                    <vxe-table-column field="NoIndexO" title="索引状态" width="100"></vxe-table-column>
+
+                    <!-- <vxe-table-column field="Filenames" title="档名" width="100" sort-by="Filenames" sortable></vxe-table-column>
                     <vxe-table-column field="fileName" title="文件标题" width="100"></vxe-table-column>
                     <vxe-table-column field="batch" title="批次号" width="100"></vxe-table-column>
                     <vxe-table-column field="createTimeO" title="导入时间" width="100" sort-by="createTime" sortable></vxe-table-column>
                     <vxe-table-column field="claimUserName" title="认领人" width="100"></vxe-table-column>
-                    <vxe-table-column field="claimTimeO" title="认领时间" width="100" sort-by="claimTime" sortable></vxe-table-column>
+                    <vxe-table-column field="claimTimeO" title="认领时间" width="100" sort-by="claimTime" sortable></vxe-table-column> -->
                     <vxe-table-column title="操作" :visible="visible" fixed="right" :width="w" :cell-render="{name:'AdaiActionButton',attr:{data:actionButton},events:{'editBook':editBook, 'removeBook':removeBook,'readBook':readBook, 'lookBook': lookBook, 'catalogPass': catalogPass, 'lookLog': lookLog}}"></vxe-table-column>
                 </vxe-table>
             </div>
@@ -104,71 +112,82 @@ export default {
     },
     created:function(){
         this.field_main = [
-            {'fieldMeans': 'ID', 'fieldName': '_key'},
+            {'fieldMeans': '谱ID', 'fieldName': '_key'},
+            {'fieldMeans': '谱名', 'fieldName': 'genealogyName'},
             {'fieldMeans': '姓氏', 'fieldName': 'surname'},
-            {'fieldMeans': '家谱谱名', 'fieldName': 'genealogyName'},
             {'fieldMeans': '出版年', 'fieldName': 'publish'},
-            {'fieldMeans': '谱籍_现代地名', 'fieldName': 'place'},
             {'fieldMeans': '堂号', 'fieldName': 'hall'},
         ];
 
         this.field_branch = [
-            {'fieldMeans': '谱籍_依谱书所载', 'fieldName': 'LocalityModern'},
-            // {'fieldMeans': '省', 'fieldName': 'prov'},
-            // {'fieldMeans': '市', 'fieldName': 'city'},
-            // {'fieldMeans': '区', 'fieldName': 'district'},
-
-            {'fieldMeans': '作者姓名', 'fieldName': 'authors'},
-            {'fieldMeans': '应拍卷(册)数', 'fieldName': 'hasVolume'},
-            {'fieldMeans': '卷(册)说明', 'fieldName': 'volume'},
-            {'fieldMeans': '缺卷(册)说明', 'fieldName': 'lostVolume'},
-            {'fieldMeans': '版本类型', 'fieldName': 'version'},
-            {'fieldMeans': '作者职务', 'fieldName': 'authorJob'},
-
             {'fieldMeans': '一世祖', 'fieldName': 'firstAncestor'},
             {'fieldMeans': '始迁祖', 'fieldName': 'migrationAncestor'},
-            {'fieldMeans': '备注', 'fieldName': 'memo'},
-            {'fieldMeans': '谱书编号', 'fieldName': 'bookId'},
-            {'fieldMeans': 'DGS 号码', 'fieldName': 'DGS'},
-            {'fieldMeans': '微卷编号', 'fieldName': 'film'},
-            {'fieldMeans': '家谱群组ID', 'fieldName': 'genealogyGroupID'},
-
-            {'fieldMeans': '重复谱书编号', 'fieldName': 'Dupbookid'},
-            {'fieldMeans': '档案时间', 'fieldName': 'Filetimes'},
-            // {'fieldMeans': '档名', 'fieldName': 'Filenames'},
-            {'fieldMeans': '代号', 'fieldName': 'code'},
-            {'fieldMeans': '认领机构', 'fieldName': 'claimOrgCode'},
-            {'fieldMeans': '状态', 'fieldName': 'condition'},
-            // {'fieldMeans': '说明', 'fieldName': 'explain'},
-            {'fieldMeans': '是否录入', 'fieldName': 'NoIndexO'},
-
-            // {'fieldMeans': '项目ID', 'fieldName': 'Projectid'},
-            // {'fieldMeans': '拍摄日期', 'fieldName': 'capturedate'},
-            // {'fieldMeans': 'Media', 'fieldName': 'Media'},
-            // {'fieldMeans': '重复专案ID', 'fieldName': 'DupProjectID'},
-            // {'fieldMeans': '认领单位', 'fieldName': 'claim'},
-            // {'fieldMeans': '认领日期', 'fieldName': 'claimDate'},
-            // {'fieldMeans': '拍摄期限', 'fieldName': 'shootingPeriod'},
-            // {'fieldMeans': '前次认领单位1', 'fieldName': 'pervious1'},
-            // {'fieldMeans': '前次认领日期1', 'fieldName': 'perviousDate1'},
-            // {'fieldMeans': '前次认领单位2', 'fieldName': 'pervious2'},
-            // {'fieldMeans': '前次认领日期2', 'fieldName': 'perviousDate2'},
-            // {'fieldMeans': '前次认领单位3', 'fieldName': 'pervious3'},
-            // {'fieldMeans': '前次认领日期3', 'fieldName': 'perviousDate3'},
-            // {'fieldMeans': '序号', 'fieldName': 'VolumeFst'},
-            // {'fieldMeans': '起年', 'fieldName': 'startYear'},
+            {'fieldMeans': '谱籍地(原谱)', 'fieldName': 'LocalityModern'},
+            {'fieldMeans': '谱籍地(现代)', 'fieldName': 'place'},
+            {'fieldMeans': '卷(册)说明', 'fieldName': 'volume'},
+            {'fieldMeans': '缺卷(册)说明', 'fieldName': 'lostVolume'},
+            {'fieldMeans': '可拍册数', 'fieldName': 'hasVolume'},
+            {'fieldMeans': '实拍册数', 'fieldName': 'volumes'},
+            {'fieldMeans': '作者', 'fieldName': 'authors'},
+            {'fieldMeans': '作者职务', 'fieldName': 'authorJob'},
         ];
+
+        // [
+        //     {'fieldMeans': '省', 'fieldName': 'prov'},
+        //     {'fieldMeans': '市', 'fieldName': 'city'},
+        //     {'fieldMeans': '区', 'fieldName': 'district'},
+        //     {'fieldMeans': '重复谱ID', 'fieldName': 'Dupbookid'},
+        //     {'fieldMeans': '备注', 'fieldName': 'memo'},
+        //     {'fieldMeans': '说明', 'fieldName': 'explain'},
+        //     {'fieldMeans': '状态', 'fieldName': 'condition'},
+        //     {'fieldMeans': '谱书编号', 'fieldName': 'bookId'},
+        //     {'fieldMeans': 'DGS 号码', 'fieldName': 'DGS'},
+        //     {'fieldMeans': '微卷编号', 'fieldName': 'film'},
+        //     {'fieldMeans': '家谱群组ID', 'fieldName': 'genealogyGroupID'},
+        //     {'fieldMeans': '重复谱书编号', 'fieldName': 'Dupbookid'},
+        //     {'fieldMeans': '档案时间', 'fieldName': 'Filetimes'},
+        //     {'fieldMeans': '档名', 'fieldName': 'Filenames'},
+        //     {'fieldMeans': '代号', 'fieldName': 'code'},
+        //     {'fieldMeans': '认领机构', 'fieldName': 'claimOrgCode'},
+        //     {'fieldMeans': '状态', 'fieldName': 'condition'},
+        //     {'fieldMeans': '是否录入', 'fieldName': 'NoIndexO'},
+        //     {'fieldMeans': '版本类型', 'fieldName': 'version'},
+        //     {'fieldMeans': '项目ID', 'fieldName': 'Projectid'},
+        //     {'fieldMeans': '拍摄日期', 'fieldName': 'capturedate'},
+        //     {'fieldMeans': 'Media', 'fieldName': 'Media'},
+        //     {'fieldMeans': '重复专案ID', 'fieldName': 'DupProjectID'},
+        //     {'fieldMeans': '认领单位', 'fieldName': 'claim'},
+        //     {'fieldMeans': '认领日期', 'fieldName': 'claimDate'},
+        //     {'fieldMeans': '拍摄期限', 'fieldName': 'shootingPeriod'},
+        //     {'fieldMeans': '前次认领单位1', 'fieldName': 'pervious1'},
+        //     {'fieldMeans': '前次认领日期1', 'fieldName': 'perviousDate1'},
+        //     {'fieldMeans': '前次认领单位2', 'fieldName': 'pervious2'},
+        //     {'fieldMeans': '前次认领日期2', 'fieldName': 'perviousDate2'},
+        //     {'fieldMeans': '前次认领单位3', 'fieldName': 'pervious3'},
+        //     {'fieldMeans': '前次认领日期3', 'fieldName': 'perviousDate3'},
+        //     {'fieldMeans': '序号', 'fieldName': 'VolumeFst'},
+        //     {'fieldMeans': '起年', 'fieldName': 'startYear'},
+        // ];
     },
     mounted:function(){
         this.h = window.innerHeight - 50 - 50 - 60 - 195 - 40;
         if(this.role < 1 || this.role > 3){
-            this.w = 240;
-            this.actionButton = [
-                {'label': '详情', 'value': 'lookBook'}, 
-                {'label': '记录', 'value': 'lookLog'},
-                {'label': '影像', 'value': 'readBook'},
-                {'label': '完结', 'value': 'catalogPass'},
-            ];
+            if(this.orgAdmin == 'admin'){
+                this.w = 240;
+                this.actionButton = [
+                    {'label': '详情', 'value': 'lookBook'}, 
+                    {'label': '记录', 'value': 'lookLog'},
+                    {'label': '影像', 'value': 'readBook'},
+                    {'label': '完结', 'value': 'catalogPass'},
+                ];
+            }else{
+                this.w = 180;
+                this.actionButton = [
+                    {'label': '详情', 'value': 'lookBook'}, 
+                    {'label': '记录', 'value': 'lookLog'},
+                    {'label': '影像', 'value': 'readBook'},
+                ];
+            }
         }else{
             if(this.stationKey == '1379194999'){// 时光站
                 this.w = 330;
@@ -314,6 +333,7 @@ export default {
             stationKey: state => state.nav.stationKey,
             orgId: state => state.nav.orgId,
             pathname: state => state.nav.pathname,
+            orgAdmin: state => state.nav.orgAdmin,
         })
     },
     watch: {

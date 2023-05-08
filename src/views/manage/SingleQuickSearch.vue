@@ -10,9 +10,9 @@
             </div>
             <div class="search-wrap">
                 <div class="search-box" v-for="(item, i) in searchArr" :key="i">
+                    <el-checkbox class="marginR5" v-model="item.check"></el-checkbox>
                     <label class="label" for="">{{item.label}}</label>
-                    <el-input class="width100" :class="{'width200': ['genealogyName', 'place' ,'LocalityModern'].indexOf(item.value) > -1}" v-model="searchObject[item.value]" :placeholder="'请输入'+item.label" clearable></el-input>
-                    <el-checkbox class="margin10" v-model="item.check"></el-checkbox>
+                    <el-input class="width100 marginR20" :class="{'width200': ['genealogyName', 'place' ,'LocalityModern'].indexOf(item.value) > -1}" v-model="searchObject[item.value]" :placeholder="'请输入'+item.label" clearable></el-input>
                 </div>
                 
                 <el-button type="primary" size="medium" @click="getDataList">检索</el-button>
@@ -20,7 +20,6 @@
                 <el-checkbox class="margin10" v-model="haswu">无或空字符堂号</el-checkbox>
             </div>
             <div class="vex-table-box">
-                <!-- show-overflow -->
                 <vxe-table
                     border
                     resizable
@@ -50,7 +49,7 @@
                     <vxe-table-column field="firstAncestor" title="一世祖" width="100"></vxe-table-column>
                     <vxe-table-column field="migrationAncestor" title="始迁祖" width="100"></vxe-table-column>
                     <vxe-table-column field="hasVolume" title="实拍册数" width="100"></vxe-table-column>
-                    <vxe-table-column field="memo" title="备注" width="100"></vxe-table-column>
+                    <vxe-table-column field="memo" title="备注" width="100" show-overflow="title"></vxe-table-column>
                     <vxe-table-column field="explain" title="说明" width="150"></vxe-table-column>
                     <vxe-table-column field="condition" title="谱状态" width="70"></vxe-table-column>
                     <vxe-table-column field="claimOrgNameO" title="供应商" width="100"></vxe-table-column>
@@ -72,7 +71,6 @@
                 </div>
             </div>
         </div>
-        <!-- <Loading v-show="loading" /> -->
         <!-- 记录 -->
         <LogModule v-if="isShow == 3" :gid="id" v-on:close="closeModule" />
         <!-- 编辑 -->
@@ -303,7 +301,7 @@ export default {
             flex-wrap: wrap;
             .search-box{
                 .label{
-                    margin-right: 5px;
+                    margin-right: 3px;
                 }
             }
         }
@@ -343,6 +341,12 @@ export default {
 }
 .margin10{
     margin: 0 10px 0 5px;
+}
+.marginR5{
+    margin-right: 5px;
+}
+.marginR20{
+    margin-right: 20px;
 }
 </style>
 

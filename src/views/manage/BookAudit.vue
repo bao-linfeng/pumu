@@ -2,7 +2,7 @@
     <div class="wrap">
         <Sidebar />
         <div class="content">
-            <NavModal :title="'审核谱目'+(total ? '('+total+')' : '')">
+            <NavModal :title="'谱目审核'+(total ? '('+total+')' : '')">
                 <div class="toolbar">
                     <!-- <vxe-button v-if="role >= 1 && role <= 3" content="删除脏数据" @click="removeSigleEvent({'row':{'hasMarkISGN':1,'batchID':''}})"></vxe-button> -->
                 </div>

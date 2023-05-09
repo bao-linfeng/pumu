@@ -2,7 +2,7 @@
     <div class="wrap">
         <Sidebar />
         <div class="content">
-            <NavModal :title="'拍机号管理'">
+            <NavModal :title="'拍机编号管理'">
                 <div class="toolbar">
                     <vxe-button v-if="role >= 1 && role <= 2" icon="fa fa-plus" content="新增" @click="insertEvent()"></vxe-button>
                 </div>

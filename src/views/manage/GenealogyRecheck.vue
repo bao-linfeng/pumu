@@ -4,7 +4,7 @@
         <div class="content">
             <div class="nav-wrap">
                 <div class="nav-left">
-                    <h3 class="title">谱目复审列表(总共{{tableData.length}}条数据)</h3>
+                    <h3 class="title">谱目复检列表(总共{{tableData.length}}条数据)</h3>
                 </div>
                 <div class="nav-left">
                     <vxe-button content="批量重复" @click="checkCatalogArr(3)"></vxe-button>

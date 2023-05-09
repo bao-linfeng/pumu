@@ -231,7 +231,7 @@ export default {
             isShow: 0,
             attrData: [
                 {'label': '详情', 'value': 'detail'},
-                {'label': '编辑', 'value': 'edit'},
+                // {'label': '编辑', 'value': 'edit'},
                 {'label': '记录', 'value': 'log'},
             ],
             volumePages: 0,

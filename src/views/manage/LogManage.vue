@@ -2,7 +2,7 @@
     <div class="wrap">
         <Sidebar />
         <div class="content">
-            <NavModal :title="'日志管理'">
+            <NavModal :title="'系统日志'">
                 <div class="toolbar">
                     <el-input class="width150" v-model="keyWord" placeholder="请输入日志内容" @change="getOperationLogList"></el-input>
                     <el-date-picker

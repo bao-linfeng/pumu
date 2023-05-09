@@ -72,9 +72,9 @@
                     :align="'center'"
                     @cell-click="cellClickEvent"
                     :data="tableData">
-                    <vxe-table-column field="time" min-width="150" title="日期" sortable></vxe-table-column>
+                    <vxe-table-column field="time" width="150" title="日期" fixed="left" sortable></vxe-table-column>
                     <vxe-table-column v-for="(item,index) in branch_main" :key="'main'+index" width="100" :field="item.value" :title="item.label"></vxe-table-column>
-                    <vxe-table-column field="allUserNumberO" width="110" title="合计总量"></vxe-table-column>
+                    <vxe-table-column field="allUserNumberO" min-width="110" title="合计总量"></vxe-table-column>
                 </vxe-table>
             </div>
         </div>

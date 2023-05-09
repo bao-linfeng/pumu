@@ -2,7 +2,7 @@
     <div class="wrap">
         <Sidebar />
         <div class="content">
-            <NavModal :title="'装载批次列表'+(total ? '('+total+')' : '')">
+            <NavModal :title="'数据装载列表'+(total ? '('+total+')' : '')">
                 <div class="toolbar">
                     <el-button type="primary" @click="(isLeadExcel=true)">导入目录</el-button>
                     <!-- <vxe-button v-if="role >= 1 && role <= 3" content="删除脏数据" @click="removeSigleEvent({'row':{'hasMarkISGN':1,'batchID':''}})"></vxe-button> -->

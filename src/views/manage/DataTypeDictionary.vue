@@ -2,7 +2,7 @@
     <div class="wrap">
         <Sidebar />
         <div class="content">
-            <NavModal :title="'数据类型字典'">
+            <NavModal :title="'数据字典'">
                 <div class="toolbar">
                     <vxe-button v-if="role >= 1 && role <= 2 && stationKey == '1379194999'" content="新增" @click="insertEvent(-1)"></vxe-button>
                 </div>

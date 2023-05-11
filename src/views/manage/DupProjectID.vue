@@ -49,7 +49,6 @@
                     class="adai-table"
                     resizable
                     keep-source
-                    show-overflow
                     highlight-current-row
                     ref="xTable"
                     :height="h"
@@ -73,7 +72,7 @@
                     <vxe-table-column field="claimOrgName" width="100" title="认领机构"></vxe-table-column>
                     <vxe-table-column field="claimTimeO" width="100" title="认领时间"></vxe-table-column>
                     <vxe-table-column field="orgName" width="100" title="上传机构"></vxe-table-column>
-                    <vxe-table-column field="action" title="操作" fixed="right" width="240" :cell-render="{name: 'AdaiActionButton2', attr: {data: actionData}, events: {'detail': showDetail, 'log': showLog, 'claim': handleCkaim, 'open': handleOpen}}"></vxe-table-column>
+                    <vxe-table-column field="action" title="操作" fixed="right" width="240" :cell-render="{name: 'AdaiActionButton2', attr: {data: actionData}, events: {'detail': showDetail, 'log': showLog, 'claim': handleCkaim, 'open': handleOpen, 'singleQuick': singleQuick}}"></vxe-table-column>
                 </vxe-table>
             </div>
             <vxe-pager
@@ -139,7 +138,12 @@ export default {
             field_main: [],
             field_branch: [],
 
-            actionData: [{'label': '详情', 'value': 'detail'}, {'label': '记录', 'value': 'log'}, {'label': '认领', 'value': 'claim'}],
+            actionData: [
+                {'label': '详情', 'value': 'detail'}, 
+                {'label': '记录', 'value': 'log'}, 
+                {'label': '认领', 'value': 'claim'},
+                {'label': '快捷查询', 'value': 'singleQuick'},
+            ],
             detail: {},
             isShow: 0,
             gcStatusO: {'30': '待开放', '35': '已开放', '40': '已认领'},
@@ -153,7 +157,8 @@ export default {
             this.actionData = [
                 {'label': '详情', 'value': 'detail'}, 
                 {'label': '记录', 'value': 'log'}, 
-                {'label': '开放', 'value': 'open'}
+                {'label': '开放', 'value': 'open'},
+                {'label': '快捷查询', 'value': 'singleQuick'},
             ];
             this.getOrgList();
         }else{
@@ -164,6 +169,9 @@ export default {
         this.getDataList();
     },
     methods:{
+        singleQuick({ row }){
+            window.open('/'+this.pathname+'/singleQuickSearch?id='+row._key, '_blank');
+        },
         async getOrgList(){// 机构列表
             let data = await api.getAxios('org?siteKey='+this.stationKey+'&name=');
             if(data.status == 200){
@@ -278,6 +286,7 @@ export default {
             stationKey: state => state.nav.stationKey,
             role: state => state.nav.role,
             orgId: state => state.nav.orgId,
+            pathname: state => state.nav.pathname,
         })
     },
     watch:{
@@ -295,6 +304,7 @@ export default {
             this.actionData = [
                 {'label': '详情', 'value': 'detail'}, 
                 {'label': '记录', 'value': 'log'},
+                {'label': '快捷查询', 'value': 'singleQuick'},
             ];
             if(this.role >= 1 && this.role <= 3){
                 if(nv == 'waitOpen'){

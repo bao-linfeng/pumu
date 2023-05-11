@@ -1,17 +1,17 @@
 <template>  
-    <div class="jiapu-table-modal">
+    <div class="jiapu-table-modal" :class="{active: isFull}">
         <div class="jiapu-table-title">
             <div class="head-wrap">
                 <h3 class="title">检索结果</h3>
             </div>
             <div>
+                <el-button class="marginL10" type="primary" size="mini" @click="toggleFull">{{isFull ? '隐藏' : '显示'}}全屏</el-button>
                 <el-button class="marginL10" type="primary" size="mini" @click="toggleColumn">{{visible ? '隐藏' : '显示'}} 操作列</el-button>
                 <span>共检索出<i>{{total}}</i>部家谱</span>
             </div>
         </div>
         <div class="jiapu-vxe-wrap style3">
             <div class="jiapu-vxe-box">
-                <!-- show-overflow -->
                 <vxe-table
                     border
                     resizable
@@ -36,8 +36,8 @@
                     <vxe-table-column field="memo" title="备注" width="100"></vxe-table-column>
                     <vxe-table-column field="explain" title="说明" width="100" show-overflow="title"></vxe-table-column>
                     <vxe-table-column field="orgName" title="供应商" width="100"></vxe-table-column>
-                    <vxe-table-column field="" title="拍数" width="100"></vxe-table-column>
-                    <vxe-table-column field="1" title="更新人员" width="100"></vxe-table-column>
+                    <vxe-table-column field="拍数" title="拍数" width="100"></vxe-table-column>
+                    <vxe-table-column field="更新人员" title="更新人员" width="100"></vxe-table-column>
                     <vxe-table-column field="condition" title="编目状态" width="100"></vxe-table-column>
                     <vxe-table-column field="NoIndexO" title="索引状态" width="100"></vxe-table-column>
 
@@ -108,6 +108,7 @@ export default {
             visible: true,
             h: 500,
             row: {},
+            isFull: false,
         };
     },
     created:function(){
@@ -126,7 +127,7 @@ export default {
             {'fieldMeans': '谱籍地(现代)', 'fieldName': 'place'},
             {'fieldMeans': '卷(册)说明', 'fieldName': 'volume'},
             {'fieldMeans': '缺卷(册)说明', 'fieldName': 'lostVolume'},
-            {'fieldMeans': '可拍册数', 'fieldName': 'hasVolume'},
+            {'fieldMeans': '应拍册数', 'fieldName': 'hasVolume'},
             {'fieldMeans': '实拍册数', 'fieldName': 'volumes'},
             {'fieldMeans': '作者', 'fieldName': 'authors'},
             {'fieldMeans': '作者职务', 'fieldName': 'authorJob'},
@@ -205,6 +206,15 @@ export default {
         this.initData();
     },
     methods:{
+        toggleFull(){
+            this.isFull = !this.isFull;
+            if(this.isFull){
+                this.h = this.h + 240;
+            }else{
+                this.h = this.h - 240;
+            }
+            this.$emit('toggle-full', this.isFull);
+        },
         sortChangeEvent({column, property, order, sortBy, sortList, $event}){
             console.log(property, order, sortBy);
             this.$emit('get-genealogy', {'prop': sortBy, 'order': order});

@@ -6,8 +6,8 @@
             <!-- 导航 -->
             <NavModal title="本站家谱" />
             <!-- 检索模块 -->
-            <SearchModal :fieldFilters="fieldFilters" v-on:get-genealogy="getGenealogy" v-on:change-parameters="changeParameters" />
-            <div class="btn_wrap_left">
+            <SearchModal v-show="!isFull" :fieldFilters="fieldFilters" v-on:get-genealogy="getGenealogy" v-on:change-parameters="changeParameters" />
+            <div v-show="!isFull" class="btn_wrap_left">
                 <input v-if="this.role >=1 && this.role <= 2" class="root" type="button" value="前台公开" @click="openRootModal" />
                 <input v-if="stationKey == '1379194999'" class="swap" type="button" value="家谱分发" @click="openSiteModal(false)" />
                 <input v-if="stationKey == '1379194999'" class="swap" type="button" value="全部分发" @click="openSiteModal(true)" />
@@ -18,7 +18,7 @@
                 <el-button v-if="this.role >=1 && this.role <= 2"  class="marginLeft20" size="small" type="primary" @click="isEdit = true">编辑的家谱</el-button>
             </div>
             <!-- 家谱table -->
-            <GenealogyTableModal v-if="fieldFilters.length" :fieldFilters="fieldFilters" :total="total" :list="list" v-on:checkbox-change="checkboxChange" v-on:get-genealogy="getJiapuList" />
+            <GenealogyTableModal v-if="fieldFilters.length" :fieldFilters="fieldFilters" :total="total" :list="list" v-on:toggle-full="toggleFull" v-on:checkbox-change="checkboxChange" v-on:get-genealogy="getJiapuList" />
             <vxe-pager
                 align="center"
                 @page-change = "changePage"
@@ -94,6 +94,7 @@ export default {
             condition: '',
             FileStartTimes: '',
             FileEndTimes: '',
+            isFull: false,
         };
     },
     created:function(){
@@ -104,6 +105,9 @@ export default {
         // this.$socket.emit("login",{'userKey':this.userId,'siteKey':this.stationKey, 'role': this.role});
     },
     methods:{
+        toggleFull(data){
+            this.isFull = data;
+        },
         reconnect(){
             this.$socket.emit("login",{'userKey':this.userId,'siteKey':this.stationKey, 'role': this.role});
         },

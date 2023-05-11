@@ -41,7 +41,7 @@
                     </vxe-table-colgroup>
                     
                     <vxe-table-column v-for="(item,index) in field_branch" :key="'field_branch'+index" width="100" :field="item.fieldName" :title="item.fieldMeans"></vxe-table-column>
-                    <vxe-table-column field="annex" title="待提交原因" width="75" :cell-render="{name:'AdaiActionButton',attr:{data:[{'label':'附件','value':'annex'}]},events:{'annex':annex}}"></vxe-table-column>
+                    <vxe-table-column field="annex" fixed="right" title="待提交原因" width="160" :cell-render="{name:'AdaiActionButton',attr:{data:[{'label':'附件','value':'annex'}, {'label':'快捷查询','value':'singleQuick'}]},events:{'annex':annex, 'singleQuick': singleQuick}}"></vxe-table-column>
                 </vxe-table>
             </div>
             <RepeatJiapuModal :row="row" :h="h" :pumuThead="pumuThead" :isF="false" />
@@ -135,6 +135,10 @@ export default {
         this.getCheckLogCodeSubmit();
     },
     methods:{
+        singleQuick({ row }){
+            console.log(row);
+            window.open('/'+this.pathname+'/singleQuickSearch?id='+row._key, '_blank');
+        },
         checkboxChange({records}){
             let catalogKeyArr = [];
             records.forEach((ele) => {
@@ -289,6 +293,7 @@ export default {
             userId: state => state.nav.userId,
             stationKey: state => state.nav.stationKey,
             role: state => state.nav.role,
+            pathname: state => state.nav.pathname,
         })
     },
     watch:{

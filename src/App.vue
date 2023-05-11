@@ -537,4 +537,7 @@ table{
   color: #999;
   /* font-weight: normal; */
 }
+.red .el-input__inner{
+    border-color: #f00 !important;
+}
 </style>

@@ -137,6 +137,8 @@ VXETable.renderer.add('AdaiActionButton', {
           arr.push(<button class="AdaiActionButton" onClick={() => events[item.value](params)}>{item.label}</button>)
         }else if(item.value == 'lookBook'){
           arr.push(<button class="AdaiActionButton" onClick={() => events[item.value](params)}>{item.label}</button>)
+        }else if(item.value == 'singleQuick'){
+          arr.push(<button class="AdaiActionButton" onClick={() => events[item.value](params)}>{item.label}</button>)
         }
         else{
           arr.push(<button class="AdaiActionButton disabled" onClick={() => events[item.value](params)}>{item.label}</button>)

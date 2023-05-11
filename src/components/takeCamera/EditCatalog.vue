@@ -8,14 +8,14 @@
         <div class="content-box">
             <ul class="edit-content">
                 <li v-for="(item, index) in argumentsList" :key="index" v-show="!item.hide">
-                    <span class="label">{{item.fieldMeans}}</span>
-                    <el-input class="w90" :class="{changeActive: changeFieldArr.indexOf(item.fieldName) > -1, w80: ['place'].indexOf(item.fieldName) > -1}" v-model="parameter[item.fieldName]" :title="parameter[item.fieldName]"  :disabled="item.disabled || read" clearable size="medium"></el-input>
+                    <span class="label"><i>{{item.fieldMeans}}</i><img class="title" v-if="item.rule" :title="item.rule" src="../../assets/help.svg" /></span>
+                    <el-input class="w90" :class="{red: item.required && !parameter[item.fieldName], changeActive: changeFieldArr.indexOf(item.fieldName) > -1, w80: ['place'].indexOf(item.fieldName) > -1}" v-model="parameter[item.fieldName]" :title="parameter[item.fieldName]"  :disabled="item.disabled || read" clearable size="medium"></el-input>
                     <img class="edit" v-if="['place'].indexOf(item.fieldName) > -1 && isEdit" @click="isOpen = 2" title="更新" src="../../assets/shoot/leaveMsg.svg" alt="">
                 </li>
             </ul>
             <div class="textarea-wrap">
                 <div class="textarea-box">
-                    <label class="label" for="">备注[memo]</label>
+                    <label class="label" for=""><i>备注[memo]</i><img class="title" title="必須要半型的標點符號" src="../../assets/help.svg" /></label>
                     <el-input
                         class="textarea"
                         :class="{changeActive: changeFieldArr.indexOf('memo') > -1}"
@@ -97,22 +97,23 @@ export default {
         return {
             argumentsList: [
                 // {'fieldMeans': '谱ID', 'fieldName': '_key', 'disabled': true},
-                {'fieldMeans': '谱名', 'fieldName': 'genealogyName'},
-                {'fieldMeans': '家谱姓氏', 'fieldName': 'surname'},
+                {'fieldMeans': '谱名', 'fieldName': 'genealogyName', 'required': true, 'rule': '可以放半型“.“”( )”，不可以有其他標點符號，不可有空格，可拆字（），不可有阿拉伯數字'},
+                {'fieldMeans': '姓氏', 'fieldName': 'surname', 'required': true, 'rule': '第1欄不可為空白，第2-3欄可以空白；提供三個欄位，每個欄位只能放一個姓氏，不可加“氏”，最多三個姓氏'},
+                {'fieldMeans': '出版年', 'fieldName': 'publish', 'required': true, 'rule': '只能填入阿拉伯數字，不可加“年”'},
+                {'fieldMeans': '堂号', 'fieldName': 'hall', 'required': true, 'rule': '不可空白，如無堂號請填“無”'},
+                {'fieldMeans': '一世祖', 'fieldName': 'firstAncestor', 'rule': '只能放1個人的完整姓名（姓+名），最後一個字元不可以是公，不可有其他標點符號，除了拆字（）'},
+                {'fieldMeans': '始迁祖', 'fieldName': 'migrationAncestor', 'rule': '只能放1個人的完整姓名（姓+名），最後一個字元不可以是公，不可有其他標點符號，除了拆字（）'},
+                {'fieldMeans': '谱籍地(原谱)', 'fieldName': 'LocalityModern', 'required': true, 'rule': '不同的行政區劃需用","分開，只能放文字，只能放大寫數字，不可有空格,不可有其他標點符號,除了拆字（）'},
+                {'fieldMeans': '谱籍地(现代)', 'fieldName': 'place', 'required': true, 'rule': '只能錄入一個完整地名，含省份，市，縣，鄉/鎮/街道，如果有村可錄入；'},
+                {'fieldMeans': '卷(册)说明', 'fieldName': 'volume', 'required': true, 'rule': '依照譜書目錄填入卷（冊）數，可以使用","，不可有空格不分卷全____冊'},
+                {'fieldMeans': '缺卷(册)说明', 'fieldName': 'lostVolume', 'required': true, 'rule': '提供錄入選單如下: 選項1：總卷數欄位如為總卷數不詳，填"存卷______________”；選項2：總卷數欄位如為不分卷且確定不全，填"存___冊”；選項3：不缺卷（冊）；選項4：知道總卷數且確定不全，則填“缺。。。”選項5：其他（可自由填入資訊）只可以使用半型“,“~“，數字必須是阿拉伯數字，不可有空格；'},
+                {'fieldMeans': '应拍册数', 'fieldName': 'hasVolume', 'required': true, 'rule': '只要填阿拉伯數字，沒有文字'},
+                {'fieldMeans': '实拍册数', 'fieldName': 'volumeNumber', 'rule': '只要填阿拉伯數字，沒有文字'},
+                {'fieldMeans': '作者', 'fieldName': 'authors', 'required': true, 'rule': '只能放1個人的完整姓名（姓+名），最後一個字元不可以是公，除了拆字（），不可有其他標點符號；可寫不詳'},
+                {'fieldMeans': '作者职务', 'fieldName': 'authorJob', 'required': true, 'rule': '只能放1個職務，不可有標點符號；可寫不詳'},
+                {'fieldMeans': '重复ID', 'fieldName': 'Dupbookid', 'rule': '只能填譜ID，只要有資料就表示要關聯系統原有譜書ID'},
                 {'fieldMeans': '家谱姓氏2', 'fieldName': 'surname2'},
                 {'fieldMeans': '家谱姓氏3', 'fieldName': 'surname3'},
-                {'fieldMeans': '出版年', 'fieldName': 'publish'},
-                {'fieldMeans': '堂号', 'fieldName': 'hall'},
-                {'fieldMeans': '一世祖', 'fieldName': 'firstAncestor'},
-                {'fieldMeans': '始迁祖', 'fieldName': 'migrationAncestor'},
-                {'fieldMeans': '谱籍地(原谱)', 'fieldName': 'LocalityModern'},
-                {'fieldMeans': '谱籍地(现代)', 'fieldName': 'place'},
-                {'fieldMeans': '卷(册)说明', 'fieldName': 'volume'},
-                {'fieldMeans': '缺卷(册)说明', 'fieldName': 'lostVolume'},
-                {'fieldMeans': '可拍册数', 'fieldName': 'hasVolume'},
-                {'fieldMeans': '作者', 'fieldName': 'authors'},
-                {'fieldMeans': '作者职务', 'fieldName': 'authorJob'},
-                {'fieldMeans': '重复ID', 'fieldName': 'Dupbookid'},
 
                 {'fieldMeans': '省', 'fieldName': 'prov', 'hide': true},
                 {'fieldMeans': '市', 'fieldName': 'city', 'hide': true},
@@ -221,7 +222,54 @@ export default {
             }
         },
         saveData(){
-            this.editCatalog();
+            // 必填项判断
+            let required = false, fieldMeans = '', 
+            publishRegExp = new RegExp(/\D/g), 
+            firstAncestorRegExp = new RegExp(/[,./;'\\\[\]!@#\$%\^&*()_=]|[，。、；‘、【】！@#￥%&*——+]/g),
+            migrationAncestorRegExp = new RegExp(/[,./;'\\\[\]!@#\$%\^&*()_=]|[，。、；‘、【】！@#￥%&*——+]/g);
+            this.argumentsList.forEach((currentValue, index) => {
+                if(currentValue.required && !this.parameter[currentValue.fieldName]){
+                    required = true;
+                    if(!fieldMeans){
+                        fieldMeans = currentValue.fieldMeans;
+                    }
+                }
+            });
+            if(required){
+                return this.$XModal.message({ message: fieldMeans+'必填！'+(fieldMeans == '堂号' ? '无堂号可填 无' : ''), status: 'warning' });
+            }
+            // 姓氏标错规则
+            if(this.parameter['surname'].indexOf('氏') > -1){
+                return this.$XModal.message({ message: '姓氏不可添加 氏', status: 'warning' });
+            }
+            if(this.parameter['surname2'].indexOf('氏') > -1){
+                return this.$XModal.message({ message: '姓氏2不可添加 氏', status: 'warning' });
+            }
+            if(this.parameter['surname3'].indexOf('氏') > -1){
+                return this.$XModal.message({ message: '姓氏3不可添加 氏', status: 'warning' });
+            }
+            // 出版年标错规则
+            if(this.parameter['publish'].indexOf('年') > -1){
+                return this.$XModal.message({ message: '出版年不可添加 年', status: 'warning' });
+            }
+            if(publishRegExp.test(this.parameter['publish'])){
+                return this.$XModal.message({ message: '出版年必须是数字', status: 'warning' });
+            }
+            // 一世祖、始迁祖标错规则
+            if(this.parameter['firstAncestor'][this.parameter['firstAncestor'].length - 1] == '公'){
+                return this.$XModal.message({ message: '一世祖最后一个字不能是 公', status: 'warning' });
+            }
+            if(firstAncestorRegExp.test(this.parameter['firstAncestor']) && this.parameter['firstAncestor']){
+                return this.$XModal.message({ message: '一世祖不可有其他標點符號，除了拆字（）', status: 'warning' });
+            }
+            if(this.parameter['migrationAncestor'].indexOf('(') > -1 && this.parameter['migrationAncestor'].indexOf(')') > -1){
+                return this.$XModal.message({ message: '始迁祖最后一个字不能是 公', status: 'warning' });
+            }
+            if(migrationAncestorRegExp.test(this.parameter['migrationAncestor']) && this.parameter['migrationAncestor']){
+                return this.$XModal.message({ message: '始迁祖祖不可有其他標點符號，除了拆字（）', status: 'warning' });
+            }
+
+            // this.editCatalog();
         },
     },
     computed: {
@@ -274,7 +322,7 @@ export default {
     }
     .content-box{
         position: relative;
-        width: 400px;
+        width: 820px;
         height: calc(100% - 80px);
         overflow: auto;
         .edit-content{
@@ -287,14 +335,19 @@ export default {
             width: 100%;
             li{
                 position: relative;
-                width: 100%;
+                width: 50%;
                 margin-bottom: 10px;
                 display: flex;
                 align-items: center;
                 .label{
                     width: 100px;
-                    text-align: left;
-                    display: block;
+                    margin-left: 10px;
+                    display: flex;
+                    align-items: center;
+                    .title{
+                        cursor: pointer;
+                        height: 15px;
+                    }
                 }
                 .edit{
                     background: #000;
@@ -334,19 +387,22 @@ i{
 .textarea-wrap{
     position: relative;
     width: 100%;
-    // display: flex;
-    // justify-content: space-between;
-    // align-items: center;
-    // margin-bottom: 10px;
+    text-align: left;
     .textarea-box{
         position: relative;
-        width: 100%;
-        display: flex;
+        width: 50%;
+        display: inline-flex;
         align-items: center;
         margin-bottom: 10px;
         .label{
             width: 100px;
-            text-align: left;
+            margin-left: 10px;
+            display: flex;
+            align-items: center;
+            .title{
+                cursor: pointer;
+                height: 15px;
+            }
         }
         .textarea{
             width: calc(100% - 100px);

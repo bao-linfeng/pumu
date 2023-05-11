@@ -49,8 +49,8 @@
                     <vxe-table-column field="firstAncestor" title="一世祖" width="100"></vxe-table-column>
                     <vxe-table-column field="migrationAncestor" title="始迁祖" width="100"></vxe-table-column>
                     <vxe-table-column field="hasVolume" title="实拍册数" width="100"></vxe-table-column>
-                    <vxe-table-column field="memo" title="备注" width="100" show-overflow="title"></vxe-table-column>
-                    <vxe-table-column field="explain" title="说明" width="150"></vxe-table-column>
+                    <vxe-table-column field="memo" title="备注" width="150" show-overflow="title"></vxe-table-column>
+                    <vxe-table-column field="explain" title="说明" width="150"  show-overflow="title"></vxe-table-column>
                     <vxe-table-column field="condition" title="谱状态" width="70"></vxe-table-column>
                     <vxe-table-column field="claimOrgNameO" title="供应商" width="100"></vxe-table-column>
                     <vxe-table-column field="createTimeO" title="上传时间" width="100" sort-by="createTime" sortable></vxe-table-column>

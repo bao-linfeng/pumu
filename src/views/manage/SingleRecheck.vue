@@ -42,7 +42,6 @@
                     resizable
                     stripe
                     keep-source
-                    show-overflow
                     highlight-hover-row
                     :loading="loading"
                     ref="xTable"
@@ -55,13 +54,29 @@
                     :sort-config="{trigger: 'cell', orders: ['desc', 'asc', 'auto'], remote: true}"
                     @sort-change="sortChangeEvent"
                     >
-                    <vxe-table-column type="checkbox" width="60"></vxe-table-column>
-                    <vxe-table-column field="gcKey" title="谱ID"></vxe-table-column>
-                    <vxe-table-column field="genealogyName" title="谱名"></vxe-table-column>
-                    <vxe-table-column field="applyUserName" title="操作人"></vxe-table-column>
-                    <vxe-table-column field="hitTargetNumber" title="命中条数"></vxe-table-column>
-                    <vxe-table-column field="applyTimeO" title="操作时间"></vxe-table-column>
-                    <vxe-table-column title="操作" width="200" :cell-render="{name:'AdaiActionButton',attr:{data: actionData},events:{'look': lookEvent, 'lookBook': lookBook}}"></vxe-table-column>
+                    <vxe-table-column field="gcKey" title="谱ID" width="100" fixed="left"></vxe-table-column>
+                    <vxe-table-column field="genealogyName" title="谱名" width="150" fixed="left"></vxe-table-column>
+                    <vxe-table-column field="surname" title="姓氏" width="50" fixed="left"></vxe-table-column>
+                    <vxe-table-column field="publish" title="出版年" width="100" sort-by="publish" sortable fixed="left"></vxe-table-column>
+                    <vxe-table-column field="hall" title="堂号" width="100" fixed="left"></vxe-table-column>
+                    <vxe-table-column field="firstAncestor" title="一世祖" width="100"></vxe-table-column>
+                    <vxe-table-column field="migrationAncestor" title="始迁祖"  width="100"></vxe-table-column>
+                    <vxe-table-column field="LocalityModern" title="谱籍地(原谱)" width="120"></vxe-table-column>
+                    <vxe-table-column field="place" title="谱籍地(现代)" width="120"></vxe-table-column>
+                    <vxe-table-column field="volume" title="卷(册)说明" width="100"></vxe-table-column>
+                    <vxe-table-column field="lostVolume" title="缺卷(册)说明" width="100"></vxe-table-column>
+                    <vxe-table-column field="hasVolume" title="应拍册数" width="100"></vxe-table-column>
+                    <vxe-table-column field="volumeNumber" title="实拍册数" width="100"></vxe-table-column>
+                    <vxe-table-column field="authors" title="作者" width="100"></vxe-table-column>
+                    <vxe-table-column field="authorJob" title="作者职务" width="100"></vxe-table-column>
+                    <vxe-table-column field="Dupbookid" title="重复谱ID" width="100"></vxe-table-column>
+                    <vxe-table-column field="memo" title="备注" width="150" show-overflow="title"></vxe-table-column>
+                    <vxe-table-column field="explain" title="说明" width="150" show-overflow="title"></vxe-table-column>
+
+                    <vxe-table-column field="updaterName" title="操作人" width="100"></vxe-table-column>
+                    <vxe-table-column field="hitTargetNumber" title="命中条数" width="100"></vxe-table-column>
+                    <vxe-table-column field="applyTimeO" title="操作时间" width="100"></vxe-table-column>
+                    <vxe-table-column title="操作" fixed="right" width="200" :cell-render="{name:'AdaiActionButton',attr:{data: actionData},events:{'look': lookEvent, 'lookBook': lookBook, 'singleQuick': singleQuick}}"></vxe-table-column>
                 </vxe-table>
                 <div class="page-foot">
                     <vxe-pager
@@ -76,9 +91,9 @@
             </div>
         </div>
         <Loading v-show="loading" />
-        <RecheckList v-if="isShow == 1" :id="checkTaskKey" v-on:close="isShow = 0" />
+        <RecheckList v-if="showRecheck" :id="checkTaskKey" v-on:close="showRecheck = false" />
         <!-- 查看谱目 -->
-        <CatalogView v-if="isShow == 2" :read="isRead" :dataKey="dataKey" :vid="''" v-on:close="isShow = 0" />
+        <CatalogView v-if="showDetail" :read="isRead" :dataKey="dataKey" :vid="''" v-on:close="showDetail = false" />
     </div>
 </template>
 
@@ -100,7 +115,8 @@ export default {
             tableData: [],
             actionData: [
                 {'label': '查重结果', 'value': 'look'}, 
-                {'label': '详情', 'value': 'lookBook'}
+                {'label': '详情', 'value': 'lookBook'},
+                {'label': '快捷查询', 'value': 'singleQuick'},
             ],
             page: 1,
             pages: 0,
@@ -126,6 +142,8 @@ export default {
             selectRecords: [],
             checkTaskKey: '',
             isShow: 0,
+            showRecheck: false,
+            showDetail: false,
             isRead: true,
             dataKey: '',
         };
@@ -138,9 +156,12 @@ export default {
         this.getDataList();
     },
     methods:{
+        singleQuick({ row }){
+            window.open('/'+this.pathname+'/singleQuickSearch?id='+row._key, '_blank');
+        },
         lookBook({ row }){
             this.dataKey = row.gcKey;
-            this.isShow = 2;
+            this.showDetail = true;
         },
         sortChangeEvent({column, property, order, sortBy, sortList, $event}){
             console.log(property, order, sortBy);
@@ -196,7 +217,7 @@ export default {
         },
         lookEvent({row}){
             this.checkTaskKey = row._key;
-            this.isShow = 1;
+            this.showRecheck = true;
         },
     },
     computed: {

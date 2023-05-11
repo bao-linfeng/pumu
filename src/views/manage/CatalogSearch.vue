@@ -5,7 +5,7 @@
         <div class="content">
             <!-- head -->
             <div class="nav-wrap">
-                <el-select class="width100" v-model="searchType" placeholder="家谱列表">
+                <el-select class="width100" v-model="searchType" size="mini" placeholder="家谱列表">
                     <el-option
                         v-for="item in searchTypeList"
                         :key="item.value"
@@ -14,7 +14,7 @@
                     </el-option>
                 </el-select>
                 <div class="head-right">
-                    <el-button type="primary" size="medium" @click="downloadExcel">导出数据</el-button>
+                    <el-button type="primary" size="mini" @click="downloadExcel">导出数据</el-button>
                 </div>
             </div>
             <!-- 检索输入框 -->
@@ -42,6 +42,14 @@
             </div>
             <div class="search-wrap" v-show="isShowSearch">
                 <div class="search-left">
+                    <el-select class="width100" size="mini" v-model="condition" multiple placeholder="谱目状态">
+                        <el-option
+                            v-for="item in conditionList"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                        </el-option>
+                    </el-select>
                     <el-select class="width100" size="mini" v-model="GCOver" placeholder="编目状态">
                         <el-option
                             v-for="item in GCOverList"
@@ -107,29 +115,31 @@
                     :sort-config="{trigger: 'cell', orders: ['desc', 'asc', 'auto'], remote: true}"
                     @sort-change="sortChangeEvent"
                     >
-                    <vxe-table-column field="_key" title="谱ID" width="100"></vxe-table-column>
+                    <vxe-table-column field="_key" title="谱ID" width="100" fixed="left"></vxe-table-column>
+                    <vxe-table-column field="genealogyName" title="谱名" min-width="120" fixed="left"></vxe-table-column>
+                    <vxe-table-column field="surname" title="姓氏" width="50" fixed="left"></vxe-table-column>
+                    <vxe-table-column field="publish" title="出版年" width="100" sort-by="publish" sortable fixed="left"></vxe-table-column>
+                    <vxe-table-column field="hall" title="堂号" width="100" fixed="left"></vxe-table-column>
+                    <vxe-table-column field="firstAncestor" title="一世祖" width="100"></vxe-table-column>
+                    <vxe-table-column field="migrationAncestor" title="始迁祖"  width="100"></vxe-table-column>
                     <vxe-table-column field="LocalityModern" title="谱籍地(原谱)" width="120"></vxe-table-column>
                     <vxe-table-column field="place" title="谱籍地(现代)" width="120"></vxe-table-column>
-                    <vxe-table-column field="surname" title="姓氏" width="50"></vxe-table-column>
-                    <vxe-table-column field="genealogyName" title="谱名" min-width="120"></vxe-table-column>
-                    <vxe-table-column field="publish" width="100" title="出版年" sort-by="publish" sortable></vxe-table-column>
-                    <vxe-table-column field="hasVolume" width="100" title="应拍卷(册)数"></vxe-table-column>
-                    <vxe-table-column field="volumeNumber" width="100" title="卷数(实拍)"></vxe-table-column>
-                    <vxe-table-column field="volume" width="100" title="卷(册)说明"></vxe-table-column>
-                    <vxe-table-column field="lostVolume" width="100" title="缺卷(册)说明"></vxe-table-column>
-                    <vxe-table-column field="hall" width="100" title="堂号"></vxe-table-column>
-                    <vxe-table-column field="authors" width="100" title="作者姓名"></vxe-table-column>
-                    <vxe-table-column field="authorJob" width="100" title="作者职务"></vxe-table-column>
-                    <vxe-table-column field="firstAncestor" width="100" title="一世祖"></vxe-table-column>
-                    <vxe-table-column field="migrationAncestor" width="100" title="始迁祖"></vxe-table-column>
-                    <vxe-table-column field="memo" width="100" title="备注"></vxe-table-column>
-                    <vxe-table-column field="imgNumber" width="100" title="拍数(总计)"></vxe-table-column>
-
-                    <vxe-table-column field="claimOrgNameO" title="所属机构" width="100" :visible="visible2"></vxe-table-column>
-                    <vxe-table-column field="explain" title="说明" width="100" :visible="visible2"></vxe-table-column>
+                    <vxe-table-column field="volume" title="卷(册)说明" width="100"></vxe-table-column>
+                    <vxe-table-column field="lostVolume" title="缺卷(册)说明" width="100"></vxe-table-column>
+                    <vxe-table-column field="hasVolume" title="可拍册数" width="100"></vxe-table-column>
+                    <vxe-table-column field="volumeNumber" title="实拍册数" width="100"></vxe-table-column>
+                    <vxe-table-column field="authors" title="作者" width="100"></vxe-table-column>
+                    <vxe-table-column field="authorJob" title="作者职务" width="100"></vxe-table-column>
+                    <vxe-table-column field="Dupbookid" title="重复谱ID" width="100"></vxe-table-column>
+                    <vxe-table-column field="memo" title="备注" width="100"></vxe-table-column>
+                    <vxe-table-column field="explain" title="说明" width="100"></vxe-table-column>
+                    <vxe-table-column field="claimOrgNameO" title="供应商" width="100" :visible="visible2"></vxe-table-column>
+                    <vxe-table-column field="imgNumber" title="拍数" width="100" :visible="visible2"></vxe-table-column>
+                    <vxe-table-column field="updateUserName" title="更新人员" width="100" :visible="visible2"></vxe-table-column>
+                    <vxe-table-column field="condition" title="谱目状态" width="100" :visible="visible2"></vxe-table-column>
                     <vxe-table-column field="GCOverO" title="编目状态" width="100" :visible="visible2"></vxe-table-column>
                     <vxe-table-column field="NoIndexO" title="索引状态" width="100" :visible="visible2"></vxe-table-column>
-                    <vxe-table-column field="updateUserName" title="更新人员" width="100" :visible="visible2"></vxe-table-column>
+
                     <vxe-table-column field="updateTimeO" title="更新日期" width="100" sort-by="updateTime" sortable :visible="visible2"></vxe-table-column>
                     <vxe-table-column field="createTimeO" title="上传日期" width="100" sort-by="createTime" sortable :visible="visible2"></vxe-table-column>
                     <vxe-table-column title="操作" :visible="visible" fixed="right" width="180" :cell-render="{name:'AdaiActionButton',attr:{data: attrData}, events: {'detail': getDetail, 'edit': getEdit, 'log': getLog}}"></vxe-table-column>
@@ -194,7 +204,7 @@ export default {
             claimOrgKey: [],
             condition: [],
             conditionList: [
-                {'label': '审核状态', 'value': ''},
+                // {'label': '审核状态', 'value': ''},
                 {'label': 'f|已完结', 'value': 'f'},
                 {'label': 'nf|可拍', 'value': 'nf'},
                 {'label': 'm|待议', 'value': 'm'},
@@ -251,7 +261,7 @@ export default {
         };
     },
     created:function(){
-        this.h = window.innerHeight - 50 - 40 - 48;
+        this.h = window.innerHeight - 30 - 30 - 10 - 48;
     },
     mounted:function(){
         this.getOrgList();
@@ -429,9 +439,9 @@ export default {
         },
         'isShowSearch': function(nv, ov){
             if(nv){
-                this.h = this.h - 40;
+                this.h = this.h - 30;
             }else{
-                this.h = this.h + 40;
+                this.h = this.h + 30;
             }
         },
     },
@@ -453,7 +463,7 @@ export default {
             position: relative;
             width: calc(100% - 40px);
             padding: 0 20px;
-            height: 50px;
+            height: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -469,7 +479,7 @@ export default {
         .search-wrap{
             position: relative;
             width: calc(100% - 40px);
-            height: 40px;
+            height: 30px;
             padding: 0 20px;
             display: flex;
             justify-content: space-between;
@@ -486,9 +496,10 @@ export default {
         .vex-table-box{
             width: calc(100% - 40px);
             padding: 0 20px;
-            height: calc(100% - 100px);
+            height: calc(100% - 70px);
+            margin-top: 10px;
             &.active{
-                height: calc(100% - 140px);
+                height: calc(100% - 100px);
             }
         }
     }

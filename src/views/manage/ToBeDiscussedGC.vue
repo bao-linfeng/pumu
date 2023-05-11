@@ -45,6 +45,7 @@
                     resizable
                     keep-source
                     highlight-current-row
+                    :loading="loading"
                     ref="xTable"
                     :height="h"
                     :align="'center'"
@@ -56,19 +57,17 @@
                     @checkbox-all = "checkboxChange"
                     :edit-config="{trigger: 'click', mode: 'row',showStatus: true, activeMethod:activeCellMethod}"
                     @cell-click="cellClickEvent">
-                    <vxe-table-column type="checkbox" field="checkbox" width="60"></vxe-table-column>
-                    <vxe-table-column field="fileName" width="100" title="文件标题"></vxe-table-column>
-                    <vxe-table-column field="Filenames" width="100" title="档名"></vxe-table-column>
-                    <vxe-table-column field="_key" width="100" title="谱ID"></vxe-table-column>
-                    <vxe-table-column v-for="(item,index) in field_main" :key="'field_main'+index" width="100" :field="item.fieldName" :title="item.fieldMeans"></vxe-table-column>
-                    <vxe-table-column field="actualVolumeNumber" width="100" title="已拍卷数"></vxe-table-column>
-                    <vxe-table-column field="condition" width="100" title="状态"></vxe-table-column>
-                    <vxe-table-column field="gcStatusO" width="100" title="谱目状态"></vxe-table-column>
+                    <vxe-table-column type="checkbox" field="checkbox" width="60" fixed="left"></vxe-table-column>
+                    <vxe-table-column v-for="(item,index) in field_main" :key="'field_main'+index" width="100" :field="item.fieldName" :title="item.fieldMeans" fixed="left"></vxe-table-column>
+                    <vxe-table-column v-for="(item,index) in field_branch" :key="'field_branch'+index" width="100" :field="item.fieldName" :title="item.fieldMeans"></vxe-table-column>
+                    <vxe-table-column field="gcStatusO" width="100" title="谱目待议状态"></vxe-table-column>
                     <vxe-table-column field="updateTimeO" width="100" title="打回日期"></vxe-table-column>
                     <vxe-table-column field="overTime" width="100" title="剩余天数"></vxe-table-column>
                     <vxe-table-column field="orgName" width="100" title="上传机构"></vxe-table-column>
-                    <vxe-table-column field="createTimeO" min-width="150" title="上传日期"></vxe-table-column>
-                    <vxe-table-column fixed="right" title="操作" width="180" :cell-render="{name: 'AdaiActionButton', attr: {data: actionData}, events:{'detail': openDetail, 'attachment': openAttachment, 'log': openLog, 'check': openCheck}}"></vxe-table-column>
+                    <vxe-table-column field="createTimeO" min-width="100" title="上传日期"></vxe-table-column>
+                    <vxe-table-column field="fileName" width="100" title="文件标题"></vxe-table-column>
+                    <vxe-table-column field="Filenames" width="100" title="档名"></vxe-table-column>
+                    <vxe-table-column fixed="right" title="操作" width="180" :cell-render="{name: 'AdaiActionButton', attr: {data: actionData}, events:{'detail': openDetail, 'attachment': openAttachment, 'log': openLog, 'check': openCheck, 'singleQuick': singleQuick}}"></vxe-table-column>
                 </vxe-table>
                 <div class="page-wrap">
                     <p>每页{{limit}}条记录</p>
@@ -141,9 +140,10 @@ export default {
             ],
             loading: false,
             actionData: [
-                {'label': '补充','value': 'attachment'},
-                {'label': '详情','value': 'detail'}, 
-                {'label': '记录','value': 'log'}, 
+                {'label': '补充', 'value': 'attachment'},
+                {'label': '详情', 'value': 'detail'}, 
+                {'label': '记录', 'value': 'log'}, 
+                {'label': '快捷查询', 'value': 'singleQuick'},
             ],
             isShow: 0,
             isCatalog: false,
@@ -154,51 +154,60 @@ export default {
     created:function(){
         this.h = window.innerHeight - 150;
         this.field_main = [
-            {'fieldMeans': '家谱姓氏', 'fieldName': 'surname'},
-            {'fieldMeans': '家谱谱名', 'fieldName': 'genealogyName'},
+            {'fieldMeans': '谱ID', 'fieldName': '_key'},
+            {'fieldMeans': '谱名', 'fieldName': 'genealogyName'},
+            {'fieldMeans': '姓氏', 'fieldName': 'surname'},
             {'fieldMeans': '出版年', 'fieldName': 'publish'},
-            {'fieldMeans': '谱籍_现代地名', 'fieldName': 'place'},
-            // {'fieldMeans': '谱籍_依谱书所载', 'fieldName': 'LocalityModern'},
             {'fieldMeans': '堂号', 'fieldName': 'hall'},
-            {'fieldMeans': '卷(册)说明', 'fieldName': 'volume'},
         ];
 
         this.field_branch = [
-            {'fieldMeans': '作者姓名', 'fieldName': 'authors'},
-            {'fieldMeans': '实拍册数', 'fieldName': 'hasVolume'},
-            {'fieldMeans': '缺卷', 'fieldName': 'lostVolume'},
-            {'fieldMeans': '版本类型', 'fieldName': 'version'},
-            {'fieldMeans': '作者职务', 'fieldName': 'authorJob'},
-
             {'fieldMeans': '一世祖', 'fieldName': 'firstAncestor'},
             {'fieldMeans': '始迁祖', 'fieldName': 'migrationAncestor'},
+            {'fieldMeans': '谱籍地(原谱)', 'fieldName': 'place'},
+            {'fieldMeans': '谱籍地(现代)', 'fieldName': 'LocalityModern'},
+            {'fieldMeans': '卷(册)说明', 'fieldName': 'volume'},
+            {'fieldMeans': '缺卷(册)说明', 'fieldName': 'lostVolume'},
+            {'fieldMeans': '应拍册数', 'fieldName': 'hasVolume'},
+            {'fieldMeans': '实拍册数', 'fieldName': 'volumeNumber'},
+            {'fieldMeans': '作者', 'fieldName': 'authors'},
+            {'fieldMeans': '作者职务', 'fieldName': 'authorJob'},
+            {'fieldMeans': '重复谱ID', 'fieldName': 'Dupbookid'},
             {'fieldMeans': '备注', 'fieldName': 'memo'},
-            {'fieldMeans': '重复谱书编号', 'fieldName': 'Dupbookid'},
-            {'fieldMeans': '状态', 'fieldName': 'condition'},
             {'fieldMeans': '说明', 'fieldName': 'explain'},
-            {'fieldMeans': '档案时间', 'fieldName': 'Filetimes'},
-            {'fieldMeans': '档名', 'fieldName': 'Filenames'},
-            {'fieldMeans': '代号', 'fieldName': 'code'},
-            {'fieldMeans': '谱籍_现代地名', 'fieldName': 'place'},
-            {'fieldMeans': '谱书编号', 'fieldName': 'bookId'},
-            {'fieldMeans': 'DGS 号码', 'fieldName': 'DGS'},
-            {'fieldMeans': '微卷编号', 'fieldName': 'film'},
-            {'fieldMeans': '家谱群组ID', 'fieldName': 'genealogyGroupID'},
-            {'fieldMeans': '项目ID', 'fieldName': 'Projectid'},
-            {'fieldMeans': '拍摄日期', 'fieldName': 'capturedate'},
-            {'fieldMeans': 'Media', 'fieldName': 'Media'},
-            {'fieldMeans': '重复专案ID', 'fieldName': 'DupProjectID'},
-            {'fieldMeans': '认领单位', 'fieldName': 'claim'},
-            {'fieldMeans': '认领日期', 'fieldName': 'claimDate'},
-            {'fieldMeans': '拍摄期限', 'fieldName': 'shootingPeriod'},
-            {'fieldMeans': '前次认领单位1', 'fieldName': 'pervious1'},
-            {'fieldMeans': '前次认领日期1', 'fieldName': 'perviousDate1'},
-            {'fieldMeans': '前次认领单位2', 'fieldName': 'pervious2'},
-            {'fieldMeans': '前次认领日期2', 'fieldName': 'perviousDate2'},
-            {'fieldMeans': '前次认领单位3', 'fieldName': 'pervious3'},
-            {'fieldMeans': '前次认领日期3', 'fieldName': 'perviousDate3'},
-            {'fieldMeans': '序号', 'fieldName': 'VolumeFst'},
-            {'fieldMeans': '起年', 'fieldName': 'startYear'},
+            {'fieldMeans': '供应商', 'fieldName': 'orgName'},
+            {'fieldMeans': '拍数', 'fieldName': '拍数'},
+            {'fieldMeans': '更新人员', 'fieldName': '更新人员'},
+            {'fieldMeans': '谱目状态', 'fieldName': 'condition'},
+            {'fieldMeans': '索引状态', 'fieldName': 'NoIndexO'},
+
+            
+            // {'fieldMeans': '版本类型', 'fieldName': 'version'},
+            // {'fieldMeans': '重复谱书编号', 'fieldName': 'Dupbookid'},
+            // {'fieldMeans': '状态', 'fieldName': 'condition'},
+            // {'fieldMeans': '档案时间', 'fieldName': 'Filetimes'},
+            // {'fieldMeans': '档名', 'fieldName': 'Filenames'},
+            // {'fieldMeans': '代号', 'fieldName': 'code'},
+            // {'fieldMeans': '谱籍_现代地名', 'fieldName': 'place'},
+            // {'fieldMeans': '谱书编号', 'fieldName': 'bookId'},
+            // {'fieldMeans': 'DGS 号码', 'fieldName': 'DGS'},
+            // {'fieldMeans': '微卷编号', 'fieldName': 'film'},
+            // {'fieldMeans': '家谱群组ID', 'fieldName': 'genealogyGroupID'},
+            // {'fieldMeans': '项目ID', 'fieldName': 'Projectid'},
+            // {'fieldMeans': '拍摄日期', 'fieldName': 'capturedate'},
+            // {'fieldMeans': 'Media', 'fieldName': 'Media'},
+            // {'fieldMeans': '重复专案ID', 'fieldName': 'DupProjectID'},
+            // {'fieldMeans': '认领单位', 'fieldName': 'claim'},
+            // {'fieldMeans': '认领日期', 'fieldName': 'claimDate'},
+            // {'fieldMeans': '拍摄期限', 'fieldName': 'shootingPeriod'},
+            // {'fieldMeans': '前次认领单位1', 'fieldName': 'pervious1'},
+            // {'fieldMeans': '前次认领日期1', 'fieldName': 'perviousDate1'},
+            // {'fieldMeans': '前次认领单位2', 'fieldName': 'pervious2'},
+            // {'fieldMeans': '前次认领日期2', 'fieldName': 'perviousDate2'},
+            // {'fieldMeans': '前次认领单位3', 'fieldName': 'pervious3'},
+            // {'fieldMeans': '前次认领日期3', 'fieldName': 'perviousDate3'},
+            // {'fieldMeans': '序号', 'fieldName': 'VolumeFst'},
+            // {'fieldMeans': '起年', 'fieldName': 'startYear'},
         ];
     },
     mounted:function(){
@@ -208,6 +217,7 @@ export default {
                 {'label': '审核','value': 'attachment'},
                 {'label': '详情','value': 'detail'}, 
                 {'label': '记录','value': 'log'}, 
+                {'label': '快捷查询', 'value': 'singleQuick'},
             ];
             this.type = 2;
             this.getOrgList();
@@ -220,6 +230,9 @@ export default {
         this.getDataList();
     },
     methods:{
+        singleQuick({ row }){
+            window.open('/'+this.pathname+'/singleQuickSearch?id='+row._key, '_blank');
+        },
         openBaseGenealogy(){
             open('/'+window.localStorage.getItem('pathname')+'/myGenealogy');
         },
@@ -270,7 +283,12 @@ export default {
             this.gid = row._key;
         },
         async getDataList(){
+            this.loading = true;
+            this.tableData = [];
+            this.pages = 0;
+            this.total = 0;
             let result = await api.getAxios('catalog/toBeDiscussedGC?siteKey='+this.stationKey+'&orgKey='+this.orgKey+'&type='+this.type+'&gcKey='+this.gcKey+'&surname='+this.surname+'&genealogyName='+this.genealogyName+'&publish='+this.publish+'&fileName='+this.fileName+'&Filenames='+this.Filenames+'&isOverTime='+this.isOverTime+'&page='+this.page+'&limit='+this.limit);
+            this.loading = false;
             if(result.status == 200){
                 result.result.list.map((item)=>{
                     item.gcStatusO = item.gcStatus ? this.catalogStatusO[item.gcStatus] : '';
@@ -371,6 +389,7 @@ export default {
             role: state => state.nav.role,
             orgId: state => state.nav.orgId,
             catalogStatusO: state => state.nav.catalogStatusO,
+            pathname: state => state.nav.pathname,
         })
     },
     watch:{
@@ -380,6 +399,7 @@ export default {
                     {'label': '查看','value': 'attachment'},
                     {'label': '详情','value': 'detail'}, 
                     {'label': '记录','value': 'log'}, 
+                    {'label': '快捷查询', 'value': 'singleQuick'},
                 ];
             }
         }

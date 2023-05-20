@@ -538,6 +538,9 @@ table{
   /* font-weight: normal; */
 }
 .red .el-input__inner{
-    border-color: #f00 !important;
+  border-color: #f00 !important;
+}
+.tooltip-w{
+  max-width: 410px !important;
 }
 </style>

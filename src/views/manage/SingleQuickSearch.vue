@@ -3,12 +3,12 @@
         <Sidebar />
         <div class="content">
             <div class="nav-wrap">
-                <span class="title">单谱快捷查询</span>
+                <span class="title">快捷查询</span>
                 <div class="head-right">
                     
                 </div>
             </div>
-            <div class="search-wrap">
+            <div class="search-wrap" :class="{h140: count == 3}">
                 <div class="search-box" v-for="(item, i) in searchArr" :key="i">
                     <el-checkbox class="marginR5" v-model="item.check"></el-checkbox>
                     <label class="label" for="">{{item.label}}</label>
@@ -19,7 +19,7 @@
                 <el-button type="primary" size="medium" @click="fieldRcover">字段复原</el-button>
                 <el-checkbox class="margin10" v-model="haswu">无或空字符堂号</el-checkbox>
             </div>
-            <div class="vex-table-box">
+            <div class="vex-table-box" :class="{h140: count == 3}">
                 <vxe-table
                     border
                     resizable
@@ -35,26 +35,22 @@
                     :sort-config="{trigger: 'cell', orders: ['desc', 'asc', 'auto'], remote: true}"
                     @sort-change="sortChangeEvent"
                     >
-                    <vxe-table-column field="_key" title="谱ID" width="100"></vxe-table-column>
-                    <vxe-table-column field="genealogyName" title="谱名" width="150"></vxe-table-column>
-                    <vxe-table-column field="surname" title="姓氏" width="60"></vxe-table-column>
-                    <vxe-table-column field="place" title="谱籍地(现代)" width="150"></vxe-table-column>
-                    <vxe-table-column field="LocalityModern" title="谱籍地(原谱)" width="150"></vxe-table-column>
-                    <vxe-table-column field="publish" title="出版年" width="100"></vxe-table-column>
-                    <vxe-table-column field="volume" title="卷数" width="100"></vxe-table-column>
-                    <vxe-table-column field="lostVolume" title="缺卷" width="100"></vxe-table-column>
-                    <vxe-table-column field="hall" title="堂号" width="100"></vxe-table-column>
-                    <vxe-table-column field="authors" title="作者姓名" width="100"></vxe-table-column>
-                    <vxe-table-column field="authorJob" title="作者职务" width="100"></vxe-table-column>
-                    <vxe-table-column field="firstAncestor" title="一世祖" width="100"></vxe-table-column>
-                    <vxe-table-column field="migrationAncestor" title="始迁祖" width="100"></vxe-table-column>
-                    <vxe-table-column field="hasVolume" title="实拍册数" width="100"></vxe-table-column>
+                    <vxe-table-column v-for="(item,index) in field_main" :key="'main'+index" :width=" item.fieldName == 'surname' ? 60 : 100" :field="item.fieldName" :title="item.fieldMeans" fixed="left"></vxe-table-column>
+                    <vxe-table-column v-for="(item,index) in field_branch" :key="'branch'+index" :width="100" :field="item.fieldName" :title="item.fieldMeans"></vxe-table-column>
                     <vxe-table-column field="memo" title="备注" width="150" show-overflow="title"></vxe-table-column>
-                    <vxe-table-column field="explain" title="说明" width="150"  show-overflow="title"></vxe-table-column>
-                    <vxe-table-column field="condition" title="谱状态" width="70"></vxe-table-column>
-                    <vxe-table-column field="claimOrgNameO" title="供应商" width="100"></vxe-table-column>
-                    <vxe-table-column field="createTimeO" title="上传时间" width="100" sort-by="createTime" sortable></vxe-table-column>
-                    <vxe-table-column title="操作" fixed="right" width="180" :cell-render="{name:'AdaiActionButton',attr:{data: attrData}, events: {'detail': getDetail, 'edit': getEdit, 'log': getLog}}"></vxe-table-column>
+                    <vxe-table-column field="explain" title="说明" width="150" show-overflow="title"></vxe-table-column>
+                    <vxe-table-column field="orgName" title="供应商" width="100"></vxe-table-column>
+                    <vxe-table-column field="condition" title="谱状态" width="100"></vxe-table-column>
+                    <vxe-table-column field="Filetimes" title="档案时间" width="100" sort-by="Filetimes" sortable></vxe-table-column>
+                    <vxe-table-column field="Filenames" title="档名" width="100"></vxe-table-column>
+                    <vxe-table-column field="bookId" title="谱书编号" width="100"></vxe-table-column>
+                    <vxe-table-column field="DGS" title="DGS号码" width="100"></vxe-table-column>
+                    <vxe-table-column field="genealogyGroupID" title="家谱群组ID" width="100"></vxe-table-column>
+                    <vxe-table-column field="updateUserName" title="更新人员" width="100"></vxe-table-column>
+                    <vxe-table-column field="GCOverO" title="编目状态" width="100"></vxe-table-column>
+                    <vxe-table-column field="NoIndexO" title="索引状态" width="100"></vxe-table-column>
+                    <vxe-table-column field="gcStatusO" title="谱书状态" width="100"></vxe-table-column>
+                    <vxe-table-column title="操作" fixed="right" width="180" :cell-render="{name:'AdaiActionButton',attr:{data: attrData}, events: {'detail': getDetail, 'readBook': readBook, 'log': getLog}}"></vxe-table-column>
                 </vxe-table>
                 <div class="page-foot">
                     <div class="count-wrap">
@@ -101,8 +97,8 @@ export default {
             pages: 0,
             limit: 20,
             total: 0,
-            sortField: '',
-            sortType: '',
+            prop: '',
+            order: '',
             genealogyName: '',
             gcKey: '',
             place: '',
@@ -130,22 +126,61 @@ export default {
             isShow: 0,
             attrData: [
                 {'label': '详情', 'value': 'detail'},
-                {'label': '编辑', 'value': 'edit'},
+                // {'label': '编辑', 'value': 'edit'},
+                {'label': 'FS影像', 'value': 'readBook'},
                 {'label': '记录', 'value': 'log'},
             ],
             isRead: false,
             detail: {},
             haswu: false,
+            field_main: [],
+            field_branch: [],
+            count: 2,
         };
     },
     created:function(){
         this.h = window.innerHeight - 50 - 50 - 50 - 48;
+        if(window.innerWidth >= 1215 && window.innerWidth <= 1550){
+            this.h = this.h - 50;
+            this.count = 3;
+        }
     },
     mounted:function(){
+        this.field_main = [
+            {'fieldMeans': '文件标题', 'fieldName': 'fileName'},
+            {'fieldMeans': '谱ID', 'fieldName': '_key'},
+            {'fieldMeans': '谱名', 'fieldName': 'genealogyName'},
+            {'fieldMeans': '姓氏', 'fieldName': 'surname'},
+            {'fieldMeans': '出版年', 'fieldName': 'publish'},
+            {'fieldMeans': '堂号', 'fieldName': 'hall'},
+        ];
+
+        this.field_branch = [
+            {'fieldMeans': '一世祖', 'fieldName': 'firstAncestor'},
+            {'fieldMeans': '始迁祖', 'fieldName': 'migrationAncestor'},
+            {'fieldMeans': '谱籍地(现代)', 'fieldName': 'place'},
+            {'fieldMeans': '谱籍地(原谱)', 'fieldName': 'LocalityModern'},
+            {'fieldMeans': '总卷数', 'fieldName': 'volume'},
+            {'fieldMeans': '缺卷说明', 'fieldName': 'lostVolume'},
+            {'fieldMeans': '可拍册数', 'fieldName': 'hasVolume'},
+            {'fieldMeans': '实拍册数', 'fieldName': 'volumeNumber'},
+            {'fieldMeans': '作者', 'fieldName': 'authors'},
+            {'fieldMeans': '作者职务', 'fieldName': 'authorJob'},
+            {'fieldMeans': '版本类型', 'fieldName': 'version'},
+            {'fieldMeans': '重复谱ID', 'fieldName': 'Dupbookid'},
+        ];
+
         this.id = ADS.getQueryVariable('id');
         this.getGenealogyDetail();
     },
     methods:{
+        readBook({row}){
+            if(row.imageLink){
+                window.open(row.imageLink);
+            }else{
+                this.$XModal.message({ message: '暂时无法查看影像', status: 'warning' });
+            }
+        },
         fieldRcover(){
             let searchObject = {};
             this.searchArr.forEach((ele, i) => {
@@ -171,8 +206,8 @@ export default {
         },
         sortChangeEvent({column, property, order, sortBy, sortList, $event}){
             console.log(property, order, sortBy);
-            this.sortField = sortBy;
-            this.sortType = order;
+            this.prop = sortBy;
+            this.order = order;
 
             this.getDataList();
         },
@@ -188,6 +223,8 @@ export default {
             let data = await api.postAxios('catalog/singleGCQuickQuery',{
                 'searchObject': searchObject,
                 'targetGCKey': this.id,
+                'prop': this.prop,
+                'order': this.order,
                 'page': this.page,
                 'limit': this.limit,
             });
@@ -299,6 +336,9 @@ export default {
             justify-content: flex-start;
             align-items: center;
             flex-wrap: wrap;
+            &.h140{
+                height: 140px;
+            }
             .search-box{
                 .label{
                     margin-right: 3px;
@@ -309,6 +349,9 @@ export default {
             width: calc(100% - 40px);
             padding: 0 20px;
             height: calc(100% - 150px);
+            &.h140{
+                height: calc(100% - 190px);
+            }
             &.active{
                 height: calc(100% - 250px);
             }

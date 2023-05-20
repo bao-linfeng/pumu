@@ -22,8 +22,8 @@
                 <div class="search-left">
                     <el-input class="width100" size="mini" v-model="gcKey" placeholder="请输入谱ID" @change="getDataList" clearable></el-input>
                     <el-input class="width100" size="mini" v-model="genealogyName" placeholder="请输入谱名" @change="getDataList" clearable></el-input>
-                    <el-input class="width100" size="mini" v-model="place" placeholder="请输入谱籍地" @change="getDataList" clearable></el-input>
                     <el-input class="width100" size="mini" v-model="surname" placeholder="请输入姓氏" @change="getDataList" clearable></el-input>
+                    <el-input class="width100" size="mini" v-model="place" placeholder="请输入谱籍地(现代)" @change="getDataList" clearable></el-input>
                     <el-select class="width100" size="mini" v-model="imgStatus" placeholder="影像状态">
                         <el-option
                             v-for="item in imgStatusList"
@@ -36,13 +36,13 @@
                     <el-checkbox class="marginL10" size="mini" v-model="isShowSearch">展开</el-checkbox>
                 </div>
                 <div class="search-right">
-                    <el-button class="marginL10" type="primary" size="mini" @click="toggleColumn(2)">{{visible2 ? '隐藏' : '显示'}} 折叠列</el-button>
+                    <!-- <el-button class="marginL10" type="primary" size="mini" @click="toggleColumn(2)">{{visible2 ? '隐藏' : '显示'}} 折叠列</el-button> -->
                     <el-button class="marginL10" type="primary" size="mini" @click="toggleColumn(1)">{{visible ? '隐藏' : '显示'}} 操作列</el-button>
                 </div>
             </div>
             <div class="search-wrap" v-show="isShowSearch">
                 <div class="search-left">
-                    <el-select class="width100" size="mini" v-model="condition" multiple placeholder="谱目状态">
+                    <el-select class="width100" size="mini" v-model="condition" multiple placeholder="谱状态">
                         <el-option
                             v-for="item in conditionList"
                             :key="item.value"
@@ -66,7 +66,7 @@
                             :value="item.value">
                         </el-option>
                     </el-select>
-                    <el-select class="width100" size="mini" v-model="claimOrgKey" multiple placeholder="机构">
+                    <el-select class="width100" size="mini" v-model="claimOrgKey" multiple placeholder="机构列表">
                         <el-option
                             v-for="item in orgList"
                             :key="item.value"
@@ -122,26 +122,27 @@
                     <vxe-table-column field="hall" title="堂号" width="100" fixed="left"></vxe-table-column>
                     <vxe-table-column field="firstAncestor" title="一世祖" width="100"></vxe-table-column>
                     <vxe-table-column field="migrationAncestor" title="始迁祖"  width="100"></vxe-table-column>
-                    <vxe-table-column field="LocalityModern" title="谱籍地(原谱)" width="120"></vxe-table-column>
                     <vxe-table-column field="place" title="谱籍地(现代)" width="120"></vxe-table-column>
-                    <vxe-table-column field="volume" title="卷(册)说明" width="100"></vxe-table-column>
-                    <vxe-table-column field="lostVolume" title="缺卷(册)说明" width="100"></vxe-table-column>
+                    <vxe-table-column field="LocalityModern" title="谱籍地(原谱)" width="120"></vxe-table-column>
+                    <vxe-table-column field="volume" title="总卷数" width="100"></vxe-table-column>
+                    <vxe-table-column field="lostVolume" title="缺卷说明" width="100"></vxe-table-column>
                     <vxe-table-column field="hasVolume" title="可拍册数" width="100"></vxe-table-column>
                     <vxe-table-column field="volumeNumber" title="实拍册数" width="100"></vxe-table-column>
                     <vxe-table-column field="authors" title="作者" width="100"></vxe-table-column>
                     <vxe-table-column field="authorJob" title="作者职务" width="100"></vxe-table-column>
+                    <vxe-table-column field="version" title="版本类型" width="100"></vxe-table-column>
                     <vxe-table-column field="Dupbookid" title="重复谱ID" width="100"></vxe-table-column>
-                    <vxe-table-column field="memo" title="备注" width="100"></vxe-table-column>
-                    <vxe-table-column field="explain" title="说明" width="100"></vxe-table-column>
-                    <vxe-table-column field="claimOrgNameO" title="供应商" width="100" :visible="visible2"></vxe-table-column>
+                    <vxe-table-column field="memo" title="备注" width="150" show-overflow="title"></vxe-table-column>
+                    <vxe-table-column field="explain" title="说明" width="150" show-overflow="title"></vxe-table-column>
+                    <vxe-table-column field="orgName" title="供应商" width="100" :visible="visible2"></vxe-table-column>
                     <vxe-table-column field="imgNumber" title="拍数" width="100" :visible="visible2"></vxe-table-column>
                     <vxe-table-column field="updateUserName" title="更新人员" width="100" :visible="visible2"></vxe-table-column>
-                    <vxe-table-column field="condition" title="谱目状态" width="100" :visible="visible2"></vxe-table-column>
+                    <vxe-table-column field="condition" title="谱状态" width="100" :visible="visible2"></vxe-table-column>
                     <vxe-table-column field="GCOverO" title="编目状态" width="100" :visible="visible2"></vxe-table-column>
                     <vxe-table-column field="NoIndexO" title="索引状态" width="100" :visible="visible2"></vxe-table-column>
 
-                    <vxe-table-column field="updateTimeO" title="更新日期" width="100" sort-by="updateTime" sortable :visible="visible2"></vxe-table-column>
-                    <vxe-table-column field="createTimeO" title="上传日期" width="100" sort-by="createTime" sortable :visible="visible2"></vxe-table-column>
+                    <!-- <vxe-table-column field="updateTimeO" title="更新日期" width="100" sort-by="updateTime" sortable :visible="visible2"></vxe-table-column>
+                    <vxe-table-column field="createTimeO" title="上传日期" width="100" sort-by="createTime" sortable :visible="visible2"></vxe-table-column> -->
                     <vxe-table-column title="操作" :visible="visible" fixed="right" width="180" :cell-render="{name:'AdaiActionButton',attr:{data: attrData}, events: {'detail': getDetail, 'edit': getEdit, 'log': getLog}}"></vxe-table-column>
                 </vxe-table>
                 <!-- 分页 -->
@@ -211,7 +212,7 @@ export default {
                 {'label': 'd|重复', 'value': 'd'},
                 {'label': 'r|无效', 'value': 'r'},
             ],
-            imgStatus: '1',
+            imgStatus: '',
             imgStatusList: [
                 {'label': '影像状态', 'value': ''},
                 {'label': '有影像', 'value': '1'},
@@ -255,7 +256,7 @@ export default {
                 {'label': '卷册列表', 'value': 'volumeSearch'},
             ],
             visible: false,
-            visible2: false,
+            visible2: true,
             Loading: false,
             isShowSearch: false,
         };

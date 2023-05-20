@@ -6,8 +6,8 @@
         </div>
         <div class="content-box">
             <div class="condition-box">
-                <label class="label">请选择谱目状态</label>
-                <el-select class="w160" v-model="condition" size="mini" placeholder="状态">
+                <label class="label">谱目状态</label>
+                <el-select class="w200" v-model="condition" size="mini" placeholder="状态">
                     <el-option
                         v-for="item in conditionList"
                         :key="item.value"
@@ -15,6 +15,15 @@
                         :value="item.value">
                     </el-option>
                 </el-select>
+            </div>
+            <div class="condition-box">
+                <label class="label">修改原因</label>
+                <el-input
+                    class="w200"
+                    type="textarea"
+                    :rows="3"
+                    v-model="reason">
+                </el-input>
             </div>
         </div>
         <div class="foot-box">
@@ -43,6 +52,7 @@ export default {
                 {'label': 'd', 'value': 'd'},
             ],
             condition: '',
+            reason: '',
         };
     },
     mounted: function(){
@@ -62,8 +72,9 @@ export default {
             let data = await api.patchAxios('v3/review/updateCondition',{
                 'gcKey': this.catalog._key, 
                 'condition': this.condition,
+                'reason': this.reason,
                 'userKey': this.userId, 
-                'siteKey': this.stationKey
+                'siteKey': this.stationKey,
             });
 
             if(data.status == 200){
@@ -133,10 +144,12 @@ export default {
     align-items: center;
     margin-bottom: 20px;
     .label{
-        width: 120px;
         text-align: right;
         margin-right: 10px;
     }
+}
+.w200{
+    width: 200px;
 }
 </style>
 

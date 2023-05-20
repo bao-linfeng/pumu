@@ -20,53 +20,7 @@
                     </el-input>
                     <el-input v-else class="w90" v-model="parameter[item.fieldName]" :title="parameter[item.fieldName]" :disabled="item.disabled || read" size="medium"></el-input>
                 </div>
-                <!-- <div class="input-box">
-                    <label class="label" for="">家谱谱名</label>
-                    <el-input class="w90" v-model="parameter['genealogyName']" :disabled="read"></el-input>
-                </div>
-                <div class="input-box">
-                    <label class="label" for="">谱籍_现代地名</label>
-                    <el-input class="w90" v-model="parameter['place']" :disabled="read"></el-input>
-                </div>
-                <div class="input-box">
-                    <label class="label" for="">所在省市区</label>
-                    <el-input class="w90" v-model="parameter['address']" :disabled="read || true"></el-input>
-                </div>
-                <div class="input-box">
-                    <label class="label" for="">谱籍_依谱书所载</label>
-                    <el-input class="w90" v-model="parameter['LocalityModern']" :disabled="read"></el-input>
-                </div> -->
             </div>
-            <!-- <ul class="edit-content">
-                <li v-for="(item, index) in argumentsList" :key="index">
-                    <span class="label">{{item.fieldMeans}}</span>
-                    <el-input class="width200" v-model="parameter[item.fieldName]" :title="parameter[item.fieldName]"  :disabled="item.disabled || read" clearable size="medium"></el-input>
-                </li>
-            </ul> -->
-            <!-- <div class="textarea-wrap">
-                <div class="textarea-box">
-                    <label class="label" for="">说明[explain]</label>
-                    <el-input
-                        class="textarea"
-                        type="textarea"
-                        :rows="3"
-                        placeholder=""
-                        :disabled="read"
-                        v-model="parameter['explain']">
-                    </el-input>
-                </div>
-                <div class="textarea-box">
-                    <label class="label" for="">备注[memo]</label>
-                    <el-input
-                        class="textarea"
-                        type="textarea"
-                        :rows="3"
-                        placeholder=""
-                        :disabled="read"
-                        v-model="parameter['memo']">
-                    </el-input>
-                </div>
-            </div> -->
             <div class="more-icon">
                 <img class="more" :src="require('../../assets/shoot/open_'+(isMore ? 't' : 'b')+'.svg')" :title="isMore ? '收起' : '展开'" @click="isMore = !isMore" alt="">
             </div>
@@ -166,32 +120,33 @@ export default {
             theadV2: ['卷(册)编号', '卷(册)名', '卷序号', '已拍页数', '已同步页数', '状态', '审核人', '审核时间', '创建人', '创建时间'],
             argumentsList: [
                 {'fieldMeans': '谱ID', 'fieldName': '_key', 'disabled': true},
+                {'fieldMeans': '姓氏', 'fieldName': 'surname'},
+                {'fieldMeans': '姓氏2', 'fieldName': 'surname2'},
+                {'fieldMeans': '姓氏3', 'fieldName': 'surname3'},
                 {'fieldMeans': '谱名', 'fieldName': 'genealogyName'},
-                {'fieldMeans': '家谱姓氏', 'fieldName': 'surname'},
-                {'fieldMeans': '家谱姓氏2', 'fieldName': 'surname2'},
-                {'fieldMeans': '家谱姓氏3', 'fieldName': 'surname3'},
                 {'fieldMeans': '出版年', 'fieldName': 'publish'},
                 {'fieldMeans': '堂号', 'fieldName': 'hall'},
                 {'fieldMeans': '一世祖', 'fieldName': 'firstAncestor'},
                 {'fieldMeans': '始迁祖', 'fieldName': 'migrationAncestor'},
-                {'fieldMeans': '谱籍地(原谱)', 'fieldName': 'LocalityModern'},
                 {'fieldMeans': '谱籍地(现代)', 'fieldName': 'place'},
-                {'fieldMeans': '卷(册)说明', 'fieldName': 'volume'},
-                {'fieldMeans': '缺卷(册)说明', 'fieldName': 'lostVolume'},
+                {'fieldMeans': '谱籍地(原谱)', 'fieldName': 'LocalityModern'},
+                {'fieldMeans': '总卷数', 'fieldName': 'volume'},
+                {'fieldMeans': '缺卷说明', 'fieldName': 'lostVolume'},
                 {'fieldMeans': '可拍册数', 'fieldName': 'hasVolume'},
-                {'fieldMeans': '实拍册数', 'fieldName': 'actualVolumes', 'disabled': true},
+                {'fieldMeans': '实拍册数', 'fieldName': 'volumeNumber', 'disabled': true},
                 {'fieldMeans': '作者', 'fieldName': 'authors'},
                 {'fieldMeans': '作者职务', 'fieldName': 'authorJob'},
+                {'fieldMeans': '版本类型', 'fieldName': 'version'},
                 {'fieldMeans': '重复谱ID', 'fieldName': 'Dupbookid'},
-                {'fieldMeans': '说明[explain]', 'fieldName': 'explain'},
-                {'fieldMeans': '备注[memo]', 'fieldName': 'memo'},
-                {'fieldMeans': '谱目状态', 'fieldName': 'condition', 'disabled': true},
+                {'fieldMeans': '备注', 'fieldName': 'memo'},
+                {'fieldMeans': '说明', 'fieldName': 'explain'},
+                {'fieldMeans': '谱状态', 'fieldName': 'condition', 'disabled': true},
+                // {'fieldMeans': '编目状态', 'fieldName': 'GCOver', 'disabled': true},
                 {'fieldMeans': '索引状态', 'fieldName': 'NoIndex', 'disabled': true},
 
                 {'fieldMeans': '档案名称', 'fieldName': 'Filenames'},
-                {'fieldMeans': '版本类型', 'fieldName': 'version'},
                 {'fieldMeans': '谱书类型', 'fieldName': 'type'},
-                {'fieldMeans': '审核状态', 'fieldName': 'gcStatus', 'disabled': true},
+                {'fieldMeans': '谱书状态', 'fieldName': 'gcStatus', 'disabled': true},
                 {'fieldMeans': '编辑完结', 'fieldName': 'GCOver', 'disabled': true},
                 {'fieldMeans': '所在省市区', 'fieldName': 'address', 'disabled': true},
             ],

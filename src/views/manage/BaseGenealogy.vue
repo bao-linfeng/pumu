@@ -95,6 +95,8 @@ export default {
             FileStartTimes: '',
             FileEndTimes: '',
             isFull: false,
+            gcStatus: '',
+            NoIndex: '',
         };
     },
     created:function(){
@@ -122,29 +124,6 @@ export default {
                 this.$XModal.message({ message: data.msg, status: 'warning' })
             }
         },
-        async downloadExcel(){// 下载检索结果
-            this.loading = true;
-            let data = await api.postAxios('data/download',{
-                'siteKey': this.stationKey,
-                'userKey': this.userId,
-                'noPublishAD': this.noPublishAD,
-                'begYear': this.begYear,
-                'endYear': this.endYear,
-                'libKey': this.libKey,
-                'orgKey': (this.orgKey).join(','),
-                'equal': this.equal,
-                'prop': this.prop,
-                'order': this.order,
-                'keyWordObj': this.keyWordObj,
-                'limit': 5000,
-            });
-            this.loading = false;
-            if(data.status == 200){
-                ADS.downliadLink(data.result);
-            }else{
-                this.$XModal.message({ message: data.msg, status: 'warning' })
-            }
-        },
         checkboxChange(data){// 复选框切换回调
             console.log(data);
             this.checkList = data;
@@ -157,6 +136,40 @@ export default {
             this.page = currentPage;
             this.getJiapuList();
         },
+        async downloadExcel(){// 下载检索结果
+            this.loading = true;
+            let data = await api.postAxios('data/download',{
+                'siteKey': this.stationKey,
+                'userKey': this.userId,
+                'startFileTimes': (this.FileStartTimes ? new Date(this.FileStartTimes).getTime() : ''),
+                'endFileTimes': (this.FileEndTimes ? new Date(this.FileEndTimes).getTime() : ''),
+                'condition': this.condition.join(','),
+                'isPublish': this.isPublish,
+                'isPlace': this.isPlace,
+                'noPublishAD': this.noPublishAD,
+                'NoIndex': this.noPublishAD,
+                'fileName': this.fileName,
+                'keyWord': this.keyWord,
+                'startTime': this.startTime,
+                'endTime': this.endTime,
+                'begYear': this.begYear,
+                'endYear': this.endYear,
+                'libKey': this.libKey,
+                'orgKey': (this.orgKey).join(','),
+                'equal': this.equal,
+                'gcStatus': this.gcStatus,
+                'keyWordObj': this.keyWordObj,
+                'prop': this.prop,
+                'order': this.order,
+                'limit': 5000,
+            });
+            this.loading = false;
+            if(data.status == 200){
+                ADS.downliadLink(data.result);
+            }else{
+                this.$XModal.message({ message: data.msg, status: 'warning' })
+            }
+        },
         async getJiapuList(O){// 谱目列表
             console.log(O);
             if(O){
@@ -164,11 +177,33 @@ export default {
                 this.order = O.order;
             }
             this.loading = true;
-            let data = await api.getAxios('catalog/back?siteKey='+this.stationKey+'&startFileTimes='+(this.FileStartTimes ? new Date(this.FileStartTimes).getTime() : '')+'&endFileTimes='+(this.FileEndTimes ? new Date(this.FileEndTimes).getTime() : '')+'&condition='+this.condition+'&isPublish='+this.isPublish+'&isPlace='+this.isPlace+'&noPublishAD='+this.noPublishAD+'&NoIndex='+this.NoIndex+'&fileName='+this.fileName+'&keyWord='+this.keyWord+'&startTime='+this.startTime+'&endTime='+this.endTime+'&begYear='+this.begYear+'&endYear='+this.endYear+'&libKey='+this.libKey+'&orgKey='+this.orgKey+'&equal='+this.equal+'&keyWordObj='+JSON.stringify(this.keyWordObj)+'&prop='+this.prop+'&order='+this.order+'&page='+this.page+'&limit='+this.limit);
+            let data = await api.getAxios('catalog/back?siteKey='+this.stationKey+
+            '&startFileTimes='+(this.FileStartTimes ? new Date(this.FileStartTimes).getTime() : '')+
+            '&endFileTimes='+(this.FileEndTimes ? new Date(this.FileEndTimes).getTime() : '')+
+            '&condition='+this.condition+
+            '&isPublish='+this.isPublish+
+            '&isPlace='+this.isPlace+
+            '&noPublishAD='+this.noPublishAD+
+            '&NoIndex='+this.NoIndex+
+            '&fileName='+this.fileName+
+            '&keyWord='+this.keyWord+
+            '&startTime='+this.startTime+
+            '&endTime='+this.endTime+
+            '&begYear='+this.begYear+
+            '&endYear='+this.endYear+
+            '&libKey='+this.libKey+
+            '&orgKey='+this.orgKey+
+            '&equal='+this.equal+
+            '&gcStatus='+this.gcStatus+
+            '&keyWordObj='+JSON.stringify(this.keyWordObj)+
+            '&prop='+this.prop+
+            '&order='+this.order+'&page='+this.page+'&limit='+this.limit);
             this.loading = false;
             if(data.status == 200){
                 this.list = data.result.list;
                 this.list.map((item)=>{
+                    item.GCOverO = item.GCOver == 1 ? '已完结' : '未完结';
+                    item.gcStatusO = this.catalogStatusO[item.gcStatus] || '';
                     item.NoIndexO = item.NoIndex == 1 ? '不可索引' : '可索引';
                     item.claimTimeO = item.claimTime ? ADS.getLocalTime(item.claimTime, '/', 1) : '';
                     item.createTimeO = item.createTime ? ADS.getLocalTime(item.createTime, '/', 1) : '';
@@ -211,9 +246,10 @@ export default {
             this.condition = data['condition'] || '';
             this.FileStartTimes = data['FileStartTimes'] || '';
             this.FileEndTimes = data['FileEndTimes'] || '';
+            this.gcStatus = data['gcStatus'] || '';
 
             for(let key in data){
-                if(key == 'FileStartTimes' || key == 'FileEndTimes' || key == 'condition' || key == 'NoIndex' || key == 'isPublish' || key == 'isPlace' || key == 'fileName' || key == 'keyWord' || key == 'startTime' || key == 'endTime' || key == 'libKey' || key == 'equal' || key == 'orgKey' || key == 'begYear' || key == 'endYear' || key == 'noPublishAD'){
+                if(key == 'gcStatus' || key == 'FileStartTimes' || key == 'FileEndTimes' || key == 'condition' || key == 'NoIndex' || key == 'isPublish' || key == 'isPlace' || key == 'fileName' || key == 'keyWord' || key == 'startTime' || key == 'endTime' || key == 'libKey' || key == 'equal' || key == 'orgKey' || key == 'begYear' || key == 'endYear' || key == 'noPublishAD'){
 
                 }else{
                     keyWordObj[key] = data[key];
@@ -234,9 +270,10 @@ export default {
             this.NoIndex = data['NoIndex'];
             this.FileStartTimes = data['FileStartTimes'] || '';
             this.FileEndTimes = data['FileEndTimes'] || '';
+            this.gcStatus = data['gcStatus'] || '';
 
             for(let key in data){
-                if(key == 'FileStartTimes' || key == 'FileEndTimes' || key == 'NoIndex' || key == 'libKey' || key == 'equal' || key == 'orgKey' || key == 'begYear' || key == 'endYear' || key == 'noPublishAD'){
+                if(key == 'gcStatus' || key == 'FileStartTimes' || key == 'FileEndTimes' || key == 'NoIndex' || key == 'libKey' || key == 'equal' || key == 'orgKey' || key == 'begYear' || key == 'endYear' || key == 'noPublishAD'){
 
                 }else{
                     keyWordObj[key] = data[key];
@@ -309,6 +346,7 @@ export default {
             role: state => state.nav.role,
             bindTotal: state => state.nav.bindTotal,
             bindPage: state => state.nav.bindPage,
+            catalogStatusO: state => state.nav.catalogStatusO,
         })
     },
     watch:{

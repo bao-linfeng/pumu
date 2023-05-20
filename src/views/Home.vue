@@ -126,12 +126,13 @@ export default {
   position: relative;
   width: 100%;
   height: 100%;
-  background: rgba(29,38,63,1) url('../assets/home/bg.png') no-repeat 50% 50%;
+  background: rgba(29,38,63,1) url('../assets/home/home-bk.jpg') no-repeat 50% 50%;
   text-align: center;
   font-size: 14px;
   display: flex;
   justify-content: center;
   align-items:center;
+  background-size: cover;
   .logo{
     margin-right: 100px;
   }

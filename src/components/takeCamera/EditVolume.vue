@@ -193,9 +193,8 @@ export default {
     position: fixed;
     top: 40px;
     right: 0;
-    // bottom: 0;
     width: 280px;
-    background: #d8d8d8;
+    background: #fff;
     font-size: 14px;
     color: #000;
     padding: 0 20px 20px 20px;

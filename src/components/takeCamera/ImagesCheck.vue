@@ -23,7 +23,7 @@
             <div class="check-wrap">
                 <h3 class="title">请选择更改后的状态:</h3>
                 <el-radio-group v-model="operate">
-                    <el-radio v-for="(item, index) in operateStatusList" :label="item.value" :key="index">{{item.label}}</el-radio>
+                    <el-radio :class="{noMarginL: index == 2, marginT10: index >= 2}" v-for="(item, index) in operateStatusList" :label="item.value" :key="index">{{item.label}}</el-radio>
                 </el-radio-group>
             </div>
             <div class="returnReason-wrap" v-if="[5, 6, 7, 12, 13, 14].indexOf(detail.takeStatus) > -1">
@@ -225,9 +225,10 @@ export default {
     top: 40px;
     right: 0;
     background: #fff;
-    font-size: 16px;
+    font-size: 14px;
     color: #000;
-    padding: 0 30px 30px 30px;
+    padding: 0 20px 20px 20px;
+    width: 280px;
     .head-box{
         position: relative;
         height: 40px;
@@ -297,6 +298,12 @@ export default {
     color: #f00;
     font-style: normal;
     font-weight: normal;
+}
+.noMarginL{
+    margin-left: 0 !important;
+}
+.marginT10{
+    margin-top: 10px !important;
 }
 </style>
 

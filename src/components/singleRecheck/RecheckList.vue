@@ -18,7 +18,7 @@
                     :height="h"
                     :align="'center'"
                     :data="tableData">
-                    <vxe-table-column field="ruleMemo" title="命中规则"></vxe-table-column>
+                    <vxe-table-column field="rules" title="命中规则"></vxe-table-column>
                     <vxe-table-column field="genealogyName" title="谱名"></vxe-table-column>
                     <vxe-table-column field="repeatOSBN" title="谱ID"></vxe-table-column>
                     <vxe-table-column field="hall" title="堂号"></vxe-table-column>
@@ -95,6 +95,13 @@ export default {
             if(result.status == 200){
                 this.tableData = result.result.list.map((ele)=>{
                     ele.timeO = ADS.getLocalTime(ele.time);
+                    if(ele.rule && ele.rule.length){
+                        let rule = ele.rule,rules='';
+                        rule.map((item2)=>{
+                            rules = rules + item2.rule+'('+item2.repeatPercent+'%);';
+                        });
+                        ele.rules = rules;
+                    }
                     return ele;
                 });
                 this.pages = 1;

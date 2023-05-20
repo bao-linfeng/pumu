@@ -94,7 +94,7 @@ export default {
 
         this.field_branch = [
             {'fieldMeans': '作者姓名', 'fieldName': 'authors'},
-            {'fieldMeans': '应拍卷(册)数', 'fieldName': 'hasVolume'},
+            {'fieldMeans': '可拍卷数', 'fieldName': 'hasVolume'},
             {'fieldMeans': '缺卷(册)说明', 'fieldName': 'lostVolume'},
             {'fieldMeans': '版本类型', 'fieldName': 'version'},
             {'fieldMeans': '作者职务', 'fieldName': 'authorJob'},

@@ -65,7 +65,7 @@
                     <vxe-table-column field="place" title="谱籍地(现代)" width="120"></vxe-table-column>
                     <vxe-table-column field="volume" title="卷(册)说明" width="100"></vxe-table-column>
                     <vxe-table-column field="lostVolume" title="缺卷(册)说明" width="100"></vxe-table-column>
-                    <vxe-table-column field="hasVolume" title="应拍册数" width="100"></vxe-table-column>
+                    <vxe-table-column field="hasVolume" title="可拍册数" width="100"></vxe-table-column>
                     <vxe-table-column field="volumeNumber" title="实拍册数" width="100"></vxe-table-column>
                     <vxe-table-column field="authors" title="作者" width="100"></vxe-table-column>
                     <vxe-table-column field="authorJob" title="作者职务" width="100"></vxe-table-column>
@@ -157,7 +157,7 @@ export default {
     },
     methods:{
         singleQuick({ row }){
-            window.open('/'+this.pathname+'/singleQuickSearch?id='+row._key, '_blank');
+            window.open('/'+this.pathname+'/singleQuickSearch?id='+row.gcKey, '_blank');
         },
         lookBook({ row }){
             this.dataKey = row.gcKey;

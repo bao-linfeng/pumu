@@ -48,14 +48,14 @@
                     <img src="../../assets/shoot/leaveMsg.svg" alt="">
                     <span class="span">编辑卷册</span>
                 </div>
-                <div v-if="(role >= 1 && role <= 3 && (takeStatus == 5 || takeStatus == 13 || takeStatus == 14 || takeStatus == 16))" class="task-verify" @click="isShow = 2">
+                <!-- <div v-if="(role >= 1 && role <= 3 && (takeStatus == 5 || takeStatus == 13 || takeStatus == 14 || takeStatus == 16))" class="task-verify" @click="isShow = 2">
                     <img src="../../assets/shoot/dor.svg" alt="">
                     <span class="span">DOR报告</span>
                 </div>
                 <div v-if="(((takeStatus == 5 || takeStatus == 13 || takeStatus == 14) && role >= 1 && role <= 3) || (takeStatus == 12 && orgAdmin == 'admin')) && !isRead" class="task-verify" @click="isShow = 1">
                     <img src="../../assets/shoot/leaveMsg.svg" alt="">
                     <span class="span">申诉{{(role == 1 || role == 2 || role == 3) ? '回复' : ''}}</span>
-                </div>
+                </div> -->
                 <div v-if="((orgAdmin == 'admin' && (takeStatus == 12 || takeStatus == 6)) || (role >= 1 && role <= 3 && (takeStatus == 5 || takeStatus == 6 || takeStatus == 7 || takeStatus == 13 || takeStatus == 14))) && !isRead" class="task-verify" @click="handleImagesCheck">
                     <img src="../../assets/shoot/pass.svg" alt="">
                     <span class="span">影像审核</span>
@@ -65,7 +65,7 @@
         <div class="content" :style="{height: IH+'px', background: bgColor}">
             <!-- 大图 -->
             <div class="img-box" :class="{active: isZoom, paddingRight340: isShow == 6}">
-                <img class="large-image" :class="{active: isNatural}" :style="{transform: 'translate('+x+'px, '+y+'px) rotate('+rotate+'deg) scale('+scale+')'}" @load="loadImage" :src="imageURL+(imageURL.indexOf('gif') > -1 ? '' : '?v='+now)" alt="" />
+                <img class="large-image" :class="{active: isNatural}" :style="{transform: 'translate('+x+'px, '+y+'px) rotate('+rotate+'deg) scale('+scale+')'}" @load="loadImage" :src="imageURL+(imageURL.indexOf('gif') > -1 ? '' : '?v='+this.now)" alt="" />
                 <div class="img-hand" @mousedown="dragStart" @mousemove.prevent="mouseMove" @wheel.passive="handleWheel"></div>
             </div>
             <div class="pass-wrap" v-show="isShowSideBar">
@@ -306,9 +306,9 @@ export default {
             this.getVolumeDetail();
         },
         handleOpenNewView(){
-            window.open(this.imageURL+'?v='+Date.now(), '_blank');
+            window.open(this.imageURL, '_blank');
         },
-        handleNatural(){
+        handleNatural(){                          
 			this.isMagnifier = 0;
 			this.isNatural = !this.isNatural;
 			this.scale = 1;
@@ -868,7 +868,14 @@ export default {
         },
         'pageKey': function(nv, ov){
             console.log(nv);
-        }
+        },
+        'isShow': function(nv, ov){
+            if(nv == 6){
+                this.isShowSideBar = false;
+            }else{
+                this.isShowSideBar= true;
+            }
+        },
     },
 };
 </script>

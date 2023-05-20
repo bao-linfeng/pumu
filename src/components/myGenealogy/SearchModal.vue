@@ -13,6 +13,14 @@
                 <input type="text" :placeholder="'请输入文件标题'" v-model.trim="parameters['fileName']" @keyup.enter="handleKeyUp" @blur="changeParameters" />
                 <div class="tag_close" v-show="parameters.fileName" @click="clear('fileName')"><i class="el-icon-close"></i></div>
             </div>
+            <el-select v-model="parameters.gcStatus" placeholder="谱书状态" class="w15 marginB10">
+                <el-option
+                    v-for="(item,index) in gcStatusList"
+                    :key="index"
+                    :label="item.label"
+                    :value="item.value">
+                </el-option>
+            </el-select>
             <el-select v-model="parameters.batchKey" placeholder="请选择批次" class="w15 marginB10">
                 <el-option
                     v-for="(item,index) in batchArr"
@@ -51,7 +59,7 @@
                     :value="item.value">
                 </el-option>
             </el-select>
-            <el-select v-model="parameters.condition" multiple placeholder="请选择状态" class="w15 marginB10">
+            <el-select v-model="parameters.condition" multiple placeholder="谱状态" class="w15 marginB10">
                 <el-option
                     v-for="item in conditionList"
                     :key="item.value"
@@ -99,7 +107,7 @@
                 <input type="text" :placeholder="'作者、谱籍地、始迁祖、一世祖'" v-model.trim="parameters['keyWord']" @keyup.enter="handleKeyUp" @blur="changeParameters" />
                 <div class="tag_close" v-show="parameters.keyWord" @click="clear('keyWord')"><i class="el-icon-close"></i></div>
             </div>
-            <div class="search-input-modal" v-for="item in (6-((fieldFilterList.length+(role >= 1 && role <= 3 ? 15 : 12))%6 || 6))" :key="'kon'+item"></div>
+            <div class="search-input-modal" v-for="item in (6-((fieldFilterList.length+(role >= 1 && role <= 3 ? 16 : 13))%6 || 6))" :key="'kon'+item"></div>
             <div class="search-input-modal"></div>
         </div>
         <div class="search-modal-box" v-if="!isShow">
@@ -123,7 +131,7 @@
                 <input type="text" :placeholder="'堂号'" v-model.trim="parameters['hall']" @keyup.enter="handleKeyUp" @blur="changeParameters" />
                 <div class="tag_close" v-show="parameters.hall" @click="clear('hall')"><i class="el-icon-close"></i></div>
             </div>
-            <el-select v-model="parameters.condition" multiple placeholder="谱目状态" class="w15 marginB10">
+            <el-select v-model="parameters.condition" multiple placeholder="谱状态" class="w15 marginB10">
                 <el-option
                     v-for="item in conditionList"
                     :key="item.value"
@@ -191,7 +199,22 @@ export default {
                 keyWord: '',
                 FileStartTimes: '',
                 FileEndTimes: '',
+                gcStatus: '',
             },
+            gcStatusList: [
+                {'label': '全部谱书状态', 'value': ''},
+                {'label': '无状态', 'value': '0'},
+                {'label': '失效谱', 'value': '10'},
+                {'label': '重复谱', 'value': '15'},
+                {'label': '待议谱', 'value': '20'},
+                {'label': '待议复审', 'value': '23'},
+                {'label': '逾期谱', 'value': '25'},
+                {'label': '在拍谱', 'value': '30'},
+                {'label': '在拍复审', 'value': '32'},
+                {'label': '开放谱书', 'value': '35'},
+                {'label': '开放谱认领', 'value': '40'},
+                {'label': '拍摄完结', 'value': '50'},
+            ],
             batchArr: [],
             sourcelist: [],
             userList: [],
@@ -200,7 +223,7 @@ export default {
                 {'label': '可索引', 'value': 0},
                 {'label': '不可索引', 'value': 1},
             ],
-            conditionList: [{'label': '全部状态', 'value': ''}, {'label': 'f', 'value': 'f'}, {'label': 'nf', 'value': 'nf'}, {'label': 'd', 'value': 'd'}, {'label': 'r', 'value': 'r'}, {'label': 'm', 'value': 'm'}],
+            conditionList: [{'label': '全部谱状态', 'value': ''}, {'label': 'f', 'value': 'f'}, {'label': 'nf', 'value': 'nf'}, {'label': 'd', 'value': 'd'}, {'label': 'r', 'value': 'r'}, {'label': 'm', 'value': 'm'}],
             imageList: [{'label':'影像资料','value':2},{'label':'有影像','value':1},{'label':'无影像','value':0}],
             libList: [],
             nolibList: [{'label':'等于','value':1},{'label':'不等于','value':0}],
@@ -323,7 +346,10 @@ export default {
         'parameters.batchKey': function(nv, ov){
             console.log(nv);
             this.$emit('change-parameters',this.parameters);
-        }
+        },
+        'parameters.gcStatus': function(nv, ov){
+            this.$emit('change-parameters',this.parameters);
+        },
     }
 };
 </script>

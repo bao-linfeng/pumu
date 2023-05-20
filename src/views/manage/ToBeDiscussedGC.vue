@@ -60,13 +60,23 @@
                     <vxe-table-column type="checkbox" field="checkbox" width="60" fixed="left"></vxe-table-column>
                     <vxe-table-column v-for="(item,index) in field_main" :key="'field_main'+index" width="100" :field="item.fieldName" :title="item.fieldMeans" fixed="left"></vxe-table-column>
                     <vxe-table-column v-for="(item,index) in field_branch" :key="'field_branch'+index" width="100" :field="item.fieldName" :title="item.fieldMeans"></vxe-table-column>
-                    <vxe-table-column field="gcStatusO" width="100" title="谱目待议状态"></vxe-table-column>
+                    <vxe-table-column field="memo" title="备注" width="150" show-overflow="title"></vxe-table-column>
+                    <vxe-table-column field="explain" title="说明" width="150" show-overflow="title"></vxe-table-column>
+                    <vxe-table-column field="orgName" title="供应商" width="100"></vxe-table-column>
+                    <vxe-table-column field="condition" title="谱状态" width="100"></vxe-table-column>
+                    <vxe-table-column field="Filetimes" title="档案时间" width="100" sort-by="Filetimes" sortable></vxe-table-column>
+                    <vxe-table-column field="Filenames" title="档名" width="100"></vxe-table-column>
+                    <vxe-table-column field="bookId" title="谱书编号" width="100"></vxe-table-column>
+                    <vxe-table-column field="DGS" title="DGS号码" width="100"></vxe-table-column>
+                    <vxe-table-column field="genealogyGroupID" title="家谱群组ID" width="100"></vxe-table-column>
+                    <vxe-table-column field="updateUserName" title="更新人员" width="100"></vxe-table-column>
+                    <vxe-table-column field="GCOverO" title="编目状态" width="100"></vxe-table-column>
+                    <vxe-table-column field="NoIndexO" title="索引状态" width="100"></vxe-table-column>
+                    <vxe-table-column field="gcStatusO" title="谱书状态" width="100"></vxe-table-column>
+                    
                     <vxe-table-column field="updateTimeO" width="100" title="打回日期"></vxe-table-column>
                     <vxe-table-column field="overTime" width="100" title="剩余天数"></vxe-table-column>
-                    <vxe-table-column field="orgName" width="100" title="上传机构"></vxe-table-column>
                     <vxe-table-column field="createTimeO" min-width="100" title="上传日期"></vxe-table-column>
-                    <vxe-table-column field="fileName" width="100" title="文件标题"></vxe-table-column>
-                    <vxe-table-column field="Filenames" width="100" title="档名"></vxe-table-column>
                     <vxe-table-column fixed="right" title="操作" width="180" :cell-render="{name: 'AdaiActionButton', attr: {data: actionData}, events:{'detail': openDetail, 'attachment': openAttachment, 'log': openLog, 'check': openCheck, 'singleQuick': singleQuick}}"></vxe-table-column>
                 </vxe-table>
                 <div class="page-wrap">
@@ -133,7 +143,7 @@ export default {
             limit: 30,
             orgList: [],
             overTimeList: [
-                {'label': '全部状态', 'value': ''}, 
+                {'label': '全部谱书状态', 'value': ''}, 
                 {'label': '待议复审', 'value': '2'}, 
                 {'label': '待议谱', 'value': '0'}, 
                 {'label': '逾期谱', 'value': '1'}
@@ -154,6 +164,7 @@ export default {
     created:function(){
         this.h = window.innerHeight - 150;
         this.field_main = [
+            {'fieldMeans': '文件标题', 'fieldName': 'fileName'},
             {'fieldMeans': '谱ID', 'fieldName': '_key'},
             {'fieldMeans': '谱名', 'fieldName': 'genealogyName'},
             {'fieldMeans': '姓氏', 'fieldName': 'surname'},
@@ -166,48 +177,13 @@ export default {
             {'fieldMeans': '始迁祖', 'fieldName': 'migrationAncestor'},
             {'fieldMeans': '谱籍地(原谱)', 'fieldName': 'place'},
             {'fieldMeans': '谱籍地(现代)', 'fieldName': 'LocalityModern'},
-            {'fieldMeans': '卷(册)说明', 'fieldName': 'volume'},
-            {'fieldMeans': '缺卷(册)说明', 'fieldName': 'lostVolume'},
-            {'fieldMeans': '应拍册数', 'fieldName': 'hasVolume'},
-            {'fieldMeans': '实拍册数', 'fieldName': 'volumeNumber'},
+            {'fieldMeans': '总卷数', 'fieldName': 'volume'},
+            {'fieldMeans': '缺卷说明', 'fieldName': 'lostVolume'},
+            {'fieldMeans': '可拍册数', 'fieldName': 'hasVolume'},
+            // {'fieldMeans': '实拍册数', 'fieldName': 'volumeNumber'},
             {'fieldMeans': '作者', 'fieldName': 'authors'},
             {'fieldMeans': '作者职务', 'fieldName': 'authorJob'},
             {'fieldMeans': '重复谱ID', 'fieldName': 'Dupbookid'},
-            {'fieldMeans': '备注', 'fieldName': 'memo'},
-            {'fieldMeans': '说明', 'fieldName': 'explain'},
-            {'fieldMeans': '供应商', 'fieldName': 'orgName'},
-            {'fieldMeans': '拍数', 'fieldName': '拍数'},
-            {'fieldMeans': '更新人员', 'fieldName': '更新人员'},
-            {'fieldMeans': '谱目状态', 'fieldName': 'condition'},
-            {'fieldMeans': '索引状态', 'fieldName': 'NoIndexO'},
-
-            
-            // {'fieldMeans': '版本类型', 'fieldName': 'version'},
-            // {'fieldMeans': '重复谱书编号', 'fieldName': 'Dupbookid'},
-            // {'fieldMeans': '状态', 'fieldName': 'condition'},
-            // {'fieldMeans': '档案时间', 'fieldName': 'Filetimes'},
-            // {'fieldMeans': '档名', 'fieldName': 'Filenames'},
-            // {'fieldMeans': '代号', 'fieldName': 'code'},
-            // {'fieldMeans': '谱籍_现代地名', 'fieldName': 'place'},
-            // {'fieldMeans': '谱书编号', 'fieldName': 'bookId'},
-            // {'fieldMeans': 'DGS 号码', 'fieldName': 'DGS'},
-            // {'fieldMeans': '微卷编号', 'fieldName': 'film'},
-            // {'fieldMeans': '家谱群组ID', 'fieldName': 'genealogyGroupID'},
-            // {'fieldMeans': '项目ID', 'fieldName': 'Projectid'},
-            // {'fieldMeans': '拍摄日期', 'fieldName': 'capturedate'},
-            // {'fieldMeans': 'Media', 'fieldName': 'Media'},
-            // {'fieldMeans': '重复专案ID', 'fieldName': 'DupProjectID'},
-            // {'fieldMeans': '认领单位', 'fieldName': 'claim'},
-            // {'fieldMeans': '认领日期', 'fieldName': 'claimDate'},
-            // {'fieldMeans': '拍摄期限', 'fieldName': 'shootingPeriod'},
-            // {'fieldMeans': '前次认领单位1', 'fieldName': 'pervious1'},
-            // {'fieldMeans': '前次认领日期1', 'fieldName': 'perviousDate1'},
-            // {'fieldMeans': '前次认领单位2', 'fieldName': 'pervious2'},
-            // {'fieldMeans': '前次认领日期2', 'fieldName': 'perviousDate2'},
-            // {'fieldMeans': '前次认领单位3', 'fieldName': 'pervious3'},
-            // {'fieldMeans': '前次认领日期3', 'fieldName': 'perviousDate3'},
-            // {'fieldMeans': '序号', 'fieldName': 'VolumeFst'},
-            // {'fieldMeans': '起年', 'fieldName': 'startYear'},
         ];
     },
     mounted:function(){
@@ -291,6 +267,8 @@ export default {
             this.loading = false;
             if(result.status == 200){
                 result.result.list.map((item)=>{
+                    item.GCOverO = item.GCOver == 1 ? '已完结' : '未完结';
+                    item.NoIndexO = item.NoIndex == 1 ? '不可索引' : '可索引';
                     item.gcStatusO = item.gcStatus ? this.catalogStatusO[item.gcStatus] : '';
                     item.updateTimeO = item.updateTime ? ADS.getLocalTime(item.updateTime) : '';
                     item.createTimeO = item.createTime ? ADS.getLocalTime(item.createTime) : '';
@@ -313,7 +291,7 @@ export default {
                 this.orgList = data.data.map((ele, index)=>{
                     return {'label': ele.organizationNo+'('+ele.name+')', 'value': ele._key};
                 });
-                this.orgList.unshift({'label': '全部机构', 'value': ''});
+                this.orgList.unshift({'label': '全部供应商', 'value': ''});
             }else{
                 this.$XModal.message({ message: data.msg, status: 'warning' });
             }
@@ -474,6 +452,7 @@ export default {
     display: flex;
     justify-content: space-around;
     align-items: center;
+    z-index: 1;
     &.active{
         z-index: 100;
         justify-content: space-between;

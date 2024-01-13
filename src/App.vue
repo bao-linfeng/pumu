@@ -149,7 +149,7 @@ export default {
     }
   },
   mounted:function(){
-    
+    window.opener = null;
   },
   methods:{
     async getWaitReviewNumber(){//获取等待审核卷数（机构或微站）

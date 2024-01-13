@@ -147,11 +147,19 @@
                     :value="item.value">
                 </el-option>
             </el-select>
+            <el-select v-if="role >= 1 && role <= 3" v-model="parameters.targetSiteKey" placeholder="分发机构" class="w15 marginB10">
+                <el-option
+                    v-for="item in siteList"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                </el-option>
+            </el-select>
             <div class="search-input-modal">
                 <input type="text" :placeholder="'作者、谱籍地、始迁祖、一世祖'" v-model.trim="parameters['keyWord']" @keyup.enter="handleKeyUp" @blur="changeParameters" />
                 <div class="tag_close" v-show="parameters.keyWord" @click="clear('keyWord')"><i class="el-icon-close"></i></div>
             </div>
-            <div class="search-input-modal" v-for="(item, index) in 4" :key="index"></div>
+            <div class="search-input-modal" v-for="(item, index) in 3" :key="index"></div>
         </div>
         <div class="search-modal-box">
             <div class="search-input-modal"></div>
@@ -200,6 +208,7 @@ export default {
                 FileStartTimes: '',
                 FileEndTimes: '',
                 gcStatus: '',
+                targetSiteKey: '',
             },
             gcStatusList: [
                 {'label': '全部谱书状态', 'value': ''},
@@ -231,12 +240,14 @@ export default {
             fieldFilterList: [{label:'家谱编码',value:'_key'}],
             time: '',
             isShow: false,
+            siteList: [],
         };
     },
     created:function(){
         this.getBatchList();
-        this.getLib();
+        // this.getLib();
         this.getOrgList();
+        this.getSite();
     },
     mounted:function(){
         if(this.role >= 1 && this.role <= 3){
@@ -248,6 +259,21 @@ export default {
         this.initFieldFilter();
     },
     methods:{
+        async getSite(){//列表
+            this.loading = true;
+            let data = await api.getAxios('site?keyWord=&page=1&limit=100');
+            this.loading = false;
+            if(data.status == 200){
+                let siteList = [{'label': '全部站点', 'value': ''}]
+                data.result.list.forEach((ele) => {
+                    ele.label = ele.siteName;
+                    ele.value = ele._key;
+                    siteList.push(ele);
+                });
+
+                this.siteList = siteList;
+            }
+        },
         initFieldFilter(){
             let fieldFilterList = [];
             this.fieldFilterList.concat(this.fieldFilters).forEach((ele) => {

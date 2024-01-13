@@ -143,6 +143,7 @@ export default {
             {'fieldMeans': '作者职务', 'fieldName': 'authorJob'},
             {'fieldMeans': '版本类型', 'fieldName': 'version'},
             {'fieldMeans': '重复谱ID', 'fieldName': 'Dupbookid'},
+            {'fieldMeans': '分发机构', 'fieldName': 'shareOrCopySiteNamesO'},
         ];
     },
     mounted:function(){

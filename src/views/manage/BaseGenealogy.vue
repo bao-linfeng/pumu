@@ -97,6 +97,7 @@ export default {
             isFull: false,
             gcStatus: '',
             NoIndex: '',
+            targetSiteKey: '',
         };
     },
     created:function(){
@@ -161,6 +162,7 @@ export default {
                 'keyWordObj': this.keyWordObj,
                 'prop': this.prop,
                 'order': this.order,
+                'targetSiteKey': this.targetSiteKey,
                 'limit': 5000,
             });
             this.loading = false;
@@ -197,6 +199,7 @@ export default {
             '&gcStatus='+this.gcStatus+
             '&keyWordObj='+JSON.stringify(this.keyWordObj)+
             '&prop='+this.prop+
+            '&targetSiteKey='+this.targetSiteKey+
             '&order='+this.order+'&page='+this.page+'&limit='+this.limit);
             this.loading = false;
             if(data.status == 200){
@@ -212,6 +215,7 @@ export default {
                     item.address = (item.prov || '') + ' ' + (item.city || '') + ' ' + (item.district || '');
                     item.hasImageO = item.hasImage == 1 ? '有' : '无';
                     item.libsStr = item.libs.join(',');
+                    item.shareOrCopySiteNamesO = item.shareOrCopySiteNames.join(',');
                 });
                 this.total = data.result.total;
             }else{
@@ -247,9 +251,10 @@ export default {
             this.FileStartTimes = data['FileStartTimes'] || '';
             this.FileEndTimes = data['FileEndTimes'] || '';
             this.gcStatus = data['gcStatus'] || '';
+            this.targetSiteKey = data['targetSiteKey'] || '';
 
             for(let key in data){
-                if(key == 'gcStatus' || key == 'FileStartTimes' || key == 'FileEndTimes' || key == 'condition' || key == 'NoIndex' || key == 'isPublish' || key == 'isPlace' || key == 'fileName' || key == 'keyWord' || key == 'startTime' || key == 'endTime' || key == 'libKey' || key == 'equal' || key == 'orgKey' || key == 'begYear' || key == 'endYear' || key == 'noPublishAD'){
+                if(key == 'targetSiteKey' || key == 'gcStatus' || key == 'FileStartTimes' || key == 'FileEndTimes' || key == 'condition' || key == 'NoIndex' || key == 'isPublish' || key == 'isPlace' || key == 'fileName' || key == 'keyWord' || key == 'startTime' || key == 'endTime' || key == 'libKey' || key == 'equal' || key == 'orgKey' || key == 'begYear' || key == 'endYear' || key == 'noPublishAD'){
 
                 }else{
                     keyWordObj[key] = data[key];
@@ -271,9 +276,10 @@ export default {
             this.FileStartTimes = data['FileStartTimes'] || '';
             this.FileEndTimes = data['FileEndTimes'] || '';
             this.gcStatus = data['gcStatus'] || '';
+            this.targetSiteKey = data['targetSiteKey'] || '';
 
             for(let key in data){
-                if(key == 'gcStatus' || key == 'FileStartTimes' || key == 'FileEndTimes' || key == 'NoIndex' || key == 'libKey' || key == 'equal' || key == 'orgKey' || key == 'begYear' || key == 'endYear' || key == 'noPublishAD'){
+                if(key == 'targetSiteKey' || key == 'gcStatus' || key == 'FileStartTimes' || key == 'FileEndTimes' || key == 'NoIndex' || key == 'libKey' || key == 'equal' || key == 'orgKey' || key == 'begYear' || key == 'endYear' || key == 'noPublishAD'){
 
                 }else{
                     keyWordObj[key] = data[key];
